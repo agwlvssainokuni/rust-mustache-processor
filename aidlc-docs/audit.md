@@ -216,3 +216,10 @@
 **Context**: CONSTRUCTION - Functional Design (core-engine, approval) → NFR Requirements (core-engine, start)
 
 ---
+
+## NFR Requirements (core-engine) - Plan and Questions Presented
+**Timestamp**: 2026-07-16T20:47:00Z
+**AI Response**: "aidlc-docs/construction/plans/core-engine-nfr-requirements-plan.mdを作成。requirements.mdより引き継ぎ済みの前提（Security/Resiliency無効、配布形態、テスト方針）を整理した上で、4問（レンダリング出力方式のString/streaming選択、セクション/パーシャルのネスト深度制限、公開APIドキュメント要件、PBTフレームワーク確定と試行回数方針）を提示。回答待ち。"
+**Context**: CONSTRUCTION - NFR Requirements (core-engine, Step 2-4, Gate)
+
+---
