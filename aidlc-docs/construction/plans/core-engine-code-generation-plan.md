@@ -103,8 +103,8 @@ Functional Designの`domain-entities.md`はValue型を`Integer`/`Float`/`HashMap
 - [x] `cargo test --test proptest`で7件全て成功を確認
 
 ### Step 10: Documentation Generation
-- [ ] `src/lib.rs`のクレートレベルdocコメントに使用例（`Mustache::new().render_str(...)`）を記載
-- [ ] `cargo doc --no-deps`がエラーなく完了することを確認
+- [x] `src/lib.rs`のクレートレベルdocコメントに使用例（`Mustache::new().render_str(...)`）を記載（Step6で先行実施済み、doctestとして`cargo test --doc`でも検証済み）
+- [x] `cargo doc --no-deps`がエラーなく完了することを確認
 
 ### Step 11: Business Logic Summary
 - [ ] `aidlc-docs/construction/core-engine/code/summary.md`に生成物一覧・テスト構成・spec準拠状況をまとめる
