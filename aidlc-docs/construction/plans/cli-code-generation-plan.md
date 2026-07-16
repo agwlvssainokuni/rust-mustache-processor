@@ -40,9 +40,10 @@
 - [x] ユニットテスト7件（形式判定優先順位、JSON/YAML往復、不正データのエラー）を実装し`cargo test --bin mustache data_loader::`で全件成功を確認
 
 ### Step 5: CliRunner（オーケストレーション）
-- [ ] `src/cli/mod.rs`: `CliError`とその`From`実装群（`logical-components.md`参照）を定義
-- [ ] `run_inner(argv) -> Result<(), CliError>`を実装（BR-5.1〜5.3, BR-6.1: process-then-cat、Atomic Output Buffering）
-- [ ] `run(argv) -> ExitCode`を実装（BR-7.1〜7.3: `run_inner`のラッパー、stderr出力・終了コード変換）
+- [x] `src/cli/mod.rs`: `CliError`とその`From`実装群（`logical-components.md`参照）を定義
+- [x] `run_inner(argv) -> Result<(), CliError>`を実装（BR-5.1〜5.3, BR-6.1: process-then-cat、Atomic Output Buffering）
+- [x] `run(argv) -> ExitCode`を実装（BR-7.1〜7.3: `run_inner`のラッパー、stderr出力・終了コード変換）
+- [x] ユニットテスト7件（単一/複数テンプレートのレンダリング、テンプレートごとのパーシャルディレクトリ解決、エラー時の全体アトミック性、引数エラー伝播、ExitCode変換）を実装し`cargo test --bin mustache cli::tests::`で全件成功を確認
 
 ### Step 6: main.rs
 - [ ] `src/main.rs`を`cli::run(&std::env::args().collect::<Vec<_>>())`相当の薄い呼び出しに置き換える

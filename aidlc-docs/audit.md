@@ -561,3 +561,10 @@
 **Context**: CONSTRUCTION - Code Generation (cli, Part 2 Generation, Step 4)
 
 ---
+
+## Code Generation (cli) - Step 5 Completed
+**Timestamp**: 2026-07-17T01:12:00Z
+**AI Response**: "Step5（CliRunner）完了。mod.rsにCliErrorとFrom実装群、run_inner（引数解析→テンプレート/データ読み込み→形式判定・変換→テンプレートごとにMustacheエンジン構築・レンダリング→バッファ連結→書き出し）、run（run_innerのラッパー、stderr出力・ExitCode変換）を実装。ユニットテスト7件（単一/複数テンプレート、テンプレートごとのパーシャルディレクトリ解決、エラー時の全体アトミック性・出力ファイル未作成の確認、引数エラー伝播、ExitCode変換）でcargo test --bin mustache cli::tests::が全件成功。"
+**Context**: CONSTRUCTION - Code Generation (cli, Part 2 Generation, Step 5)
+
+---
