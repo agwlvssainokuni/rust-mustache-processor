@@ -64,6 +64,6 @@
 
 ## Current Status
 - **Lifecycle Phase**: CONSTRUCTION
-- **Current Stage**: Code Generation（ユニット: cli）— 全9ステップ完了、承認待ち
-- **Next Stage**: Build and Test
-- **Status**: 承認待ち
+- **Current Stage**: Build and Test
+- **Next Stage**: Operations（プレースホルダ）
+- **Status**: 進行中
