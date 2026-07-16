@@ -48,10 +48,10 @@
 - [x] NFR Requirements — 成果物生成完了、承認済み
 - [x] NFR Design — 成果物生成完了、承認済み
 - [ ] Infrastructure Design — SKIP（クラウドインフラなし）
-- [x] Code Generation — 全11ステップ完了（承認待ち）
+- [x] Code Generation — 全11ステップ完了、承認済み
 
 #### ユニット: cli
-- [ ] Functional Design — EXECUTE（未着手）
+- [ ] Functional Design — EXECUTE（進行中）
 - [ ] NFR Requirements — EXECUTE（未着手）
 - [ ] NFR Design — EXECUTE（未着手）
 - [ ] Infrastructure Design — SKIP（クラウドインフラなし）
@@ -64,6 +64,6 @@
 
 ## Current Status
 - **Lifecycle Phase**: CONSTRUCTION
-- **Current Stage**: Code Generation（ユニット: core-engine）— 全11ステップ完了、承認待ち
-- **Next Stage**: Functional Design（cli）
-- **Status**: 承認待ち
+- **Current Stage**: Functional Design（ユニット: cli）
+- **Next Stage**: NFR Requirements（cli）
+- **Status**: 進行中

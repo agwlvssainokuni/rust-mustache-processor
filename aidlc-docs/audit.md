@@ -362,3 +362,11 @@
 **Context**: CONSTRUCTION - Code Generation (core-engine, Part 2 Generation, Step 11 — 全ステップ完了)
 
 ---
+
+## Code Generation (core-engine) - Approved
+**Timestamp**: 2026-07-16T23:40:00Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "core-engineユニットのCode Generation成果物（src/配下の実装、テスト86件、summary.md）が承認された。core-engineユニットのCONSTRUCTION（Functional Design/NFR Requirements/NFR Design/Code Generation）を完了とし、cliユニットのFunctional Designに移行する。"
+**Context**: CONSTRUCTION - Code Generation (core-engine, approval) → Functional Design (cli, start)
+
+---
