@@ -261,3 +261,10 @@
 **Context**: CONSTRUCTION - NFR Design (core-engine, Step 5)
 
 ---
+
+## NFR Design (core-engine) - Artifacts Generated
+**Timestamp**: 2026-07-16T21:02:00Z
+**AI Response**: "aidlc-docs/construction/core-engine/nfr-design/配下にnfr-design-patterns.md（Resilience/Scalability/Security PatternsはN/A、Recursion Guard・Cycle Detection・Bundled Render State・Capacity Pre-allocation・Compile-time Documentation Enforcement・Tuned Property Test Configurationの6パターン）、logical-components.md（RenderState構造体、RenderErrorKindへのMaxNestingDepthExceeded追加、render_nodes内部シグネチャ、Mustache::renderエントリポイントの更新、テスト用論理コンポーネント配置）を生成。"
+**Context**: CONSTRUCTION - NFR Design (core-engine, Step 6)
+
+---

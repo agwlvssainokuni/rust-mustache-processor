@@ -7,9 +7,9 @@
 - [x] Step 1: NFR Requirements成果物の分析
 - [x] Step 2-4: 計画作成・質問洗い出し（本ファイル）
 - [x] Step 5: ユーザー回答収集・曖昧さ分析（Q1=A, Q2=A, Q3=A、いずれも推奨通り。曖昧・矛盾なし）
-- [ ] Step 6: NFR設計成果物生成
-  - [ ] `nfr-design-patterns.md`
-  - [ ] `logical-components.md`
+- [x] Step 6: NFR設計成果物生成
+  - [x] `nfr-design-patterns.md`
+  - [x] `logical-components.md`
 - [ ] Step 7-9: 完了メッセージ提示・承認待ち・記録
 
 ## カテゴリ別評価
