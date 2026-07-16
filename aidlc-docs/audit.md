@@ -276,3 +276,10 @@
 **Context**: CONSTRUCTION - NFR Design (core-engine, approval) → Code Generation (core-engine, start)
 
 ---
+
+## Code Generation (core-engine) - Plan Presented (Part 1)
+**Timestamp**: 2026-07-16T21:08:00Z
+**AI Response**: "aidlc-docs/construction/plans/core-engine-code-generation-plan.mdを作成。11ステップ（プロジェクト構造セットアップ、Value/Map、AST/Parser、Renderer、PartialResolver、Mustacheエンジン公開API、ユニットテスト、spec conformanceテスト、PBTテスト、ドキュメント生成、サマリー）を定義。計画作成時にFunctional Designのdomain-entities.mdがApplication Design承認済みのValueメソッド（from_serialize, is_truthy, get, iter）とキー順序保持Map仕様を見落としていたことを検出し、Application Design側を正として計画に補正を記録（indexmap等の新規依存は追加せずVec<(String, Value)>ベースで実現）。承認依頼待ち。"
+**Context**: CONSTRUCTION - Code Generation (core-engine, Part 1 Planning, Step 5-6, Gate)
+
+---
