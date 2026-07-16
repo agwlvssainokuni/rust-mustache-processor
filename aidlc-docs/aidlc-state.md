@@ -57,13 +57,13 @@
 - [ ] Infrastructure Design — SKIP（クラウドインフラなし）
 - [x] Code Generation — 全9ステップ完了（承認待ち）
 
-- [ ] Build and Test — EXECUTE（全ユニット完了後、常時）
+- [x] Build and Test — 成果物生成完了（承認待ち）
 
 ### 🟡 OPERATIONS PHASE
 - [ ] Operations — PLACEHOLDER
 
 ## Current Status
 - **Lifecycle Phase**: CONSTRUCTION
-- **Current Stage**: Build and Test
+- **Current Stage**: Build and Test — 成果物生成完了、承認待ち
 - **Next Stage**: Operations（プレースホルダ）
-- **Status**: 進行中
+- **Status**: 承認待ち

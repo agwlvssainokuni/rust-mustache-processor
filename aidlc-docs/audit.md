@@ -604,3 +604,10 @@
 **Context**: CONSTRUCTION - Code Generation (cli, approval) → Build and Test (start)
 
 ---
+
+## Build and Test - Instructions Generated
+**Timestamp**: 2026-07-17T01:35:00Z
+**AI Response**: "aidlc-docs/construction/build-and-test/配下にbuild-instructions.md（ビルド対象・コマンド・成果物配置）、unit-test-instructions.md（core-engine 72件・cli 33件の実行方法とテスト内容要約）、integration-test-instructions.md（run_inner系テストによるユニット間結合検証、spec conformanceテスト、手動エンドツーエンド確認）、performance-test-instructions.md（専用ベンチマーク未実装の方針とその理由、実装済みの性能配慮、手動計測方法）、build-and-test-summary.md（全体サマリー、cargo test全119テスト実行単位が成功、両ユニットのsummary.mdへの相互参照）を生成。cargo build警告0件・cargo test全119件成功を再確認。"
+**Context**: CONSTRUCTION - Build and Test (artifacts generated)
+
+---
