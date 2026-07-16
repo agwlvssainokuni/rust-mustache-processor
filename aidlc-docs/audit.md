@@ -268,3 +268,11 @@
 **Context**: CONSTRUCTION - NFR Design (core-engine, Step 6)
 
 ---
+
+## NFR Design (core-engine) - Approved
+**Timestamp**: 2026-07-16T21:04:00Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "core-engineユニットのNFR Design成果物（nfr-design-patterns.md, logical-components.md）が承認された。NFR Designステージ（core-engine）を完了とし、Code Generation（core-engine）に移行する。"
+**Context**: CONSTRUCTION - NFR Design (core-engine, approval) → Code Generation (core-engine, start)
+
+---

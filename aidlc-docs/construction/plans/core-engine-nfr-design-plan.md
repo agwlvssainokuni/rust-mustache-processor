@@ -10,7 +10,7 @@
 - [x] Step 6: NFR設計成果物生成
   - [x] `nfr-design-patterns.md`
   - [x] `logical-components.md`
-- [ ] Step 7-9: 完了メッセージ提示・承認待ち・記録
+- [x] Step 7-9: 完了メッセージ提示・承認待ち・記録
 
 ## カテゴリ別評価
 
