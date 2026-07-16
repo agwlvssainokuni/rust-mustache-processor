@@ -306,3 +306,10 @@
 **Context**: CONSTRUCTION - Code Generation (core-engine, Part 2 Generation, Step 3)
 
 ---
+
+## Code Generation (core-engine) - Step 4 Completed
+**Timestamp**: 2026-07-16T21:55:00Z
+**AI Response**: "Step4（Renderer）完了。RenderState、変数展開（BR-1.1〜1.9）、セクション/逆セクション評価（BR-2.1〜3.1、コンテキストスタックpush/pop含む）、パーシャル解決（遅延評価・常にエラー化・循環検出・インデント適用、BR-5.1〜5.5）、ネスト深度ガードを実装。ユニットテスト21件で動作確認中、深度超過テストでガードが発火する前に実スタックオーバーフローが発生する不具合を発見。RUST_MIN_STACK=1048576（Windows既定1MiB相当）で二分探索的に実測し、安全な上限が200階層程度と判明したため、MAX_NESTING_DEPTHをNFR Design Q2の例示値1000から100（安全マージン込み）に修正。また、パーシャル内容自体の構文エラーを表すRenderErrorKind::PartialParseErrorがdomain-entities.md/logical-components.mdに未定義だったため追加し、BR-8.2に従いパーシャル自身の位置情報を採用。いずれも計画書に補正として記録。"
+**Context**: CONSTRUCTION - Code Generation (core-engine, Part 2 Generation, Step 4)
+
+---

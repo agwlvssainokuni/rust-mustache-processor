@@ -43,10 +43,15 @@ Functional Designの`domain-entities.md`はValue型を`Integer`/`Float`/`HashMap
 - [x] `parser.rs`に`#[cfg(test)]`ユニットテスト17件（Step7の一部前倒し）を実装し、`cargo test --lib parser::`で全件成功を確認
 
 ### Step 4: Business Logic Generation — Renderer
-- [ ] `src/renderer.rs`: `RenderState`（context_stack, depth, partial_chain, strict）、`MAX_NESTING_DEPTH`定数（1000）
-- [ ] 変数展開（エスケープ有無、BR-1.1〜BR-1.9）、セクション/逆セクション評価（BR-2.1〜BR-3.1）、コンテキストスタック探索（BR-4.1〜BR-4.2）を実装
-- [ ] パーシャル解決（BR-5.1〜BR-5.5: 遅延評価、常にエラー化、循環検出、インデント適用）とネスト深度制限（Recursion Guardパターン）を実装
-- [ ] `src/error.rs`に`RenderError`, `RenderErrorKind`（UndefinedVariable, PartialNotFound, PartialCycleDetected, MaxNestingDepthExceeded）を追加
+- [x] `src/renderer.rs`: `RenderState`（context_stack, depth, partial_chain, strict）、`MAX_NESTING_DEPTH`定数
+- [x] 変数展開（エスケープ有無、BR-1.1〜BR-1.9）、セクション/逆セクション評価（BR-2.1〜BR-3.1）、コンテキストスタック探索（BR-4.1〜BR-4.2）を実装
+- [x] パーシャル解決（BR-5.1〜BR-5.5: 遅延評価、常にエラー化、循環検出、インデント適用）とネスト深度制限（Recursion Guardパターン）を実装
+- [x] `src/error.rs`に`RenderError`, `RenderErrorKind`（UndefinedVariable, PartialNotFound, PartialCycleDetected, MaxNestingDepthExceeded, **PartialParseError**）を追加（後者は実装時に追加、下記参照）
+- [x] `renderer.rs`に`#[cfg(test)]`ユニットテスト21件（Step7の一部前倒し）を実装し、`cargo test --lib renderer::`で全件成功を確認
+
+**実装時の追加補正（要記録・1）**: `domain-entities.md`/`logical-components.md`の`RenderErrorKind`にはパーシャル内容自体の構文エラーを表すバリアントが定義されていなかった（パーシャルは独立ファイルであり、主テンプレートのパース成功後でも不正なMustache構文を含みうるため、この経路のエラー化が必須）。`RenderErrorKind::PartialParseError { name, message }`を追加し、BR-8.2（パーシャル内での位置報告）に従いパーシャル自身の`ParseError`のline/columnをそのまま採用した。
+
+**実装時の追加補正（要記録・2）**: NFR Design Q2で決定した`MAX_NESTING_DEPTH`の上限値は、NFR Requirements Q2の「例1000階層」を踏襲したものだったが、実装後にユニットテストで実測したところ、Rustのデフォルトスレッドスタック（特にWindows既定の1MiB相当を`RUST_MIN_STACK=1048576`で模擬した場合）では、深度1000はガード自体が発火する前に実スタックオーバーフローを起こすことが判明した（`RenderState`を伴う`render_nodes`/`render_section`の再帰1コールあたりのスタックフレームが、単純な再帰関数より大きいため）。二分探索的に実測した結果、1MiBスタックでも安全に動作する上限は200階層程度だったため、余裕を持たせて`MAX_NESTING_DEPTH = 100`に修正した。NFR Requirements Q2・NFR Design Q2の原文はいずれも「例」「上限値1000は例示通り」と明記しており値そのものを厳密に固定してはいなかったため、Code Generationステージでの実装知見に基づく妥当な具体化と判断した。実用上、100階層は現実的なMustacheテンプレートのネスト深度を十分にカバーする。
 
 ### Step 5: Business Logic Generation — PartialResolver / DirectoryPartialResolver
 - [ ] `src/partial.rs`: `PartialResolver`トレイト（`resolve(&self, name: &str) -> Option<String>`、`component-methods.md`準拠）

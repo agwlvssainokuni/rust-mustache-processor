@@ -13,3 +13,9 @@
 // limitations under the License.
 
 //! パーシャル名からテンプレート文字列を解決するための抽象化。
+
+/// パーシャル名からテンプレート文字列を取得するためのトレイト。
+pub trait PartialResolver {
+    /// パーシャル名からテンプレート文字列を取得する。未解決時は`None`を返す。
+    fn resolve(&self, name: &str) -> Option<String>;
+}
