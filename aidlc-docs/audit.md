@@ -370,3 +370,10 @@
 **Context**: CONSTRUCTION - Code Generation (core-engine, approval) → Functional Design (cli, start)
 
 ---
+
+## Functional Design (cli) - Plan and Questions Presented
+**Timestamp**: 2026-07-16T23:45:00Z
+**AI Response**: "requirements.md（FR-5〜FR-7）、component-methods.md、unit-of-work-dependency.mdを参照し、cli-functional-design-plan.mdを作成。FR-5〜FR-7で既に決定済みの事項を前提として整理したうえで、未決定の5論点（CLI引数の具体的な形状、データ形式判定の優先順位、テンプレート標準入力切替の方法とパーシャルディレクトリのデフォルト解決、終了コード方針、エラーメッセージの出力形式）を質問として提示。承認依頼待ち。"
+**Context**: CONSTRUCTION - Functional Design (cli, Part 1 Planning, Step presented)
+
+---
