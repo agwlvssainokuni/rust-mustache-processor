@@ -21,7 +21,7 @@
 
 - [x] **Step 5: releaseジョブ実装** — `build`に依存し、`actions/download-artifact`で全アーカイブを収集後、`softprops/action-gh-release`で`generate_release_notes: true`を指定してリリースを作成し、全アーカイブをアセットとして添付（FR-7, FR-8対応）
 
-- [ ] **Step 6: README更新** — README.md/README.en.mdの「インストール」節に、GitHub Releasesからのビルド済みバイナリダウンロードによるインストール手順を追記（`cargo install --path .`と並記）
+- [x] **Step 6: README更新** — README.md/README.en.mdの「インストール」節に、GitHub Releasesからのビルド済みバイナリダウンロードによるインストール手順を追記（`cargo install --path .`と並記）
 
 - [ ] **Step 7: ドキュメントサマリー作成** — `aidlc-docs/construction/release-automation/code/summary.md`に生成物一覧・設計判断の要約・既知の対象外事項（crates.io公開、CHANGELOG.md運用、Linux aarch64、日常CI）を記録
 

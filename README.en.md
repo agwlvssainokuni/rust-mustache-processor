@@ -12,6 +12,14 @@ A Mustache template engine implemented from scratch in Rust. Available both as a
 
 ## Installation
 
+### Using a prebuilt binary
+
+Download the archive for your OS/architecture (`mustache-<version>-<target-triple>.tar.gz` or `.zip`) from [GitHub Releases](../../releases), extract it, and place `mustache` (`mustache.exe` on Windows) somewhere on your `PATH`.
+
+Supported platforms: Linux (x86_64) / macOS (x86_64, Apple Silicon) / Windows (x86_64)
+
+### Building from source
+
 ```bash
 git clone <this-repository>
 cd rust-mustache-processor

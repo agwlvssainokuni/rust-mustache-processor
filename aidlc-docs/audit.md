@@ -739,3 +739,10 @@
 **Context**: New Unit: release-automation — Code Generation Step 5完了（設計補正あり）
 
 ---
+
+## Code Generation Step 6 (release-automation) - Completed
+**Timestamp**: 2026-07-17T03:15:00Z
+**AI Response**: "README.md/README.en.mdの「インストール」節を「ビルド済みバイナリを使う」（GitHub Releasesからのダウンロード手順、対応プラットフォーム明記）と「ソースからビルドする」（既存のcargo install --path .手順）の2小節に再構成した。"
+**Context**: New Unit: release-automation — Code Generation Step 6完了
+
+---
