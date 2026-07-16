@@ -479,3 +479,11 @@
 **Context**: CONSTRUCTION - NFR Requirements (cli, Step 6)
 
 ---
+
+## NFR Requirements (cli) - Approved
+**Timestamp**: 2026-07-17T00:30:00Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "cliユニットのNFR Requirements成果物（nfr-requirements.md, tech-stack-decisions.md）が承認された。NFR Requirementsステージ（cli）を完了とし、NFR Design（cli）に移行する。"
+**Context**: CONSTRUCTION - NFR Requirements (cli, approval) → NFR Design (cli, start)
+
+---
