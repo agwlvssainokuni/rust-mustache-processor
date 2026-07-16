@@ -30,11 +30,12 @@
 **実装時の追加補正（要記録）**: `CliArgsError`に`PartialEq`を付与してテストしやすくするため、`clap::Error`（`PartialEq`未実装）をそのまま保持せず`Clap(String)`に変更。また`detect_format`は`&CliArgs`を引数に取ると`CliArgs`（`args.rs`）が`DataFormat`（`data_loader.rs`）に依存する一方で循環依存になるため、必要なフィールド（`explicit_format`, `data_path`）を直接引数に取る形に詳細化した。詳細は`domain-entities.md`（cli）に追記。
 
 ### Step 3: IoController（入出力）
-- [ ] `src/cli/io.rs`: `TemplateSource`, `LoadedTemplate`, `IoError`を定義
-- [ ] `read_templates`（BR-2.1〜2.3）、`read_data`（`--data`指定時はファイル、未指定時は標準入力）、`resolve_partials_dir`（BR-4.1〜4.3、テンプレートファイルごとの解決）、`write_output`（`--output`指定時はファイル、未指定時は標準出力）を実装
+- [x] `src/cli/io.rs`: `TemplateSource`, `LoadedTemplate`, `IoError`を定義
+- [x] `read_templates`（BR-2.1〜2.3）、`read_data`（`--data`指定時はファイル、未指定時は標準入力）、`resolve_partials_dir`（BR-4.1〜4.3、テンプレートファイルごとの解決）、`write_output`（`--output`指定時はファイル、未指定時は標準出力）を実装
+- [x] ユニットテスト7件を実装し`cargo test --bin mustache io::`で全件成功を確認（標準入力を使うケースはプロセス分離が必要なためexample-basedユニットテストの対象外とし、ファイル経由のケースで動作確認）
 
 ### Step 4: DataLoader（データ変換）
-- [ ] `src/cli/data_loader.rs`: `DataFormat`, `DataLoaderError`を定義
+- [x] `src/cli/data_loader.rs`: `DataFormat`, `DataLoaderError`を定義（Step2でCliArgsの依存解消のため前倒し実装済み。詳細はStep2参照）
 - [ ] `detect_format`（BR-3.1〜3.3: `--format`最優先→拡張子→エラー）、`load`（`serde_json`/`serde_yaml`でパースし`Value::from_serialize`で変換）を実装
 
 ### Step 5: CliRunner（オーケストレーション）

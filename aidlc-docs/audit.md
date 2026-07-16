@@ -547,3 +547,10 @@
 **Context**: CONSTRUCTION - Code Generation (cli, Part 2 Generation, Step 2)
 
 ---
+
+## Code Generation (cli) - Step 3 Completed
+**Timestamp**: 2026-07-17T01:05:00Z
+**AI Response**: "Step3（IoController）完了。io.rsにTemplateSource/LoadedTemplate/IoErrorを定義し、read_templates（BR-2.1〜2.3）、read_data（--data指定時はファイル、未指定時は標準入力）、resolve_partials_dir（BR-4.1〜4.3、テンプレートファイルごとの解決）、write_output（--output指定時はファイル、未指定時は標準出力）を実装。ユニットテスト7件でcargo test --bin mustache io::が全件成功（標準入力を使うケースはプロセス分離が必要なためファイル経由のケースで代替検証）。"
+**Context**: CONSTRUCTION - Code Generation (cli, Part 2 Generation, Step 3)
+
+---
