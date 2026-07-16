@@ -223,3 +223,11 @@
 **Context**: CONSTRUCTION - NFR Requirements (core-engine, Step 2-4, Gate)
 
 ---
+
+## NFR Requirements (core-engine) - Questions Answered with Rationale
+**Timestamp**: 2026-07-16T20:50:00Z
+**User Input**: "各質問の推奨とその理由を教えてください。" / "全て推奨通りとします。"
+**AI Response**: "Q1=A（String返却のみ）, Q2=B（最大ネスト深度制限あり）, Q3=B（missing_docsをdenyで強制）, Q4=B（proptest採用、プロパティごとに試行回数調整）を推奨通りに記録。理由をcore-engine-nfr-requirements-plan.mdに追記。曖昧さ・矛盾なしと判定。"
+**Context**: CONSTRUCTION - NFR Requirements (core-engine, Step 5)
+
+---
