@@ -35,7 +35,12 @@ jobs:
     needs: verify-version
     runs-on: ubuntu-latest
     steps:
-      - run: echo "TODO Step 3"
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Run tests
+        run: cargo test
 
   build:
     needs: test

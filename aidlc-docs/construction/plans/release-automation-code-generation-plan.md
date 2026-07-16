@@ -15,7 +15,7 @@
 
 - [x] **Step 2: verify-versionジョブ実装** — タグ名（`github.ref_name`）から`vX.Y.Z`の`X.Y.Z`部分を抽出し、`Cargo.toml`の`version`フィールドと比較。不一致なら`exit 1`で失敗させる（FR-4対応）
 
-- [ ] **Step 3: testジョブ実装** — `verify-version`に依存し、`ubuntu-latest`上で`dtolnay/rust-toolchain@stable`をセットアップして`cargo test`を実行（FR-5対応）
+- [x] **Step 3: testジョブ実装** — `verify-version`に依存し、`ubuntu-latest`上で`dtolnay/rust-toolchain@stable`をセットアップして`cargo test`を実行（FR-5対応）
 
 - [ ] **Step 4: buildジョブ実装（マトリクス）** — `test`に依存し、4ターゲット（`x86_64-unknown-linux-gnu`/`ubuntu-latest`, `x86_64-apple-darwin`/`macos-13`, `aarch64-apple-darwin`/`macos-14`, `x86_64-pc-windows-msvc`/`windows-latest`）のマトリクスで`cargo build --release --target <triple>`を実行し、`mustache-<version>-<target-triple>.tar.gz`（Windowsのみ`.zip`）にアーカイブして`actions/upload-artifact`で保存（FR-3, FR-6対応）
 
