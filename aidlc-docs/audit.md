@@ -611,3 +611,11 @@
 **Context**: CONSTRUCTION - Build and Test (artifacts generated)
 
 ---
+
+## Ad-hoc Request: README.md Creation
+**Timestamp**: 2026-07-17T01:40:00Z
+**User Input**: "README.md を作成してください。英語版も。"
+**AI Response**: "ワークスペースルートにREADME.md（日本語、プロジェクト概要・インストール手順・CLI使用方法全オプション・ライブラリ使用例・開発コマンド・ライセンス）とREADME.en.md（英語版、相互リンク付き）を作成。CLIオプション一覧は実際のmustache --help出力を確認して正確性を担保。ライブラリ使用例はsrc/lib.rsのdoctestと同一のコードを使用。"
+**Context**: Build and Testステージ承認待ち中の付随タスク（Operations移行の承認はまだ得ていない）
+
+---
