@@ -7,10 +7,10 @@
 - [x] Step 1: ユニットコンテキスト分析（unit-of-work.md, unit-of-work-story-map.md読み込み）
 - [x] Step 2-4: 計画作成・質問洗い出し（本ファイル）
 - [x] Step 5: ユーザー回答収集・曖昧さ分析（Q1=B, Q2=A, Q3=A, Q4=B, Q5=B、いずれも推奨通り。曖昧・矛盾なし）
-- [ ] Step 6: 機能設計成果物生成
-  - [ ] `business-logic-model.md`
-  - [ ] `business-rules.md`
-  - [ ] `domain-entities.md`
+- [x] Step 6: 機能設計成果物生成
+  - [x] `business-logic-model.md`（Testable Properties [PBT-01] を含む）
+  - [x] `business-rules.md`
+  - [x] `domain-entities.md`
 - [ ] Step 7-9: 完了メッセージ提示・承認待ち・記録
 
 ## 前提（公式spec準拠、質問不要）

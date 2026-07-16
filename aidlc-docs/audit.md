@@ -201,3 +201,10 @@
 **Context**: CONSTRUCTION - Functional Design (core-engine, Step 5)
 
 ---
+
+## Functional Design (core-engine) - Artifacts Generated
+**Timestamp**: 2026-07-16T20:42:00Z
+**AI Response**: "aidlc-docs/construction/core-engine/functional-design/配下にdomain-entities.md（Value, Node, Template, PartialResolver, DirectoryPartialResolver, ParseError/RenderError, Mustacheの詳細データモデル）、business-rules.md（変数展開・セクション・逆セクション・コンテキストスタック・パーシャル・コメント/デリミタ変更・スタンドアロン空白トリミング・エラー処理の8カテゴリ、Q1〜Q5の決定を統合）、business-logic-model.md（パース/レンダリングアルゴリズム、エラー伝播、PBT-01に基づくTestable Propertiesテーブル）を生成。PBT拡張機能（フル適用）のPBT-01検証項目（プロパティ識別、カテゴリ参照、N/A理由明記）を満たすことを確認。"
+**Context**: CONSTRUCTION - Functional Design (core-engine, Step 6)
+
+---
