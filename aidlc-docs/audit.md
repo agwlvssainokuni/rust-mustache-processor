@@ -253,3 +253,11 @@
 **Context**: CONSTRUCTION - NFR Design (core-engine, Step 2-4, Gate)
 
 ---
+
+## NFR Design (core-engine) - Questions Answered with Rationale
+**Timestamp**: 2026-07-16T20:59:00Z
+**User Input**: "各質問の推奨とその理由を教えてください。" / "全て推奨通りとします。"
+**AI Response**: "Q1=A（RenderState構造体に内部状態をまとめる）, Q2=A（ネスト深度は単一カウンタで合算、上限1000）, Q3=A（テンプレート長でString容量を事前確保）を推奨通りに記録。理由をcore-engine-nfr-design-plan.mdに追記。曖昧さ・矛盾なしと判定。"
+**Context**: CONSTRUCTION - NFR Design (core-engine, Step 5)
+
+---
