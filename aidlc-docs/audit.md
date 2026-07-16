@@ -155,3 +155,11 @@
 **Context**: INCEPTION - Application Design (approval) → Units Generation (start)
 
 ---
+
+## Units Generation - Planning Questions Answered with Rationale
+**Timestamp**: 2026-07-16T20:20:00Z
+**User Input**: "各質問の推奨とその理由を教えてください。" / "推奨通り。理由も記録。"
+**AI Response**: "Question 1（Cargoプロジェクトの物理構成）=A（単一クレート、src/lib.rs + src/main.rs）、Question 2（テストコード・spec conformanceテストデータの配置）=Aを推奨通りに記録。両問とも理由をunit-of-work-plan.mdに追記。回答の曖昧さ・矛盾なしと判定し、フォローアップ質問は不要と結論。"
+**Context**: INCEPTION - Units Generation Part 1 (Step 6-8)
+
+---
