@@ -37,9 +37,10 @@ Functional Designの`domain-entities.md`はValue型を`Integer`/`Float`/`HashMap
 **実装時の追加補正（要記録）**: Application Design（`components.md`）の真偽判定規則の要約「false, null, 空文字列, 空配列, 空Mapはfalsy」は、Functional Design（`business-rules.md` BR-2.1〜BR-2.4、公式mustache/spec準拠で精査済み）と矛盾する（公式spec上、空文字列・空Mapはtruthy）。components.mdの記述はApplication Design段階での大まかな要約であり、business-rules.mdはFunctional Designステージで公式spec準拠を目的として精査された記述のため、後者を正として`is_truthy`を実装した。
 
 ### Step 3: Business Logic Generation — AST / Parser
-- [ ] `src/ast.rs`: `SourcePosition`, `Node`（Text/Variable/Section/Partial）を定義（`domain-entities.md`準拠）
-- [ ] `src/parser.rs`: タグ検出・デリミタ変更追跡・スタンドアロン行トリミング（BR-6.1〜BR-7.2）・セクション対応チェックを実装する`Parser`
-- [ ] `src/error.rs`: `ParseError`, `ParseErrorKind`を定義（行番号・列番号付き、Q5=B）
+- [x] `src/ast.rs`: `SourcePosition`, `Node`（Text/Variable/Section/Partial）を定義（`domain-entities.md`準拠。Step1で先行作成済み）
+- [x] `src/parser.rs`: タグ検出・デリミタ変更追跡・スタンドアロン行トリミング（BR-6.1〜BR-7.2）・セクション対応チェックを実装する`parse`関数
+- [x] `src/error.rs`: `ParseError`, `ParseErrorKind`を定義（行番号・列番号付き、Q5=B。Step1で先行作成済み）
+- [x] `parser.rs`に`#[cfg(test)]`ユニットテスト17件（Step7の一部前倒し）を実装し、`cargo test --lib parser::`で全件成功を確認
 
 ### Step 4: Business Logic Generation — Renderer
 - [ ] `src/renderer.rs`: `RenderState`（context_stack, depth, partial_chain, strict）、`MAX_NESTING_DEPTH`定数（1000）
