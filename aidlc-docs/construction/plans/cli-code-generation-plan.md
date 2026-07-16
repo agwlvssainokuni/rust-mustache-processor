@@ -51,7 +51,8 @@
 - [x] `cargo run --bin mustache`で実際にテンプレート+JSONデータのレンダリング、および引数エラー時のstderr出力・終了コード1を手動確認
 
 ### Step 7: Unit Testing
-- [ ] `args.rs`/`io.rs`/`data_loader.rs`/`mod.rs`内に`#[cfg(test)]`ユニットテスト（各BRの代表ケース: 複数テンプレート、`--template-stdin`と位置引数の競合、`--data`未指定時の標準入力、フォーマット判定優先順位、パーシャルディレクトリのファイルごと解決、エラー時の全体中断・出力なし等）
+- [x] `args.rs`/`io.rs`/`data_loader.rs`/`mod.rs`内に`#[cfg(test)]`ユニットテストをStep2〜6で前倒し実装済み（args.rs 9件、io.rs 7件、data_loader.rs 7件、mod.rs 7件、計30件）。`cargo test --bin mustache`で全件成功を確認
+- [x] 標準入力を読む経路（`--template-stdin`, `--data`未指定時）は、プロセス分離が必要なためexample-basedユニットテストの対象外とし、ファイル経由の等価な経路（`resolve_partials_dir`のStdinケース、引数バリデーション）で代替検証済み。実動作は`cargo run`による手動確認（Step6）で補完
 
 ### Step 8: PBT Test Generation
 - [ ] `tests/proptest/`にcli向けプロパティテストを追加（`business-logic-model.md`のTestable Properties: DataLoaderのJSON往復変換・YAML往復変換・形式判定の決定性、いずれもデフォルト256ケース）
