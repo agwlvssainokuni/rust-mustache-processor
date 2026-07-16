@@ -193,3 +193,11 @@
 **Context**: CONSTRUCTION - Functional Design (core-engine, Step 2-4, Gate)
 
 ---
+
+## Functional Design (core-engine) - Questions Answered with Rationale
+**Timestamp**: 2026-07-16T20:38:00Z
+**User Input**: "各質問の推奨とその理由を教えてください。" / "推奨通り。理由も記録。"
+**AI Response**: "Q1=B（数値はi64/f64を区別）, Q2=A（strictモードは変数展開のみ対象）, Q3=A（パーシャル未解決は常にエラー）, Q4=B（パーシャル循環参照を検出しRenderError）, Q5=B（エラーに行番号・列番号を含める）を推奨通りに記録。理由をcore-engine-functional-design-plan.mdに追記。曖昧さ・矛盾なしと判定。"
+**Context**: CONSTRUCTION - Functional Design (core-engine, Step 5)
+
+---
