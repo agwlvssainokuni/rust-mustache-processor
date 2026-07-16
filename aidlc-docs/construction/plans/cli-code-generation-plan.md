@@ -55,7 +55,10 @@
 - [x] 標準入力を読む経路（`--template-stdin`, `--data`未指定時）は、プロセス分離が必要なためexample-basedユニットテストの対象外とし、ファイル経由の等価な経路（`resolve_partials_dir`のStdinケース、引数バリデーション）で代替検証済み。実動作は`cargo run`による手動確認（Step6）で補完
 
 ### Step 8: PBT Test Generation
-- [ ] `tests/proptest/`にcli向けプロパティテストを追加（`business-logic-model.md`のTestable Properties: DataLoaderのJSON往復変換・YAML往復変換・形式判定の決定性、いずれもデフォルト256ケース）
+- [x] `business-logic-model.md`のTestable Properties（DataLoaderのJSON往復変換・YAML往復変換・形式判定の決定性）を実装。デフォルト256ケース
+- [x] `cargo test --bin mustache data_loader::`でproptest 3件を含む10件全て成功を確認
+
+**実装時の追加補正（要記録）**: 計画では`tests/proptest/`（外部統合テスト）への追加を想定していたが、`DataLoader`はcliバイナリクレート内部（`pub(crate)`）でありライブラリターゲットの公開APIではないため、外部統合テストからは原理的にアクセスできないことが判明した（core-engineの`Value`/`Mustache`とは異なり、cliの`main.rs`配下のモジュールはリンク可能なライブラリとして公開されていない）。そのため`src/cli/data_loader.rs`自身の`#[cfg(test)]`モジュール内（`properties`サブモジュール）にproptestを実装する方式に補正した。テスト内容・ケース数・対象プロパティ自体はbusiness-logic-model.mdの決定を変更していない。
 
 ### Step 9: Build Verification and Summary
 - [ ] `cargo build --bin mustache`が警告なく完了することを確認

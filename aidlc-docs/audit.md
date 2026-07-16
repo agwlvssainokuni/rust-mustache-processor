@@ -582,3 +582,10 @@
 **Context**: CONSTRUCTION - Code Generation (cli, Part 2 Generation, Step 7)
 
 ---
+
+## Code Generation (cli) - Step 8 Completed
+**Timestamp**: 2026-07-17T01:20:00Z
+**AI Response**: "Step8（PBT Test Generation）完了。当初tests/proptest/（外部統合テスト）への追加を計画していたが、DataLoaderがcliバイナリクレート内部（pub(crate)）でありライブラリとして公開されていないため外部統合テストからアクセス不能と判明。src/cli/data_loader.rsのユニットテストモジュール内にpropertiesサブモジュールを設け、JSON往復変換・YAML往復変換・detect_formatの決定性の3プロパティをデフォルト256ケースで実装。cargo test --bin mustache data_loader::でproptest 3件を含む10件全て成功を確認。計画書に補正を記録。"
+**Context**: CONSTRUCTION - Code Generation (cli, Part 2 Generation, Step 8)
+
+---

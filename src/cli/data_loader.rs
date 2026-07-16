@@ -192,4 +192,61 @@ mod tests {
             }
         ));
     }
+
+    // PBT-01（business-logic-model.md, cli）: DataLoaderはcliバイナリ内部（pub(crate)）の
+    // ため、tests/proptest/（外部統合テスト、公開APIのみアクセス可）からは検証できない。
+    // data_loader.rs自身のユニットテストとしてproptestを実装する（Code Generation時の補正）。
+    mod properties {
+        use super::*;
+        use proptest::prelude::*;
+
+        fn arb_json_value() -> impl Strategy<Value = serde_json::Value> {
+            let leaf = prop_oneof![
+                Just(serde_json::Value::Null),
+                any::<bool>().prop_map(serde_json::Value::Bool),
+                any::<i32>().prop_map(|i| serde_json::Value::Number(i.into())),
+                "[a-zA-Z0-9 ]{0,10}".prop_map(serde_json::Value::String),
+            ];
+            leaf.prop_recursive(3, 20, 5, |inner| {
+                prop_oneof![
+                    prop::collection::vec(inner.clone(), 0..5)
+                        .prop_map(|v| serde_json::Value::Array(v)),
+                    prop::collection::vec(("[a-z]{1,6}", inner), 0..5).prop_map(|entries| {
+                        serde_json::Value::Object(entries.into_iter().collect())
+                    }),
+                ]
+            })
+        }
+
+        proptest! {
+            #![proptest_config(ProptestConfig::with_cases(256))]
+
+            #[test]
+            fn json_round_trip(value in arb_json_value()) {
+                let text = serde_json::to_string(&value).unwrap();
+                let loaded = load(&text, DataFormat::Json).unwrap();
+                let direct = Value::from_serialize(&value).unwrap();
+                prop_assert_eq!(loaded, direct);
+            }
+
+            #[test]
+            fn yaml_round_trip(value in arb_json_value()) {
+                let text = serde_norway::to_string(&value).unwrap();
+                let loaded = load(&text, DataFormat::Yaml).unwrap();
+                let direct = Value::from_serialize(&value).unwrap();
+                prop_assert_eq!(loaded, direct);
+            }
+
+            #[test]
+            fn detect_format_is_idempotent(
+                format in prop::option::of(prop_oneof![Just(DataFormat::Json), Just(DataFormat::Yaml)]),
+                path in prop::option::of("[a-z]{1,6}\\.(json|yaml|yml|txt)"),
+            ) {
+                let path = path.map(PathBuf::from);
+                let first = detect_format(format, path.as_deref());
+                let second = detect_format(format, path.as_deref());
+                prop_assert_eq!(first, second);
+            }
+        }
+    }
 }
