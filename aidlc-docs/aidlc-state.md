@@ -62,8 +62,16 @@
 ### 🟡 OPERATIONS PHASE
 - [ ] Operations — PLACEHOLDER（具体的な実行ステップ未定義。将来のデプロイ計画・監視設定等の拡張時に着手）
 
+## New Unit: release-automation（GitHub Actionsクロスコンパイル・自動リリース）
+
+Operations PHASEに具体的なステップが定義されていないため、軽量なAI-DLCユニットとして別途進行中。
+
+- [x] Requirements Analysis — release-automation-requirements.md承認待ち
+- [ ] Application/Functional Design（軽量） — 未着手
+- [ ] Code Generation — 未着手
+
 ## Current Status
-- **Lifecycle Phase**: OPERATIONS
-- **Current Stage**: Operations（プレースホルダ）
-- **Next Stage**: —（現時点でAI-DLCワークフローの実行可能な全ステージが完了）
-- **Status**: CONSTRUCTION PHASE完了、OPERATIONS PHASEはプレースホルダのため待機中
+- **Lifecycle Phase**: OPERATIONS（既存2ユニットは完了）／release-automationユニットはINCEPTION中
+- **Current Stage**: release-automation — Requirements Analysis（承認待ち）
+- **Next Stage**: release-automation — 軽量設計（Application/Functional Design相当）
+- **Status**: core-engine/cliのCONSTRUCTION PHASE完了。release-automationユニットは要件定義段階
