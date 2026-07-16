@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Greenfield
 - **Start Date**: 2026-07-16T18:48:00Z
-- **Current Stage**: INCEPTION - Application Design
+- **Current Stage**: INCEPTION - Units Generation
 
 ## Workspace State
 - **Existing Code**: Yes (minimal scaffold only — `cargo init`のデフォルト雛形、ビジネスロジックなし)
@@ -38,8 +38,8 @@
 - [x] Requirements Analysis — requirements.md承認済み
 - [x] User Stories — SKIPPED（単一開発者向けツール、複数ペルソナなし）
 - [x] Workflow Planning — execution-plan.md承認済み
-- [x] Application Design — 設計成果物生成完了、ユーザー承認待ち
-- [ ] Units Generation — EXECUTE（未着手）
+- [x] Application Design — 設計成果物生成完了、承認済み
+- [ ] Units Generation — EXECUTE（進行中）
 
 ### 🟢 CONSTRUCTION PHASE
 - [ ] Functional Design — EXECUTE（各ユニット）
@@ -54,6 +54,6 @@
 
 ## Current Status
 - **Lifecycle Phase**: INCEPTION
-- **Current Stage**: Application Design（ユーザー承認待ち）
-- **Next Stage**: Units Generation
-- **Status**: 承認待ち
+- **Current Stage**: Units Generation（進行中）
+- **Next Stage**: Functional Design（core-engineユニットから）
+- **Status**: 進行中
