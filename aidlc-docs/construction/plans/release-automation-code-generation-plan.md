@@ -23,7 +23,7 @@
 
 - [x] **Step 6: README更新** — README.md/README.en.mdの「インストール」節に、GitHub Releasesからのビルド済みバイナリダウンロードによるインストール手順を追記（`cargo install --path .`と並記）
 
-- [ ] **Step 7: ドキュメントサマリー作成** — `aidlc-docs/construction/release-automation/code/summary.md`に生成物一覧・設計判断の要約・既知の対象外事項（crates.io公開、CHANGELOG.md運用、Linux aarch64、日常CI）を記録
+- [x] **Step 7: ドキュメントサマリー作成** — `aidlc-docs/construction/release-automation/code/summary.md`に生成物一覧・設計判断の要約・既知の対象外事項（crates.io公開、CHANGELOG.md運用、Linux aarch64、日常CI）を記録
 
 ## 完了基準
 
