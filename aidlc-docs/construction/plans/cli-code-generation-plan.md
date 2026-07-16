@@ -61,8 +61,8 @@
 **実装時の追加補正（要記録）**: 計画では`tests/proptest/`（外部統合テスト）への追加を想定していたが、`DataLoader`はcliバイナリクレート内部（`pub(crate)`）でありライブラリターゲットの公開APIではないため、外部統合テストからは原理的にアクセスできないことが判明した（core-engineの`Value`/`Mustache`とは異なり、cliの`main.rs`配下のモジュールはリンク可能なライブラリとして公開されていない）。そのため`src/cli/data_loader.rs`自身の`#[cfg(test)]`モジュール内（`properties`サブモジュール）にproptestを実装する方式に補正した。テスト内容・ケース数・対象プロパティ自体はbusiness-logic-model.mdの決定を変更していない。
 
 ### Step 9: Build Verification and Summary
-- [ ] `cargo build --bin mustache`が警告なく完了することを確認
-- [ ] `cargo test`（lib + cli統合分含む）が全て成功することを確認
-- [ ] `aidlc-docs/construction/cli/code/summary.md`に生成物一覧・テスト構成をまとめる
+- [x] `cargo build --bin mustache`が警告なく完了することを確認
+- [x] `cargo test`（lib + cli + proptest + spec + doctest）が全て成功することを確認（合計119テスト実行単位）
+- [x] `aidlc-docs/construction/cli/code/summary.md`に生成物一覧・テスト構成をまとめる
 
 **N/A（cliに該当なし）**: API Layer Generation, Repository Layer Generation, Frontend Components Generation, Database Migration Scripts — cliはデータベース・Web API・UIを持たないCLIツールのため対象外。Deployment Artifacts Generation（シングルバイナリ配布）は将来のOperations Phaseで扱う。

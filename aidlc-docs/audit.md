@@ -589,3 +589,10 @@
 **Context**: CONSTRUCTION - Code Generation (cli, Part 2 Generation, Step 8)
 
 ---
+
+## Code Generation (cli) - Step 9 Completed (Part 2 Generation 完了)
+**Timestamp**: 2026-07-17T01:25:00Z
+**AI Response**: "Step9（Build Verification and Summary）完了。cargo build --bin mustacheが警告0件で成功、cargo test全体（core-engine lib 72件、cli bin 33件、core-engine proptest 7件、core-engine spec conformance 6モジュール136ケース、doctest 1件、合計119テスト実行単位）が全て成功することを確認。aidlc-docs/construction/cli/code/summary.mdに生成物一覧・テスト構成・Code Generation中に発見した3件の設計補正（serde_norwayへの変更、CliArgsError/detect_formatのシグネチャ補正、PBTテストの実装場所補正）をまとめた。これでcliユニットのCode Generation（全9ステップ）が完了。"
+**Context**: CONSTRUCTION - Code Generation (cli, Part 2 Generation, Step 9 — 全ステップ完了)
+
+---
