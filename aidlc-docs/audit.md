@@ -449,3 +449,11 @@
 **Context**: CONSTRUCTION - Functional Design (cli, Step 6)
 
 ---
+
+## Functional Design (cli) - Approved
+**Timestamp**: 2026-07-17T00:10:00Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "cliユニットのFunctional Design成果物（domain-entities.md, business-rules.md, business-logic-model.md）が承認された。Functional Designステージ（cli）を完了とし、NFR Requirements（cli）に移行する。"
+**Context**: CONSTRUCTION - Functional Design (cli, approval) → NFR Requirements (cli, start)
+
+---
