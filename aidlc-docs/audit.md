@@ -186,3 +186,10 @@
 **Context**: INCEPTION - Units Generation (approval) → CONSTRUCTION PHASE - Functional Design (core-engine, start)
 
 ---
+
+## Functional Design (core-engine) - Plan and Questions Presented
+**Timestamp**: 2026-07-16T20:35:00Z
+**AI Response**: "aidlc-docs/construction/plans/core-engine-functional-design-plan.mdを作成。公式spec準拠により質問不要な事項（エスケープ規則、真偽判定、コンテキストスタック探索順、デリミタ変更スコープ、スタンドアロンタグ、パーシャルインデント）を整理した上で、spec未規定・実装判断が必要な5問（数値の内部表現、strictモードの適用範囲、パーシャル未解決時のデフォルト挙動、パーシャル循環参照の扱い、エラー情報の詳細度）を提示。回答待ち。"
+**Context**: CONSTRUCTION - Functional Design (core-engine, Step 2-4, Gate)
+
+---
