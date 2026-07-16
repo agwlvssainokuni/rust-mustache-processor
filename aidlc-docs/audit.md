@@ -314,6 +314,13 @@
 
 ---
 
+## Code Generation (core-engine) - Step 6 Completed
+**Timestamp**: 2026-07-16T22:15:00Z
+**AI Response**: "Step6（Mustacheエンジン公開API）完了。lib.rsにTemplate（root, source_len）、Mustache（new/with_partial_resolver/with_strict/parse/render/render_str）、クレートレベルdocコメント（doctest付き使用例）を実装。renderではString::with_capacity(template.source_len)による事前確保を適用。#![deny(missing_docs)]でビルド警告0件を確認。lib.rs内に統合テスト5件を追加しcargo test --libで全45件成功、cargo test --docでdoctestも成功。実装時にCargo.tomlの[lib]セクションにクレート名を指定していなかったためデフォルト名がrust_mustache_processorになっていたことに気づき、name = \"mustache_processor\"を追記して補正。"
+**Context**: CONSTRUCTION - Code Generation (core-engine, Part 2 Generation, Step 6)
+
+---
+
 ## Code Generation (core-engine) - Step 5 Completed
 **Timestamp**: 2026-07-16T22:00:00Z
 **AI Response**: "Step5（PartialResolver/DirectoryPartialResolver）完了。PartialResolverトレイトはStep4でRendererが依存するため先行作成済みだったため、本Stepで`DirectoryPartialResolver`（base_dir配下の`{name}.mustache`を読み込み、component-methods.md準拠でOption<String>を返す）を実装。ユニットテスト2件（存在するファイルの解決、存在しないファイルでNone）で動作確認。"

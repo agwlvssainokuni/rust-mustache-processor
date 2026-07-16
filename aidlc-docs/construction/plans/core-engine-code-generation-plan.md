@@ -58,9 +58,13 @@ Functional Designの`domain-entities.md`はValue型を`Integer`/`Float`/`HashMap
 - [x] `DirectoryPartialResolver`（ディレクトリベース実装、`{name}.mustache`ファイルを読み込み）を実装、ユニットテスト2件で動作確認
 
 ### Step 6: Business Logic Generation — Mustache エンジン公開API
-- [ ] `src/lib.rs`: `Template`（`root: Vec<Node>`, `source_len: usize`）、`Mustache`（`new`, `with_partial_resolver`, `with_strict`, `parse`, `render`, `render_str`）、`Error`型（Parse/Render統合）を実装
-- [ ] `Mustache::render`で`String::with_capacity(template.source_len)`による事前確保（Capacity Pre-allocationパターン）を適用
-- [ ] 全公開項目にrustdocコメントを付与（`#![deny(missing_docs)]`がビルドを通ることを確認）
+- [x] `src/lib.rs`: `Template`（`root: Vec<Node>`, `source_len: usize`）、`Mustache`（`new`, `with_partial_resolver`, `with_strict`, `parse`, `render`, `render_str`）、`Error`型（Parse/Render統合）を実装
+- [x] `Mustache::render`で`String::with_capacity(template.source_len)`による事前確保（Capacity Pre-allocationパターン）を適用
+- [x] 全公開項目にrustdocコメントを付与（`#![deny(missing_docs)]`がビルドを通ることを確認、警告0件）
+- [x] クレートレベルdocコメントに使用例（doctest）を記載し`cargo test --doc`で成功を確認（Step10の一部前倒し）
+- [x] `lib.rs`に統合テスト5件（render_str/parse+render再利用/エラー伝播/PartialResolver連携）を実装し`cargo test --lib`で全45件成功を確認
+
+**実装時の追加補正（要記録）**: `Cargo.toml`の`[lib]`セクションにライブラリ名を指定していなかったため、パッケージ名`rust-mustache-processor`由来の既定クレート名`rust_mustache_processor`になっていた。doctestで利用しやすい名前とするため`name = "mustache_processor"`を明示した（Step1のCargo.toml内容への軽微な追加補正）。
 
 ### Step 7: Business Logic Unit Testing
 - [ ] `value.rs`内に`#[cfg(test)]`ユニットテスト（is_truthy各パターン、get/iter、from_serialize）
