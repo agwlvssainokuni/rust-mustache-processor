@@ -46,7 +46,9 @@
 - [x] ユニットテスト7件（単一/複数テンプレートのレンダリング、テンプレートごとのパーシャルディレクトリ解決、エラー時の全体アトミック性、引数エラー伝播、ExitCode変換）を実装し`cargo test --bin mustache cli::tests::`で全件成功を確認
 
 ### Step 6: main.rs
-- [ ] `src/main.rs`を`cli::run(&std::env::args().collect::<Vec<_>>())`相当の薄い呼び出しに置き換える
+- [x] `src/main.rs`を`cli::run(&std::env::args().collect::<Vec<_>>())`相当の薄い呼び出しに置き換える
+- [x] `cargo build`成功（警告0件）を確認
+- [x] `cargo run --bin mustache`で実際にテンプレート+JSONデータのレンダリング、および引数エラー時のstderr出力・終了コード1を手動確認
 
 ### Step 7: Unit Testing
 - [ ] `args.rs`/`io.rs`/`data_loader.rs`/`mod.rs`内に`#[cfg(test)]`ユニットテスト（各BRの代表ケース: 複数テンプレート、`--template-stdin`と位置引数の競合、`--data`未指定時の標準入力、フォーマット判定優先順位、パーシャルディレクトリのファイルごと解決、エラー時の全体中断・出力なし等）

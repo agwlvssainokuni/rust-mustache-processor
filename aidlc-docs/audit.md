@@ -568,3 +568,10 @@
 **Context**: CONSTRUCTION - Code Generation (cli, Part 2 Generation, Step 5)
 
 ---
+
+## Code Generation (cli) - Step 6 Completed
+**Timestamp**: 2026-07-17T01:15:00Z
+**AI Response**: "Step6（main.rs）完了。main.rsをcli::run(&std::env::args().collect())の薄い呼び出しに置き換え。cargo build成功（警告0件、全モジュールがmain経由で接続されたため未使用警告が解消）。cargo run --bin mustacheで実際にテンプレート+JSONデータのレンダリング（Hello, {{name}}!→Hello, Rust!等）、および引数未指定時のstderrメッセージ・終了コード1を手動確認。"
+**Context**: CONSTRUCTION - Code Generation (cli, Part 2 Generation, Step 6)
+
+---
