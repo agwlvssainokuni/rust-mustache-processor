@@ -349,6 +349,13 @@
 
 ---
 
+## Code Generation (core-engine) - Step 11 Completed (Part 2 Generation 完了)
+**Timestamp**: 2026-07-16T23:32:00Z
+**AI Response**: "Step11（Business Logic Summary）完了。aidlc-docs/construction/core-engine/code/summary.mdに生成物一覧（src/配下7ファイル計2676行）、テスト構成（ユニット72件・spec conformance136件・proptest 7プロパティ・doctest 1件、計86テスト実行単位）、spec準拠状況（必須6モジュール136/136成功）、Code Generation中に発見・修正した主要な設計補正5件をまとめた。これでcore-engineユニットのCode Generation（Part 2、全11ステップ）が完了。"
+**Context**: CONSTRUCTION - Code Generation (core-engine, Part 2 Generation, Step 11 — 全ステップ完了)
+
+---
+
 ## Code Generation (core-engine) - Step 5 Completed
 **Timestamp**: 2026-07-16T22:00:00Z
 **AI Response**: "Step5（PartialResolver/DirectoryPartialResolver）完了。PartialResolverトレイトはStep4でRendererが依存するため先行作成済みだったため、本Stepで`DirectoryPartialResolver`（base_dir配下の`{name}.mustache`を読み込み、component-methods.md準拠でOption<String>を返す）を実装。ユニットテスト2件（存在するファイルの解決、存在しないファイルでNone）で動作確認。"

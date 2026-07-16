@@ -107,6 +107,6 @@ Functional Designの`domain-entities.md`はValue型を`Integer`/`Float`/`HashMap
 - [x] `cargo doc --no-deps`がエラーなく完了することを確認
 
 ### Step 11: Business Logic Summary
-- [ ] `aidlc-docs/construction/core-engine/code/summary.md`に生成物一覧・テスト構成・spec準拠状況をまとめる
+- [x] `aidlc-docs/construction/core-engine/code/summary.md`に生成物一覧・テスト構成・spec準拠状況をまとめる
 
 **N/A（core-engineに該当なし）**: API Layer Generation, Repository Layer Generation, Frontend Components Generation, Database Migration Scripts, Deployment Artifacts Generation — core-engineはデータベース・API・UIを持たないライブラリのため対象外。配布形態（シングルバイナリ）はcliユニットのCode Generationおよび将来のOperations Phaseで扱う。
