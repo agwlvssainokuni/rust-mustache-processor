@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Greenfield
 - **Start Date**: 2026-07-16T18:48:00Z
-- **Current Stage**: INCEPTION - Units Generation
+- **Current Stage**: CONSTRUCTION - Functional Design (core-engine)
 
 ## Workspace State
 - **Existing Code**: Yes (minimal scaffold only — `cargo init`のデフォルト雛形、ビジネスロジックなし)
@@ -39,21 +39,31 @@
 - [x] User Stories — SKIPPED（単一開発者向けツール、複数ペルソナなし）
 - [x] Workflow Planning — execution-plan.md承認済み
 - [x] Application Design — 設計成果物生成完了、承認済み
-- [x] Units Generation — 成果物生成完了、ユーザー承認待ち
+- [x] Units Generation — 成果物生成完了、承認済み
 
 ### 🟢 CONSTRUCTION PHASE
-- [ ] Functional Design — EXECUTE（各ユニット）
-- [ ] NFR Requirements — EXECUTE（各ユニット）
-- [ ] NFR Design — EXECUTE（各ユニット）
+
+#### ユニット: core-engine
+- [ ] Functional Design — EXECUTE（進行中）
+- [ ] NFR Requirements — EXECUTE（未着手）
+- [ ] NFR Design — EXECUTE（未着手）
 - [ ] Infrastructure Design — SKIP（クラウドインフラなし）
-- [ ] Code Generation — EXECUTE（常時）
-- [ ] Build and Test — EXECUTE（常時）
+- [ ] Code Generation — EXECUTE（未着手）
+
+#### ユニット: cli
+- [ ] Functional Design — EXECUTE（未着手）
+- [ ] NFR Requirements — EXECUTE（未着手）
+- [ ] NFR Design — EXECUTE（未着手）
+- [ ] Infrastructure Design — SKIP（クラウドインフラなし）
+- [ ] Code Generation — EXECUTE（未着手）
+
+- [ ] Build and Test — EXECUTE（全ユニット完了後、常時）
 
 ### 🟡 OPERATIONS PHASE
 - [ ] Operations — PLACEHOLDER
 
 ## Current Status
-- **Lifecycle Phase**: INCEPTION
-- **Current Stage**: Units Generation（ユーザー承認待ち）
-- **Next Stage**: CONSTRUCTION PHASE - Functional Design（core-engineユニットから）
-- **Status**: 承認待ち
+- **Lifecycle Phase**: CONSTRUCTION
+- **Current Stage**: Functional Design（ユニット: core-engine）
+- **Next Stage**: NFR Requirements（core-engine）
+- **Status**: 進行中
