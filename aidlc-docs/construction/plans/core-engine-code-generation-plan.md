@@ -24,14 +24,17 @@ Functional Designの`domain-entities.md`はValue型を`Integer`/`Float`/`HashMap
 ## Plan Checklist
 
 ### Step 1: Project Structure Setup（Greenfield）
-- [ ] `Cargo.toml`を更新: `[lib]`ターゲット追加、`serde`（`derive`機能）を`[dependencies]`に追加、`proptest`を`[dev-dependencies]`に追加
-- [ ] `src/lib.rs`（クレートルート、`#![deny(missing_docs)]`、モジュール宣言、著作権ヘッダー）を作成
-- [ ] `src/value.rs`, `src/ast.rs`, `src/parser.rs`, `src/renderer.rs`, `src/partial.rs`, `src/error.rs`の空ファイルを著作権ヘッダー付きで作成
+- [x] `Cargo.toml`を更新: `[lib]`ターゲット追加、`serde`（`derive`機能）を`[dependencies]`に追加、`proptest`を`[dev-dependencies]`に追加
+- [x] `src/lib.rs`（クレートルート、`#![deny(missing_docs)]`、モジュール宣言、著作権ヘッダー）を作成
+- [x] `src/value.rs`, `src/ast.rs`, `src/parser.rs`, `src/renderer.rs`, `src/partial.rs`, `src/error.rs`の空ファイルを著作権ヘッダー付きで作成（`error.rs`・`ast.rs`はStep3内容を含めて本実装まで先行実施、`value.rs`はStep2で本実装）
 
 ### Step 2: Business Logic Generation — Value / Map
-- [ ] `src/value.rs`: `Value`列挙型（Null, Bool, Integer(i64), Float(f64), String(String), Array(Vec\<Value\>), Map(Map)）、`Map`型（`Vec<(String, Value)>`ベース、キー順序保持、`get`/`insert`/`iter`）
-- [ ] `Value::is_truthy`（BR-2.1〜BR-2.4準拠）、`Value::get`、`Value::iter`を実装
-- [ ] `Value::from_serialize<T: Serialize>`を、`serde::Serializer`をカスタム実装した内部シリアライザ経由で実装、`ValueError`型を定義
+- [x] `src/value.rs`: `Value`列挙型（Null, Bool, Integer(i64), Float(f64), String(String), Array(Vec\<Value\>), Map(Map)）、`Map`型（`Vec<(String, Value)>`ベース、キー順序保持、`get`/`insert`/`iter`）
+- [x] `Value::is_truthy`（BR-2.1〜BR-2.4準拠）、`Value::get`、`Value::iter`を実装
+- [x] `Value::from_serialize<T: Serialize + ?Sized>`を、`serde::Serializer`をカスタム実装した内部シリアライザ経由で実装、`ValueError`型を定義
+- [x] `cargo build --lib`成功を確認（`ast.rs`未使用によるdead_code警告のみ、Step3で解消予定）
+
+**実装時の追加補正（要記録）**: Application Design（`components.md`）の真偽判定規則の要約「false, null, 空文字列, 空配列, 空Mapはfalsy」は、Functional Design（`business-rules.md` BR-2.1〜BR-2.4、公式mustache/spec準拠で精査済み）と矛盾する（公式spec上、空文字列・空Mapはtruthy）。components.mdの記述はApplication Design段階での大まかな要約であり、business-rules.mdはFunctional Designステージで公式spec準拠を目的として精査された記述のため、後者を正として`is_truthy`を実装した。
 
 ### Step 3: Business Logic Generation — AST / Parser
 - [ ] `src/ast.rs`: `SourcePosition`, `Node`（Text/Variable/Section/Partial）を定義（`domain-entities.md`準拠）

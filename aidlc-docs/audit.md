@@ -291,3 +291,11 @@
 **Context**: CONSTRUCTION - Code Generation (core-engine, Part 1 Planning, approval) → Part 2 Generation (start)
 
 ---
+
+## Code Generation (core-engine) - Step 1+2 Completed
+**Timestamp**: 2026-07-16T21:30:00Z
+**User Input**: "Stepごとにコミットして欲しい。"
+**AI Response**: "以降、計画の各Stepが完了するごとにコミットする方針に変更。Step1（プロジェクト構造セットアップ: Cargo.toml更新、src/lib.rs・ast.rs・parser.rs・renderer.rs・partial.rs・error.rsを著作権ヘッダー付きで作成）とStep2（Value/Map実装: is_truthy/get/iter/from_serialize、カスタムserde::Serializer、ValueError）をまとめて完了。cargo build --lib成功を確認。実装時にApplication Design（components.md）の真偽判定要約とFunctional Design（business-rules.md BR-2.1〜BR-2.4）の間に矛盾（空文字列・空Mapのfalsy/truthy）を発見し、公式spec準拠で精査済みのbusiness-rules.md側を正として実装、計画書に補正を記録。"
+**Context**: CONSTRUCTION - Code Generation (core-engine, Part 2 Generation, Step 1-2)
+
+---
