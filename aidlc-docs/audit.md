@@ -246,3 +246,10 @@
 **Context**: CONSTRUCTION - NFR Requirements (core-engine, approval) → NFR Design (core-engine, start)
 
 ---
+
+## NFR Design (core-engine) - Plan and Questions Presented
+**Timestamp**: 2026-07-16T20:56:00Z
+**AI Response**: "aidlc-docs/construction/plans/core-engine-nfr-design-plan.mdを作成。Resilience/Scalability/Security Patternsは適用対象がないためN/Aと明記した上で、3問（レンダリング内部状態のまとめ方、ネスト深度制限の実装方式、出力バッファの事前確保方針）を提示。回答待ち。"
+**Context**: CONSTRUCTION - NFR Design (core-engine, Step 2-4, Gate)
+
+---
