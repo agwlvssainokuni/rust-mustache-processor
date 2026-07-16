@@ -27,7 +27,7 @@
 
 ## Stage Progress
 - [x] Workspace Detection — Greenfield判定、Reverse Engineeringは不要と判断
-- [ ] Requirements Analysis — 質問回答完了（全11問）、requirements.md生成待ち
+- [x] Requirements Analysis — requirements.md生成完了、ユーザー承認待ち
 - [ ] User Stories — 未定
 - [ ] Workflow Planning
 - [ ] Application Design — 未定
