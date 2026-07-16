@@ -487,3 +487,10 @@
 **Context**: CONSTRUCTION - NFR Requirements (cli, approval) → NFR Design (cli, start)
 
 ---
+
+## NFR Design (cli) - Plan and Question Presented
+**Timestamp**: 2026-07-17T00:33:00Z
+**AI Response**: "cli-nfr-design-plan.mdを作成。Resilience/Scalability/SecurityはN/A、Performanceは既存BRで決定済みのため新規パターンなしと判定。テスタビリティを踏まえたエラー処理・ExitCode変換の実装位置を唯一の論点として提示（Functional Designで大半のルールが既に確定しているため、NFR Designの論点はcore-engineより少ない）。承認依頼待ち。"
+**Context**: CONSTRUCTION - NFR Design (cli, Part 1 Planning, presented)
+
+---
