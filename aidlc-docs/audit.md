@@ -517,3 +517,10 @@
 **Context**: CONSTRUCTION - NFR Design (cli, approval) → Code Generation (cli, start)
 
 ---
+
+## Code Generation (cli) - Plan Presented (Part 1)
+**Timestamp**: 2026-07-17T00:45:00Z
+**AI Response**: "cli-code-generation-plan.mdを作成。9ステップ（プロジェクト構造セットアップ、CliArgs、IoController、DataLoader、CliRunner、main.rs、ユニットテスト、PBTテスト、ビルド検証・サマリー）を定義。承認依頼待ち。"
+**Context**: CONSTRUCTION - Code Generation (cli, Part 1 Planning, Gate)
+
+---
