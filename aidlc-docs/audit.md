@@ -464,3 +464,11 @@
 **Context**: CONSTRUCTION - NFR Requirements (cli, Part 1 Planning, presented)
 
 ---
+
+## NFR Requirements (cli) - Questions Answered with Rationale
+**Timestamp**: 2026-07-17T00:20:00Z
+**User Input**: "各質問の推奨とその理由を教えてください。" / "全て推奨通りとします。"
+**AI Response**: "Q1=A（deny(missing_docs)は適用しない）、Q2=A（clap derive API）、Q3=A（リリースビルド最適化設定は追加しない）、Q4=A（proptest再利用、256ケース）を推奨通りに記録。理由をcli-nfr-requirements-plan.mdに追記。曖昧さ・矛盾なしと判定。"
+**Context**: CONSTRUCTION - NFR Requirements (cli, Part 1 Planning, Step 5)
+
+---
