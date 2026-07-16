@@ -457,3 +457,10 @@
 **Context**: CONSTRUCTION - Functional Design (cli, approval) → NFR Requirements (cli, start)
 
 ---
+
+## NFR Requirements (cli) - Plan and Questions Presented
+**Timestamp**: 2026-07-17T00:15:00Z
+**AI Response**: "cli-nfr-requirements-plan.mdを作成。Security/Resiliency/ScalabilityをN/Aと判定し、4つの論点（missing_docs適用要否、clap API形式、リリースビルド最適化、PBT運用方針）を質問として提示。承認依頼待ち。"
+**Context**: CONSTRUCTION - NFR Requirements (cli, Part 1 Planning, presented)
+
+---
