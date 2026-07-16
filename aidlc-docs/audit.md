@@ -689,3 +689,10 @@
 **Context**: New Unit: release-automation — Infrastructure Design（承認） → Code Generation（開始）
 
 ---
+
+## Code Generation Plan (release-automation) - Presented
+**Timestamp**: 2026-07-17T02:40:00Z
+**AI Response**: "aidlc-docs/construction/plans/release-automation-code-generation-plan.mdを作成（全7ステップ: ワークフロースケルトン、verify-versionジョブ、testジョブ、buildジョブ（マトリクス）、releaseジョブ、README更新、ドキュメントサマリー）。承認を依頼。"
+**Context**: New Unit: release-automation — Code Generation Part 1（プラン提示、承認待ち）
+
+---
