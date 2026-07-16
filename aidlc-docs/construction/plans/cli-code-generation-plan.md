@@ -36,7 +36,8 @@
 
 ### Step 4: DataLoader（データ変換）
 - [x] `src/cli/data_loader.rs`: `DataFormat`, `DataLoaderError`を定義（Step2でCliArgsの依存解消のため前倒し実装済み。詳細はStep2参照）
-- [ ] `detect_format`（BR-3.1〜3.3: `--format`最優先→拡張子→エラー）、`load`（`serde_json`/`serde_yaml`でパースし`Value::from_serialize`で変換）を実装
+- [x] `detect_format`（BR-3.1〜3.3: `--format`最優先→拡張子→エラー）、`load`（`serde_json`/`serde_norway`でパースし`Value::from_serialize`で変換）を実装（Step2で前倒し実装済み）
+- [x] ユニットテスト7件（形式判定優先順位、JSON/YAML往復、不正データのエラー）を実装し`cargo test --bin mustache data_loader::`で全件成功を確認
 
 ### Step 5: CliRunner（オーケストレーション）
 - [ ] `src/cli/mod.rs`: `CliError`とその`From`実装群（`logical-components.md`参照）を定義

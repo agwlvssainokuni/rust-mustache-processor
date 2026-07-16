@@ -105,3 +105,91 @@ pub(crate) fn load(raw: &str, format: DataFormat) -> Result<Value, DataLoaderErr
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::path::PathBuf;
+
+    #[test]
+    fn detect_format_prefers_explicit_over_extension() {
+        let result = detect_format(Some(DataFormat::Yaml), Some(&PathBuf::from("data.json")));
+        assert_eq!(result, Ok(DataFormat::Yaml));
+    }
+
+    #[test]
+    fn detect_format_falls_back_to_extension() {
+        assert_eq!(
+            detect_format(None, Some(&PathBuf::from("data.json"))),
+            Ok(DataFormat::Json)
+        );
+        assert_eq!(
+            detect_format(None, Some(&PathBuf::from("data.yaml"))),
+            Ok(DataFormat::Yaml)
+        );
+        assert_eq!(
+            detect_format(None, Some(&PathBuf::from("data.yml"))),
+            Ok(DataFormat::Yaml)
+        );
+    }
+
+    #[test]
+    fn detect_format_unknown_without_format_or_extension() {
+        assert_eq!(
+            detect_format(None, None),
+            Err(DataLoaderError::UnknownFormat)
+        );
+        assert_eq!(
+            detect_format(None, Some(&PathBuf::from("data.txt"))),
+            Err(DataLoaderError::UnknownFormat)
+        );
+    }
+
+    #[test]
+    fn load_json_object() {
+        let value = load(r#"{"name": "World", "n": 1}"#, DataFormat::Json).unwrap();
+        match value {
+            Value::Map(map) => {
+                assert_eq!(map.get("name"), Some(&Value::String("World".to_string())));
+                assert_eq!(map.get("n"), Some(&Value::Integer(1)));
+            }
+            other => panic!("expected Map, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn load_yaml_object() {
+        let value = load("name: World\nn: 1\n", DataFormat::Yaml).unwrap();
+        match value {
+            Value::Map(map) => {
+                assert_eq!(map.get("name"), Some(&Value::String("World".to_string())));
+                assert_eq!(map.get("n"), Some(&Value::Integer(1)));
+            }
+            other => panic!("expected Map, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn load_invalid_json_errors() {
+        let err = load("{not valid", DataFormat::Json).unwrap_err();
+        assert!(matches!(
+            err,
+            DataLoaderError::Parse {
+                format: DataFormat::Json,
+                ..
+            }
+        ));
+    }
+
+    #[test]
+    fn load_invalid_yaml_errors() {
+        let err = load("- a\n  b: [unterminated", DataFormat::Yaml).unwrap_err();
+        assert!(matches!(
+            err,
+            DataLoaderError::Parse {
+                format: DataFormat::Yaml,
+                ..
+            }
+        ));
+    }
+}

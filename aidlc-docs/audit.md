@@ -554,3 +554,10 @@
 **Context**: CONSTRUCTION - Code Generation (cli, Part 2 Generation, Step 3)
 
 ---
+
+## Code Generation (cli) - Step 4 Completed
+**Timestamp**: 2026-07-17T01:08:00Z
+**AI Response**: "Step4（DataLoader）完了。detect_format/loadの実装本体はStep2で前倒し済みだったため、本Stepではdata_loader.rsのユニットテスト7件（形式判定優先順位、JSON/YAML拡張子判定、判定不能時のエラー、JSON/YAMLオブジェクトの読み込み、不正データのパースエラー）を実装。cargo test --bin mustache data_loader::で全件成功を確認。"
+**Context**: CONSTRUCTION - Code Generation (cli, Part 2 Generation, Step 4)
+
+---
