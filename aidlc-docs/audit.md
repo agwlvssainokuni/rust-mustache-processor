@@ -442,3 +442,10 @@
 **Context**: CONSTRUCTION - Functional Design (cli, Part 1 Planning, 追加補正)
 
 ---
+
+## Functional Design (cli) - Artifacts Generated
+**Timestamp**: 2026-07-17T00:05:00Z
+**AI Response**: "aidlc-docs/construction/cli/functional-design/配下にdomain-entities.md（CliArgs/CliArgsError/IoController/DataLoader/CliRunner/CliErrorの詳細型定義。resolve_partials_dirはcomponent-methods.mdのシグネチャをsource引数追加で詳細化）、business-rules.md（BR-1.x〜BR-8.xの8カテゴリ・約20ルール）、business-logic-model.md（CliRunnerオーケストレーション9手順、PBT-01 Testable Propertiesテーブル: DataLoaderのJSON/YAML往復変換・形式判定の決定性、CliArgs/IoController/CliRunnerはN/A）を生成。"
+**Context**: CONSTRUCTION - Functional Design (cli, Step 6)
+
+---
