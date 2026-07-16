@@ -830,3 +830,11 @@
 **User Input**: "念の為確認です。README の修正は不要ですか？"
 **AI Response**: "README.md/README.en.mdの「ライブラリとしての使い方」節が、featureゲート追加前の`[dependencies] mustache_processor = { path = ... }`のままだと、デフォルトのcli featureが有効になりclap等も付いてくることを確認。両ファイルに`default-features = false`指定の説明を追記した。"
 **Context**: 既存ユニット補正 — README追記（依存最小化の使い方明記）
+
+---
+
+## Ad-hoc Request: v0.1.1リリース
+**Timestamp**: 2026-07-17T04:40:00Z
+**User Input**: "Push it, and tag v0.1.1"
+**AI Response**: "mainブランチをpush後、v0.1.1タグを作成しpush（run ID: 29542391719）。verify-version/test/build（linux, macos-aarch64, windows）/releaseの全ジョブが一発で成功。GitHub Release「mustache 0.1.1」が作成され、3プラットフォーム分のアーカイブがアセットとして添付されたことを確認した。"
+**Context**: 既存ユニット補正 — v0.1.1リリース完了（実地検証成功、Node.js 24対応版アクション・3プラットフォーム構成での初の正常実行）
