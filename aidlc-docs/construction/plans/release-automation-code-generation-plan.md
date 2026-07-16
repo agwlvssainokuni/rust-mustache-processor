@@ -19,7 +19,7 @@
 
 - [x] **Step 4: buildジョブ実装（マトリクス）** — `test`に依存し、4ターゲット（`x86_64-unknown-linux-gnu`/`ubuntu-latest`, `x86_64-apple-darwin`/`macos-13`, `aarch64-apple-darwin`/`macos-14`, `x86_64-pc-windows-msvc`/`windows-latest`）のマトリクスで`cargo build --release --target <triple>`を実行し、`mustache-<version>-<target-triple>.tar.gz`（Windowsのみ`.zip`）にアーカイブして`actions/upload-artifact`で保存（FR-3, FR-6対応）
 
-- [ ] **Step 5: releaseジョブ実装** — `build`に依存し、`actions/download-artifact`で全アーカイブを収集後、`softprops/action-gh-release`で`generate_release_notes: true`を指定してリリースを作成し、全アーカイブをアセットとして添付（FR-7, FR-8対応）
+- [x] **Step 5: releaseジョブ実装** — `build`に依存し、`actions/download-artifact`で全アーカイブを収集後、`softprops/action-gh-release`で`generate_release_notes: true`を指定してリリースを作成し、全アーカイブをアセットとして添付（FR-7, FR-8対応）
 
 - [ ] **Step 6: README更新** — README.md/README.en.mdの「インストール」節に、GitHub Releasesからのビルド済みバイナリダウンロードによるインストール手順を追記（`cargo install --path .`と並記）
 

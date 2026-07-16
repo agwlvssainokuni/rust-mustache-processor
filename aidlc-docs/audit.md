@@ -732,3 +732,10 @@
 **Context**: New Unit: release-automation — Code Generation Step 4完了
 
 ---
+
+## Code Generation Step 5 (release-automation) - Completed
+**Timestamp**: 2026-07-17T03:10:00Z
+**AI Response**: "releaseジョブを実装。actions/download-artifact@v4（merge-multiple: true）で全マトリクスジョブのアーカイブを1ディレクトリに集約し、softprops/action-gh-release@v2でgenerate_release_notes: trueを指定してリリースを作成、全アーカイブをアセット添付。実装時の追加判断として、releaseジョブに`if: github.ref_type == 'tag'`を追加した。理由: workflow_dispatch（手動起動）はタグを伴わないブランチ実行もあり得るため、その場合はビルド検証のみに留め、意図しないリリース作成（タグ不在での実行）を防ぐため。requirements.mdのFR-2（手動起動対応）はビルド・テストの動作確認用途として維持しつつ、リリース作成はタグpush時のみに限定する設計判断。"
+**Context**: New Unit: release-automation — Code Generation Step 5完了（設計補正あり）
+
+---

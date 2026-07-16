@@ -75,3 +75,7 @@ on:
 | リリース作成アクション | `softprops/action-gh-release` | 現行で広く使われ、メンテナンスされている。`actions/create-release`は非推奨 |
 | ジョブ分割 | verify-version → test → build（マトリクス） → release | 早期失敗（fail-fast）でムダなビルドを避け、FR-4/FR-5のゲートを構造的に表現 |
 | 権限 | `contents: write`を明示付与 | GITHUB_TOKENのデフォルト権限だけではリリース作成に失敗する可能性があるため |
+
+## 実装時の追加補正（要記録）
+
+- **releaseジョブに`if: github.ref_type == 'tag'`を追加**（Code Generation Step 5）: `workflow_dispatch`（手動起動）はタグを伴わないブランチ実行もあり得るため、その場合はビルド検証のみに留め、意図しないリリース作成（タグ不在での実行）を防ぐ。FR-2（手動起動対応）はビルド・テストの動作確認用途として維持しつつ、リリース作成自体はタグpush時のみに限定した。
