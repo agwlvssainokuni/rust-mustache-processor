@@ -11,7 +11,7 @@
 
 ## ステップ一覧
 
-- [ ] **Step 1: ワークフロースケルトン作成** — `.github/workflows/release.yml`を新規作成し、`name`、`on`（タグpush `v*.*.*` ＋ `workflow_dispatch`）、`permissions: contents: write`、ジョブ名の骨組み（`verify-version`, `test`, `build`, `release`）を記述する（FR-1, FR-2対応）
+- [x] **Step 1: ワークフロースケルトン作成** — `.github/workflows/release.yml`を新規作成し、`name`、`on`（タグpush `v*.*.*` ＋ `workflow_dispatch`）、`permissions: contents: write`、ジョブ名の骨組み（`verify-version`, `test`, `build`, `release`）を記述する（FR-1, FR-2対応）
 
 - [ ] **Step 2: verify-versionジョブ実装** — タグ名（`github.ref_name`）から`vX.Y.Z`の`X.Y.Z`部分を抽出し、`Cargo.toml`の`version`フィールドと比較。不一致なら`exit 1`で失敗させる（FR-4対応）
 

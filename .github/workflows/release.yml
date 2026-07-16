@@ -1,0 +1,38 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  verify-version:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "TODO Step 2"
+
+  test:
+    needs: verify-version
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "TODO Step 3"
+
+  build:
+    needs: test
+    strategy:
+      fail-fast: false
+      matrix:
+        include: []
+    runs-on: ${{ matrix.os }}
+    steps:
+      - run: echo "TODO Step 4"
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "TODO Step 5"
