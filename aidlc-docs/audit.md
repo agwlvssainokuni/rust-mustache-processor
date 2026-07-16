@@ -472,3 +472,10 @@
 **Context**: CONSTRUCTION - NFR Requirements (cli, Part 1 Planning, Step 5)
 
 ---
+
+## NFR Requirements (cli) - Artifacts Generated
+**Timestamp**: 2026-07-17T00:25:00Z
+**AI Response**: "aidlc-docs/construction/cli/nfr-requirements/配下にnfr-requirements.md（Scalability/Availability/SecurityはN/A、Performance/Reliability/Maintainability/Usability/PBT運用方針を記載）、tech-stack-decisions.md（clap/serde_json/serde_yamlの依存関係表、serde_jsonがcore-engineのdev-dependencyからcliのdependenciesへ昇格する旨の注記、リリースビルド設定なし）を生成。"
+**Context**: CONSTRUCTION - NFR Requirements (cli, Step 6)
+
+---
