@@ -377,3 +377,59 @@
 **Context**: CONSTRUCTION - Functional Design (cli, Part 1 Planning, Step presented)
 
 ---
+
+## Functional Design (cli) - Q1 Revised: Multiple Template Files
+**Timestamp**: 2026-07-16T23:50:00Z
+**User Input**: "各質問の推奨とその理由を教えてください。" → （推奨提示後）"Q1について。テンプレートを複数指定できるようにしたいです。catコマンドと同じで指定された順に連結する形。"
+**AI Response**: "Q1を改訂し、テンプレート位置引数をVec<PathBuf>（1つ以上）とする案を提示。派生点A（連結時のセパレータ有無）・B（複数テンプレート時の--partials-dirデフォルト解決）を推奨とともに提示。"
+**Context**: CONSTRUCTION - Functional Design (cli, Part 1 Planning, Q1 iteration 1)
+
+---
+
+## Functional Design (cli) - Q1 Revised: Process-then-Cat
+**Timestamp**: 2026-07-16T23:52:00Z
+**User Input**: "派生点Aはセパレータ挿入なしとします。派生点Bは各ファイルごとに切り替えたいです。連結してから処理するのではなく、処理してから連結する方式はどうでしょうか？"
+**AI Response**: "各テンプレートファイルを個別にパース・レンダリングし、結果を指定順に連結するprocess-then-cat方式に変更。--partials-dir未指定時は各ファイルごとにそのファイル自身のディレクトリをデフォルトとする。エラー時は全体を中断し出力は一切書き出さない（core-engineの既存方針との整合性）方針を提示し確認を依頼。"
+**Context**: CONSTRUCTION - Functional Design (cli, Part 1 Planning, Q1 iteration 2)
+
+---
+
+## Functional Design (cli) - Q1 Confirmed
+**Timestamp**: 2026-07-16T23:53:00Z
+**User Input**: "Q1はこれで確定です。"
+**AI Response**: "Q1を確定。process-then-cat方式（個別レンダリング後に連結、セパレータなし、ファイルごとのpartials-dirデフォルト、エラー時は全体中断・出力なし）をcli-functional-design-plan.mdに記録。"
+**Context**: CONSTRUCTION - Functional Design (cli, Part 1 Planning, Q1 confirmed)
+
+---
+
+## Functional Design (cli) - Q2 Answered with Rationale
+**Timestamp**: 2026-07-16T23:54:00Z
+**User Input**: "Q2=Aとします。推奨通りです。理由も記録してください。"
+**AI Response**: "Q2=A（--format最優先、次に拡張子、両方なければエラー）を推奨通りに記録。理由をcli-functional-design-plan.mdに追記。"
+**Context**: CONSTRUCTION - Functional Design (cli, Part 1 Planning, Q2)
+
+---
+
+## Functional Design (cli) - Q3 Answered with Rationale
+**Timestamp**: 2026-07-16T23:57:00Z
+**User Input**: "Q2=3とします。推奨通りです。理由も記録してください。"（AIが確認要求）→ "Q3=Aとします。推奨通りです。理由も記録してください。"
+**AI Response**: "表記ゆれ（Q2=3）についてQ3=Aの意図か確認し、ユーザーが明示的にQ3=Aと再回答。--template-stdinフラグ＋カレントディレクトリへのフォールバックを推奨通りに記録。理由をcli-functional-design-plan.mdに追記。"
+**Context**: CONSTRUCTION - Functional Design (cli, Part 1 Planning, Q3)
+
+---
+
+## Functional Design (cli) - Q4 Answered with Rationale
+**Timestamp**: 2026-07-16T23:58:00Z
+**User Input**: "Q4=Aとします。推奨通りです。理由も記録してください。"
+**AI Response**: "Q4=A（成功0、それ以外1のシンプル二値終了コード）を推奨通りに記録。理由をcli-functional-design-plan.mdに追記。"
+**Context**: CONSTRUCTION - Functional Design (cli, Part 1 Planning, Q4)
+
+---
+
+## Functional Design (cli) - Q5 Answered with Rationale
+**Timestamp**: 2026-07-16T23:59:00Z
+**User Input**: "Q5=Aとします。推奨通りです。理由も記録してください。"
+**AI Response**: "Q5=A（mustache: <message>形式のプレーンテキストをstderrへ出力）を推奨通りに記録。理由をcli-functional-design-plan.mdに追記。全5問の回答・理由記録が完了。"
+**Context**: CONSTRUCTION - Functional Design (cli, Part 1 Planning, Q5, 質問回答フェーズ完了)
+
+---
