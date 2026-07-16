@@ -12,8 +12,4 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod cli;
-
-fn main() {
-    println!("Hello, world!");
-}
+//! JSON/YAMLデータのパースとcore-engineの`Value`への変換（DataLoader）。

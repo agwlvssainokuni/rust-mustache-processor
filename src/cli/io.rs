@@ -12,8 +12,4 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod cli;
-
-fn main() {
-    println!("Hello, world!");
-}
+//! テンプレート・データの読み込みと出力の書き出し（IoController）。

@@ -13,9 +13,12 @@
 ## Plan Checklist
 
 ### Step 1: Project Structure Setup
-- [ ] `Cargo.toml`を更新: `clap`（`derive`機能）、`serde_yaml`を`[dependencies]`に追加。`serde_json`を`[dev-dependencies]`から`[dependencies]`へ昇格（`tech-stack-decisions.md`の注記通り）
-- [ ] `src/cli/mod.rs`, `src/cli/args.rs`, `src/cli/io.rs`, `src/cli/data_loader.rs`を著作権ヘッダー付きの空ファイルとして作成
-- [ ] `src/main.rs`を更新（現状のHello World雛形を置き換える準備）
+- [x] `Cargo.toml`を更新: `clap`（`derive`機能）を`[dependencies]`に追加。`serde_json`を`[dev-dependencies]`から`[dependencies]`へ昇格（`tech-stack-decisions.md`の注記通り）
+- [x] `src/cli/mod.rs`, `src/cli/args.rs`, `src/cli/io.rs`, `src/cli/data_loader.rs`を著作権ヘッダー付きの空ファイルとして作成
+- [x] `src/main.rs`に`mod cli;`宣言を追加（Hello World雛形は後続Stepで置き換え）
+- [x] `cargo build`成功を確認
+
+**実装時の追加補正（要記録）**: `serde_yaml`を追加してビルドしたところ`serde_yaml v0.9.34+deprecated`と表示され、作者による非推奨化が判明。ユーザーに確認のうえ、`serde_yaml` 0.9系とAPI互換のメンテナンス継続中の後継クレート`serde_norway`に変更した。詳細は`tech-stack-decisions.md`（cli）に記録。
 
 ### Step 2: CliArgs（引数解析）
 - [ ] `src/cli/args.rs`: `clap::Parser`のderive APIで`CliArgs`を定義（テンプレート位置引数`Vec<PathBuf>`、`--template-stdin`, `--data`, `--output`/`-o`, `--partials-dir`, `--strict`, `--format`）

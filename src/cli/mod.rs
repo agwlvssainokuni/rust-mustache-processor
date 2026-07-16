@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod cli;
+//! CLIのオーケストレーション（CliRunner）。
 
-fn main() {
-    println!("Hello, world!");
-}
+pub(crate) mod args;
+pub(crate) mod data_loader;
+pub(crate) mod io;
