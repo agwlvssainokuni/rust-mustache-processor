@@ -15,11 +15,11 @@
 - [x] Step 10-11: 承認ログ記録・状態更新
 
 ### Part 2 — Generation
-- [ ] `aidlc-docs/inception/application-design/unit-of-work.md` 生成（ユニット定義・コード構成方針を含む）
-- [ ] `aidlc-docs/inception/application-design/unit-of-work-dependency.md` 生成（依存関係マトリクス）
-- [ ] `aidlc-docs/inception/application-design/unit-of-work-story-map.md` 生成（要件→ユニットのマッピング）
-- [ ] ユニット境界・依存関係の妥当性検証
-- [ ] 全要件（FR-1〜FR-8）がいずれかのユニットに割り当てられていることを確認
+- [x] `aidlc-docs/inception/application-design/unit-of-work.md` 生成（ユニット定義・コード構成方針を含む）
+- [x] `aidlc-docs/inception/application-design/unit-of-work-dependency.md` 生成（依存関係マトリクス）
+- [x] `aidlc-docs/inception/application-design/unit-of-work-story-map.md` 生成（要件→ユニットのマッピング）
+- [x] ユニット境界・依存関係の妥当性検証
+- [x] 全要件（FR-1〜FR-8）がいずれかのユニットに割り当てられていることを確認
 - [ ] 完了メッセージ提示・ユーザー承認待ち
 
 ## 検討済み・決定済みの論点（Application Designより引き継ぎ）

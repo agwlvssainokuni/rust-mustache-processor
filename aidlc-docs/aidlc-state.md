@@ -39,7 +39,7 @@
 - [x] User Stories — SKIPPED（単一開発者向けツール、複数ペルソナなし）
 - [x] Workflow Planning — execution-plan.md承認済み
 - [x] Application Design — 設計成果物生成完了、承認済み
-- [ ] Units Generation — EXECUTE（進行中）
+- [x] Units Generation — 成果物生成完了、ユーザー承認待ち
 
 ### 🟢 CONSTRUCTION PHASE
 - [ ] Functional Design — EXECUTE（各ユニット）
@@ -54,6 +54,6 @@
 
 ## Current Status
 - **Lifecycle Phase**: INCEPTION
-- **Current Stage**: Units Generation Part 2（Generation、進行中）
-- **Next Stage**: Functional Design（core-engineユニットから）
-- **Status**: 進行中
+- **Current Stage**: Units Generation（ユーザー承認待ち）
+- **Next Stage**: CONSTRUCTION PHASE - Functional Design（core-engineユニットから）
+- **Status**: 承認待ち
