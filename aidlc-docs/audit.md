@@ -231,3 +231,10 @@
 **Context**: CONSTRUCTION - NFR Requirements (core-engine, Step 5)
 
 ---
+
+## NFR Requirements (core-engine) - Artifacts Generated
+**Timestamp**: 2026-07-16T20:53:00Z
+**AI Response**: "aidlc-docs/construction/core-engine/nfr-requirements/配下にnfr-requirements.md（スケーラビリティ/可用性/セキュリティはN/Aと明記、パフォーマンス・信頼性・保守性・ユーザビリティの各要件をQ1〜Q4の決定と統合）、tech-stack-decisions.md（serde/proptest依存、missing_docs lint設定、proptest試行回数方針、除外した選択肢）を生成。"
+**Context**: CONSTRUCTION - NFR Requirements (core-engine, Step 6)
+
+---

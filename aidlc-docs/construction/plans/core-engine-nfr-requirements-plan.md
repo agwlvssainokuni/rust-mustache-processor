@@ -7,9 +7,9 @@
 - [x] Step 1: Functional Design成果物の分析
 - [x] Step 2-4: 計画作成・質問洗い出し（本ファイル）
 - [x] Step 5: ユーザー回答収集・曖昧さ分析（Q1=A, Q2=B, Q3=B, Q4=B、いずれも推奨通り。曖昧・矛盾なし）
-- [ ] Step 6: NFR成果物生成
-  - [ ] `nfr-requirements.md`
-  - [ ] `tech-stack-decisions.md`
+- [x] Step 6: NFR成果物生成
+  - [x] `nfr-requirements.md`
+  - [x] `tech-stack-decisions.md`
 - [ ] Step 7-9: 完了メッセージ提示・承認待ち・記録
 
 ## 前提（requirements.mdより引き継ぎ、質問不要）
