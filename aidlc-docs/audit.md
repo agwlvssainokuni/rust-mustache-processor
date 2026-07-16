@@ -799,3 +799,10 @@
 **User Input**: "macos-13 が終わらないので除外。"
 **AI Response**: "v0.1.0の初回リリース実行でmacos-13ランナーのビルドジョブがキューから進行せず、最終的にcancelledとなったことを確認（GitHub Releasesは未作成のまま）。ユーザー指示によりbuildジョブのマトリクスからmacos-13/x86_64-apple-darwinエントリを削除。release-automation-requirements.md（FR-3、対象外事項、実装時の追加補正）、infrastructure-design.md（ジョブ構成図、ターゲット表、実装時の追加補正）、release-automation-code-generation-plan.md（承認後の追加補正）、summary.md、README.md/README.en.mdの対応プラットフォーム記載を全て3プラットフォーム（Linux x86_64・macOS aarch64・Windows x86_64）に修正。"
 **Context**: New Unit: release-automation — macOS x86_64ターゲット削除（設計・要件の補正）
+
+---
+
+## Ad-hoc Request: v0.1.0タグ再作成・再push
+**Timestamp**: 2026-07-17T04:15:00Z
+**AI Response**: "既存のv0.1.0タグ（macos-13を含む旧構成でのcancelled実行）をリモート・ローカルから削除し、修正済みコミットをmainにpush後、v0.1.0タグを作り直して再push（run ID: 29522971431）。verify-version/test/build（linux, macos-aarch64, windows）/releaseの全ジョブが成功。GitHub Release「mustache 0.1.0」が実際に作成され、3プラットフォーム分のアーカイブ（mustache-0.1.0-x86_64-unknown-linux-gnu.tar.gz, mustache-0.1.0-aarch64-apple-darwin.tar.gz, mustache-0.1.0-x86_64-pc-windows-msvc.zip）がアセットとして添付されたことをGitHub API経由で確認した。"
+**Context**: New Unit: release-automation — v0.1.0リリース完了（実地検証成功）

@@ -27,7 +27,7 @@
 ## 検証状況
 
 - `.github/workflows/release.yml`のYAML構文はPython `yaml`モジュールで妥当性を確認済み
-- `v0.1.0`タグpushによる初回実行で、macOS x86_64ランナーの問題を発見。修正後、再度`v0.1.0`タグをpushして実地検証を行う
+- `v0.1.0`タグpushによる初回実行で、macOS x86_64ランナーの問題を発見・修正後、タグを作り直して再push。verify-version/test/build（linux/macos-aarch64/windows）/releaseの全ジョブが成功し、GitHub Release「mustache 0.1.0」が実際に作成され、3プラットフォーム分のアーカイブがアセットとして添付されたことを確認済み（https://github.com/agwlvssainokuni/rust-mustache-processor/releases/tag/v0.1.0）
 
 ## 既知の対象外事項（requirements.mdより）
 
