@@ -759,3 +759,35 @@
 **User Input**: "Continue to Next Stage"
 **AI Response**: "release-automationユニットのCode Generation（全7ステップ）が承認された。要件定義・設計・実装の全ステージが完了。実際のGitHub Actions実行によるエンドツーエンド検証（タグpush等）は今後の実運用時に行う。"
 **Context**: New Unit: release-automation — Code Generation（承認）→ ユニット完了
+
+---
+
+## Ad-hoc Request: 初回リリース実行
+**Timestamp**: 2026-07-17T03:40:00Z
+**User Input**: "早速リリースしたい。"
+**AI Response**: "リモートリポジトリ（github.com/agwlvssainokuni/rust-mustache-processor）とタグpushの影響範囲（公開リリース作成）を説明し、実行計画を提示して承認を得た。"
+**Context**: New Unit: release-automation — 実地検証（初回タグリリース）
+
+---
+
+## Ad-hoc Request - Approved
+**Timestamp**: 2026-07-17T03:41:00Z
+**User Input**: "進めてください。"
+**AI Response**: "アノテーション付きタグv0.1.0を作成し、originにpush。release.ymlワークフローが起動（run ID: 29517405069）。verify-version/test/build（linux, windows, macos-aarch64）の成功を確認。"
+**Context**: New Unit: release-automation — v0.1.0タグpush実行
+
+---
+
+## Code Generation (release-automation) - Action Version Fix
+**Timestamp**: 2026-07-17T03:45:00Z
+**User Input**: "「Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/」という警告が表示されました。"
+**AI Response**: "GitHub APIで各アクションの最新リリースを調査し、actions/checkout v6でNode.js 24対応が追加されたことを確認。対応方針をAskUserQuestionで確認した。"
+**Context**: New Unit: release-automation — Node.js 20非推奨警告への対応
+
+---
+
+## Code Generation (release-automation) - Action Version Fix Approved
+**Timestamp**: 2026-07-17T03:46:00Z
+**User Input**: "今すぐ最新バージョンに更新する（推奨）"
+**AI Response**: "release.yml内のアクションバージョンを更新: actions/checkout@v4→v7, actions/upload-artifact@v4→v7, actions/download-artifact@v4→v8, softprops/action-gh-release@v2→v3。dtolnay/rust-toolchain@stableはブランチ追従のため変更なし。YAML構文検証OK。summary.mdに補正内容を追記。この修正は実行中のv0.1.0リリースには影響せず、次回タグpushから適用される。"
+**Context**: New Unit: release-automation — Code Generation（アクションバージョン補正、追加コミット）
