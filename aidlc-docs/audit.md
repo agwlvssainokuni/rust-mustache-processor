@@ -540,3 +540,10 @@
 **Context**: CONSTRUCTION - Code Generation (cli, Part 2 Generation, Step 1)
 
 ---
+
+## Code Generation (cli) - Step 2 Completed
+**Timestamp**: 2026-07-17T01:00:00Z
+**AI Response**: "Step2（CliArgs）完了。args.rsにRawArgs（clap derive）→CliArgs（ドメイン型）の2段変換、CliArgsError、parse_args（BR-1.1〜1.8の手動バリデーション統一実装）を実装。CliArgsがDataFormatに依存するため、data_loader.rsのDataFormat/DataLoaderError/detect_format/loadも前倒しで実装（Step4相当）。ユニットテスト9件でcargo test --bin mustache args::が全件成功。実装時にCliArgsErrorへPartialEqを付与する都合でClap(clap::Error)をClap(String)に変更、detect_formatは&CliArgsではなく個別フィールドを取る形に詳細化（args⇄data_loaderの循環依存回避）。domain-entities.mdに補正を記録。"
+**Context**: CONSTRUCTION - Code Generation (cli, Part 2 Generation, Step 2)
+
+---

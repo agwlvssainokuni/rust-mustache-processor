@@ -36,6 +36,8 @@ pub(crate) enum CliArgsError {
 }
 ```
 
+**実装時の補正**: `CliArgsError`に`#[derive(PartialEq)]`を付与してユニットテストで`assert_eq!`によるバリアント比較を可能にしたいが、`clap::Error`は`PartialEq`を実装していないため、`Clap(clap::Error)`のままでは`CliArgsError`全体を`PartialEq`にできない。実装では`Clap(String)`（`clap::Error`の`to_string()`結果）に変更した。`detect_format`も同様の理由で`&CliArgs`ではなく必要なフィールド（`explicit_format: Option<DataFormat>`, `data_path: Option<&Path>`）を直接引数に取る形に詳細化した（`CliArgs`が`data_loader.rs`の`DataFormat`型に依存するため、逆に`detect_format`が`&CliArgs`を取ると`args`⇄`data_loader`モジュール間の循環依存が生じるため）。
+
 ## IoController（入出力制御）
 
 ```rust

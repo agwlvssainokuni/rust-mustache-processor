@@ -21,9 +21,13 @@
 **実装時の追加補正（要記録）**: `serde_yaml`を追加してビルドしたところ`serde_yaml v0.9.34+deprecated`と表示され、作者による非推奨化が判明。ユーザーに確認のうえ、`serde_yaml` 0.9系とAPI互換のメンテナンス継続中の後継クレート`serde_norway`に変更した。詳細は`tech-stack-decisions.md`（cli）に記録。
 
 ### Step 2: CliArgs（引数解析）
-- [ ] `src/cli/args.rs`: `clap::Parser`のderive APIで`CliArgs`を定義（テンプレート位置引数`Vec<PathBuf>`、`--template-stdin`, `--data`, `--output`/`-o`, `--partials-dir`, `--strict`, `--format`）
-- [ ] `CliArgsError`（Clap/NoTemplateSpecified/TemplateAndStdinConflict/TemplateStdinAndDataStdinConflict/InvalidFormat）を定義
-- [ ] `parse_args(argv: &[String]) -> Result<CliArgs, CliArgsError>`を実装。clapの`conflicts_with`で表現できる制約（BR-1.2）はderive属性で、`--data`未指定との組み合わせ（BR-1.5）はパース後の手動バリデーションで実装
+- [x] `src/cli/args.rs`: `clap::Parser`のderive APIで`RawArgs`（clap解析専用）を定義し、`CliArgs`（ドメイン型）へ変換する2段構成で実装（テンプレート位置引数`Vec<PathBuf>`、`--template-stdin`, `--data`, `--output`/`-o`, `--partials-dir`, `--strict`, `--format`）
+- [x] `CliArgsError`（Clap/NoTemplateSpecified/TemplateAndStdinConflict/TemplateStdinAndDataStdinConflict/InvalidFormat）を定義
+- [x] `parse_args(argv: &[String]) -> Result<CliArgs, CliArgsError>`を実装。BR-1.2/1.3/1.5は全てclap解析後の手動バリデーションで統一実装（`CliArgsError`の各バリアントで一貫したエラーメッセージを出すため、clapの`conflicts_with`は使わない方針に変更）
+- [x] `src/cli/data_loader.rs`: `DataFormat`/`DataLoaderError`/`detect_format`/`load`を実装（`CliArgs`が`DataFormat`に依存するため、Step2でargs.rsと同時に実装。詳細はStep4参照）
+- [x] ユニットテスト9件を実装し`cargo test --bin mustache args::`で全件成功を確認
+
+**実装時の追加補正（要記録）**: `CliArgsError`に`PartialEq`を付与してテストしやすくするため、`clap::Error`（`PartialEq`未実装）をそのまま保持せず`Clap(String)`に変更。また`detect_format`は`&CliArgs`を引数に取ると`CliArgs`（`args.rs`）が`DataFormat`（`data_loader.rs`）に依存する一方で循環依存になるため、必要なフィールド（`explicit_format`, `data_path`）を直接引数に取る形に詳細化した。詳細は`domain-entities.md`（cli）に追記。
 
 ### Step 3: IoController（入出力）
 - [ ] `src/cli/io.rs`: `TemplateSource`, `LoadedTemplate`, `IoError`を定義
