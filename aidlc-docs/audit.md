@@ -313,3 +313,10 @@
 **Context**: CONSTRUCTION - Code Generation (core-engine, Part 2 Generation, Step 4)
 
 ---
+
+## Code Generation (core-engine) - Step 5 Completed
+**Timestamp**: 2026-07-16T22:00:00Z
+**AI Response**: "Step5（PartialResolver/DirectoryPartialResolver）完了。PartialResolverトレイトはStep4でRendererが依存するため先行作成済みだったため、本Stepで`DirectoryPartialResolver`（base_dir配下の`{name}.mustache`を読み込み、component-methods.md準拠でOption<String>を返す）を実装。ユニットテスト2件（存在するファイルの解決、存在しないファイルでNone）で動作確認。"
+**Context**: CONSTRUCTION - Code Generation (core-engine, Part 2 Generation, Step 5)
+
+---

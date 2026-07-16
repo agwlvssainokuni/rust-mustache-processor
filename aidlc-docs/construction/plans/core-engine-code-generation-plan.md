@@ -54,8 +54,8 @@ Functional Designの`domain-entities.md`はValue型を`Integer`/`Float`/`HashMap
 **実装時の追加補正（要記録・2）**: NFR Design Q2で決定した`MAX_NESTING_DEPTH`の上限値は、NFR Requirements Q2の「例1000階層」を踏襲したものだったが、実装後にユニットテストで実測したところ、Rustのデフォルトスレッドスタック（特にWindows既定の1MiB相当を`RUST_MIN_STACK=1048576`で模擬した場合）では、深度1000はガード自体が発火する前に実スタックオーバーフローを起こすことが判明した（`RenderState`を伴う`render_nodes`/`render_section`の再帰1コールあたりのスタックフレームが、単純な再帰関数より大きいため）。二分探索的に実測した結果、1MiBスタックでも安全に動作する上限は200階層程度だったため、余裕を持たせて`MAX_NESTING_DEPTH = 100`に修正した。NFR Requirements Q2・NFR Design Q2の原文はいずれも「例」「上限値1000は例示通り」と明記しており値そのものを厳密に固定してはいなかったため、Code Generationステージでの実装知見に基づく妥当な具体化と判断した。実用上、100階層は現実的なMustacheテンプレートのネスト深度を十分にカバーする。
 
 ### Step 5: Business Logic Generation — PartialResolver / DirectoryPartialResolver
-- [ ] `src/partial.rs`: `PartialResolver`トレイト（`resolve(&self, name: &str) -> Option<String>`、`component-methods.md`準拠）
-- [ ] `DirectoryPartialResolver`（ディレクトリベース実装、`{name}.mustache`ファイルを読み込み）
+- [x] `src/partial.rs`: `PartialResolver`トレイト（`resolve(&self, name: &str) -> Option<String>`、`component-methods.md`準拠。Step4でRendererが依存するため先行作成済み）
+- [x] `DirectoryPartialResolver`（ディレクトリベース実装、`{name}.mustache`ファイルを読み込み）を実装、ユニットテスト2件で動作確認
 
 ### Step 6: Business Logic Generation — Mustache エンジン公開API
 - [ ] `src/lib.rs`: `Template`（`root: Vec<Node>`, `source_len: usize`）、`Mustache`（`new`, `with_partial_resolver`, `with_strict`, `parse`, `render`, `render_str`）、`Error`型（Parse/Render統合）を実装
