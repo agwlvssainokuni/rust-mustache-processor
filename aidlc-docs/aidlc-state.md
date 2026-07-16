@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Greenfield
 - **Start Date**: 2026-07-16T18:48:00Z
-- **Current Stage**: INCEPTION - Workflow Planning
+- **Current Stage**: INCEPTION - Application Design
 
 ## Workspace State
 - **Existing Code**: Yes (minimal scaffold only — `cargo init`のデフォルト雛形、ビジネスロジックなし)
@@ -37,9 +37,9 @@
 - [x] Reverse Engineering — SKIPPED（greenfield）
 - [x] Requirements Analysis — requirements.md承認済み
 - [x] User Stories — SKIPPED（単一開発者向けツール、複数ペルソナなし）
-- [x] Workflow Planning — execution-plan.md作成、ユーザー承認待ち
-- [ ] Application Design — EXECUTE（承認待ち）
-- [ ] Units Generation — EXECUTE（承認待ち）
+- [x] Workflow Planning — execution-plan.md承認済み
+- [x] Application Design — 設計成果物生成完了、ユーザー承認待ち
+- [ ] Units Generation — EXECUTE（未着手）
 
 ### 🟢 CONSTRUCTION PHASE
 - [ ] Functional Design — EXECUTE（各ユニット）
@@ -54,6 +54,6 @@
 
 ## Current Status
 - **Lifecycle Phase**: INCEPTION
-- **Current Stage**: Workflow Planning（ユーザー承認待ち）
-- **Next Stage**: Application Design
+- **Current Stage**: Application Design（ユーザー承認待ち）
+- **Next Stage**: Units Generation
 - **Status**: 承認待ち

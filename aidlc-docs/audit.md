@@ -132,3 +132,18 @@
 **Context**: INCEPTION - Application Design (Step 7-9, answers finalized with rationale)
 
 ---
+
+## Application Design - Commit Message Amend
+**Timestamp**: 2026-07-16T20:01:00Z
+**User Input**: "amendして"
+**AI Response**: "直前コミットのメッセージ誤り（要件分析ステージの文言を誤用）をgit commit --amendで修正（58df2ad）。"
+**Context**: INCEPTION - Application Design (process correction)
+
+---
+
+## Application Design - Artifacts Generated
+**Timestamp**: 2026-07-16T20:06:00Z
+**AI Response**: "aidlc-docs/inception/application-design/配下にcomponents.md, component-methods.md, services.md, component-dependency.md, application-design.mdを生成。core-engine（Value, Parser, Template, Renderer, PartialResolver, DirectoryPartialResolver, Mustacheエンジン, ParseError/RenderError）とcli（CliArgs, IoController, DataLoader, CliRunner）の2ユニット構成で、Q1〜Q5の設計判断を反映。aidlc-state.mdをApplication Design完了・ユーザー承認待ちに更新。"
+**Context**: INCEPTION - Application Design (Step 10-12)
+
+---
