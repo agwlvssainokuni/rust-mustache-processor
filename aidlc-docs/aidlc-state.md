@@ -18,9 +18,16 @@
 - **Documentation**: aidlc-docs/ only
 - **Structure patterns**: See code-generation.md Critical Rules
 
+## Extension Configuration
+| Extension | Enabled | Decided At |
+|---|---|---|
+| Security Baseline | No | Requirements Analysis |
+| Resiliency Baseline | No | Requirements Analysis |
+| Property-Based Testing | Yes | Requirements Analysis |
+
 ## Stage Progress
 - [x] Workspace Detection — Greenfield判定、Reverse Engineeringは不要と判断
-- [ ] Requirements Analysis — 進行中
+- [ ] Requirements Analysis — 質問回答完了（全11問）、requirements.md生成待ち
 - [ ] User Stories — 未定
 - [ ] Workflow Planning
 - [ ] Application Design — 未定
