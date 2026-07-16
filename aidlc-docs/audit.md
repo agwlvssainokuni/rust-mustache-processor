@@ -627,3 +627,27 @@
 **Context**: CONSTRUCTION - Build and Test (approval) → OPERATIONS PHASE (placeholder)
 
 ---
+
+## Ad-hoc Q&A: GitHub Releasesについて
+**Timestamp**: 2026-07-17T02:00:00Z
+**User Input**: "GitHub Releasesとは？" / "GitHub Releasesを使うのに費用はかかりますか？"
+**AI Response**: "GitHub Releasesの機能概要（タグ付けリリース、リリースノート、バイナリアセット配布）と、パブリックリポジトリでは無料で利用できる旨を説明。"
+**Context**: OPERATIONS PHASE（プレースホルダ）中の情報提供。ワークフロー上のアクションなし。
+
+---
+
+## New Request: GitHub Actionsによるクロスコンパイル・自動リリース設定
+**Timestamp**: 2026-07-17T02:05:00Z
+**User Input**: "GitHub Actionsでクロスコンパイル・自動リリースの設定をお願いできますか？"
+**AI Response**: "`.aidlc-rule-details/operations/operations.md`を確認した結果、Operationsフェーズには具体的な実行ステップが定義されておらず、既存のrequirements.mdもCI/CD自動化の要件定義は行っていないことを説明。進め方についてユーザーに確認した。"
+**Context**: OPERATIONS PHASE（プレースホルダ）→ 新規スコープの発生
+
+---
+
+## New Request - Approach Decision
+**Timestamp**: 2026-07-17T02:06:00Z
+**User Input**: "軽量なAI-DLCユニットとして進める（推奨）"
+**AI Response**: "新規ユニット「release-automation」として、簡易Requirements Analysis→軽量な設計（質問→承認）→Code Generation（プラン→承認→Stepごとにコミット）のゲート付きフローで進めることを決定。"
+**Context**: New Unit: release-automation — 進め方の決定
+
+---
