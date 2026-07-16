@@ -67,11 +67,11 @@
 Operations PHASEに具体的なステップが定義されていないため、軽量なAI-DLCユニットとして別途進行中。
 
 - [x] Requirements Analysis — release-automation-requirements.md承認済み
-- [x] Infrastructure Design（軽量） — infrastructure-design.md生成完了、承認待ち
-- [ ] Code Generation — 未着手
+- [x] Infrastructure Design（軽量） — infrastructure-design.md承認済み
+- [ ] Code Generation — プラン承認済み、実装中（Stepごとにコミット）
 
 ## Current Status
 - **Lifecycle Phase**: OPERATIONS（既存2ユニットは完了）／release-automationユニットはCONSTRUCTION中
-- **Current Stage**: release-automation — Infrastructure Design（承認待ち）
-- **Next Stage**: release-automation — Code Generation
-- **Status**: core-engine/cliのCONSTRUCTION PHASE完了。release-automationユニットは設計段階
+- **Current Stage**: release-automation — Code Generation Part 2（Generation実行中）
+- **Next Stage**: release-automation — Code Generation完了後、任意で（必要なら）Build and Test / Operations統合
+- **Status**: core-engine/cliのCONSTRUCTION PHASE完了。release-automationユニットはコード生成中
