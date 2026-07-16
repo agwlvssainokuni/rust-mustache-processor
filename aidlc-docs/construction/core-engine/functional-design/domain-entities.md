@@ -53,6 +53,8 @@ pub struct Template {
 
 パース結果を保持する不透明な値。内部構造（`Node`）は公開せず、`Mustache::render`にのみ渡せる。
 
+> **Step8での補正**: 以下の`PartialResolver`（`Result`ベース）と`RenderErrorKind`（`PartialCycleDetected`を含む3種）は初版の設計であり、その後Application Design（`component-methods.md`）準拠への補正（Step5、`Option<String>`ベースに変更）およびStep8のspec conformanceテストで判明した補正（`PartialParseError`/`MaxNestingDepthExceeded`の追加、`PartialCycleDetected`の削除）により変更されている。現在の正確な定義は`aidlc-docs/construction/core-engine/nfr-design/logical-components.md`と実装（`src/error.rs`, `src/partial.rs`）を参照。
+
 ## PartialResolver（公開トレイト）
 
 ```rust

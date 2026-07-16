@@ -23,10 +23,12 @@ use crate::value::Value;
 pub(crate) const MAX_NESTING_DEPTH: usize = 100;
 
 /// レンダリング全体で共有・更新される内部状態（NFR Design Q1）。
+///
+/// パーシャルの再帰は名前チェーン追跡による循環検出ではなく、`depth`の上限
+/// （`MAX_NESTING_DEPTH`）のみで安全性を担保する（Step8で発見した設計補正、後述）。
 pub(crate) struct RenderState<'a> {
     context_stack: Vec<&'a Value>,
     depth: usize,
-    partial_chain: Vec<String>,
     strict: bool,
 }
 
@@ -35,7 +37,6 @@ impl<'a> RenderState<'a> {
         Self {
             context_stack: vec![root],
             depth: 0,
-            partial_chain: Vec::new(),
             strict,
         }
     }
@@ -70,8 +71,30 @@ pub(crate) fn render_nodes(
     Ok(())
 }
 
-/// コンテキストスタックを最も内側から探索し、キーに対応する値を返す（BR-4.1/BR-4.2）。
+/// 名前を解決して値を返す。
+///
+/// - `.`（暗黙のイテレータ）は、コンテキストスタックの最上位（現在のコンテキスト自体）を返す
+/// - `.`を含む名前（例: `a.b.c`）はドット区切りのパスとして扱う。最初のセグメントのみ
+///   コンテキストスタックを探索し（BR-4.1/BR-4.2）、以降のセグメントは直前で解決した値への
+///   直接のキー参照として辿る（同名のフラットキー、例: データ中の`"a.b"`というキー自体は
+///   絶対に参照しない）
+/// - それ以外は単一キーとしてコンテキストスタックを探索する（BR-4.1/BR-4.2）
 fn resolve<'a>(state: &RenderState<'a>, name: &str) -> Option<&'a Value> {
+    if name == "." {
+        return state.context_stack.last().copied();
+    }
+
+    let mut segments = name.split('.');
+    let first = segments.next()?;
+    let mut current = resolve_single(state, first)?;
+    for segment in segments {
+        current = current.get(segment)?;
+    }
+    Some(current)
+}
+
+/// コンテキストスタックを最も内側から探索し、単一キーに対応する値を返す（BR-4.1/BR-4.2）。
+fn resolve_single<'a>(state: &RenderState<'a>, name: &str) -> Option<&'a Value> {
     for ctx in state.context_stack.iter().rev() {
         if let Some(v) = ctx.get(name) {
             return Some(v);
@@ -193,17 +216,20 @@ fn render_section(
                 result?;
             }
         }
-        Some(map_value @ Value::Map(_)) if !inverted => {
-            // BR-2.3: Mapは1回だけコンテキストにプッシュして表示する。
+        Some(v) if !inverted => {
+            // BR-2.3/BR-2.4: Map・スカラー真値のいずれも、その値自体を1回だけ
+            // コンテキストにプッシュして表示する（公式spec準拠。`{{.}}`が
+            // スカラーセクションの値自体を参照できるようにするため、Mapと
+            // 同様にプッシュする必要がある。Step8のspec conformanceテストで発見）。
             enter_depth(state, pos)?;
-            state.context_stack.push(map_value);
+            state.context_stack.push(v);
             let result = render_nodes(children, state, partial_resolver, out);
             state.context_stack.pop();
             state.depth -= 1;
             result?;
         }
         _ => {
-            // BR-2.4（スカラー真値を1回表示）、および逆セクション（BR-3.1）はコンテキスト不変。
+            // 逆セクション（BR-3.1、valueが偽または未定義）はコンテキスト不変。
             enter_depth(state, pos)?;
             let result = render_nodes(children, state, partial_resolver, out);
             state.depth -= 1;
@@ -222,43 +248,35 @@ fn render_partial(
     partial_resolver: Option<&dyn PartialResolver>,
     out: &mut String,
 ) -> Result<(), RenderError> {
-    let resolver = match partial_resolver {
-        Some(r) => r,
+    // BR-5.1/BR-5.2: 遅延評価で解決する。公式spec準拠でデフォルト（非strict）は
+    // 空文字列として継続し、strictモードでは検出目的でエラーとする
+    // （リゾルバ未設定・名前未解決のいずれも同様に扱う）。
+    let content = match partial_resolver.and_then(|r| r.resolve(name)) {
+        Some(c) => c,
         None => {
-            return Err(mk_render_error(
-                RenderErrorKind::PartialNotFound {
-                    name: name.to_string(),
-                },
-                pos,
-            ));
+            if state.strict {
+                return Err(mk_render_error(
+                    RenderErrorKind::PartialNotFound {
+                        name: name.to_string(),
+                    },
+                    pos,
+                ));
+            }
+            return Ok(());
         }
     };
 
-    // BR-5.5: 解決中のパーシャル名チェーンに既に含まれる場合は循環として検出する。
-    if state.partial_chain.iter().any(|n| n == name) {
-        let mut chain = state.partial_chain.clone();
-        chain.push(name.to_string());
-        return Err(mk_render_error(
-            RenderErrorKind::PartialCycleDetected { chain },
-            pos,
-        ));
-    }
-
-    // BR-5.1/BR-5.2: 遅延評価で解決し、失敗時はstrictモードに関わらず常にエラー。
-    let content = match resolver.resolve(name) {
-        Some(c) => c,
-        None => {
-            return Err(mk_render_error(
-                RenderErrorKind::PartialNotFound {
-                    name: name.to_string(),
-                },
-                pos,
-            ));
-        }
+    // BR-5.4: インデントは値展開前のパーシャル・テンプレート文字列自体に適用する。
+    // レンダリング後の出力に事後適用すると、展開された値そのものに含まれる改行にまで
+    // インデントが波及してしまうため（Step8のspec conformanceテストで発見）。
+    let indented_content = if indent.is_empty() {
+        content
+    } else {
+        indent_source(&content, indent)
     };
 
     // BR-6.3: パーシャル内容はデフォルトデリミタから再パースする。
-    let nodes = crate::parser::parse(&content).map_err(|parse_err| RenderError {
+    let nodes = crate::parser::parse(&indented_content).map_err(|parse_err| RenderError {
         kind: RenderErrorKind::PartialParseError {
             name: name.to_string(),
             message: parse_err.message.clone(),
@@ -268,29 +286,21 @@ fn render_partial(
         message: format!("failed to parse partial '{name}': {}", parse_err.message),
     })?;
 
+    // 同名パーシャルの再帰は、公式spec上は正当な実装パターンとして許容される
+    // （データに基づき自然終端するツリー/リスト構造の再帰的パーシャルなど）。
+    // 名前チェーンによる循環検出は行わず、MAX_NESTING_DEPTHのみを安全装置とする。
     enter_depth(state, pos)?;
-    state.partial_chain.push(name.to_string());
-
-    let result = if indent.is_empty() {
-        render_nodes(&nodes, state, Some(resolver), out)
-    } else {
-        let mut buf = String::new();
-        let r = render_nodes(&nodes, state, Some(resolver), &mut buf);
-        if r.is_ok() {
-            apply_indent(out, &buf, indent);
-        }
-        r
-    };
-
-    state.partial_chain.pop();
+    let result = render_nodes(&nodes, state, partial_resolver, out);
     state.depth -= 1;
     result
 }
 
-/// パーシャル内容の各行（末尾改行のない最終行を除く）に`indent`を適用する（BR-5.4）。
-fn apply_indent(out: &mut String, content: &str, indent: &str) {
+/// パーシャルのテンプレート文字列に対し、各行（末尾改行のない最終行を除く）へ
+/// `indent`を適用する（BR-5.4）。値展開前の静的テキストにのみ適用することで、
+/// 展開された値の内容に含まれる改行にはインデントが波及しないようにする。
+fn indent_source(content: &str, indent: &str) -> String {
     if content.is_empty() {
-        return;
+        return String::new();
     }
     let ends_with_newline = content.ends_with('\n');
     let body = if ends_with_newline {
@@ -298,18 +308,20 @@ fn apply_indent(out: &mut String, content: &str, indent: &str) {
     } else {
         content
     };
+    let mut result = String::with_capacity(content.len() + indent.len());
     let mut first = true;
     for line in body.split('\n') {
         if !first {
-            out.push('\n');
+            result.push('\n');
         }
-        out.push_str(indent);
-        out.push_str(line);
+        result.push_str(indent);
+        result.push_str(line);
         first = false;
     }
     if ends_with_newline {
-        out.push('\n');
+        result.push('\n');
     }
+    result
 }
 
 fn enter_depth(state: &mut RenderState, pos: SourcePosition) -> Result<(), RenderError> {
@@ -339,9 +351,6 @@ fn describe_render_error(kind: &RenderErrorKind) -> String {
     match kind {
         RenderErrorKind::UndefinedVariable { name } => format!("undefined variable: {name}"),
         RenderErrorKind::PartialNotFound { name } => format!("partial not found: {name}"),
-        RenderErrorKind::PartialCycleDetected { chain } => {
-            format!("circular partial reference: {}", chain.join(" -> "))
-        }
         RenderErrorKind::MaxNestingDepthExceeded { depth } => {
             format!("maximum nesting depth ({depth}) exceeded")
         }
@@ -524,17 +533,31 @@ mod tests {
     }
 
     #[test]
-    fn partial_without_resolver_errors() {
-        let err = render("{{> p}}", &Value::Map(Map::new()), false).unwrap_err();
-        assert!(matches!(err.kind, RenderErrorKind::PartialNotFound { .. }));
+    fn partial_without_resolver_renders_empty_by_default() {
+        // 公式spec準拠（Failed Lookup）: リゾルバ未設定でもデフォルトは空文字列。
+        let out = render("[{{> p}}]", &Value::Map(Map::new()), false).unwrap();
+        assert_eq!(out, "[]");
     }
 
     #[test]
-    fn partial_missing_errors_even_without_strict() {
+    fn partial_missing_renders_empty_by_default() {
+        // 公式spec準拠（Failed Lookup）: 未解決のパーシャルはデフォルトで空文字列。
+        let out = render_with_resolver(
+            "[{{> p}}]",
+            &Value::Map(Map::new()),
+            false,
+            &NoopResolver,
+        )
+        .unwrap();
+        assert_eq!(out, "[]");
+    }
+
+    #[test]
+    fn partial_missing_errors_in_strict_mode() {
         let err = render_with_resolver(
             "{{> p}}",
             &Value::Map(Map::new()),
-            false,
+            true,
             &NoopResolver,
         )
         .unwrap_err();
@@ -558,10 +581,33 @@ mod tests {
     }
 
     #[test]
-    fn partial_cycle_detected() {
+    fn partial_self_recursion_terminates_via_data() {
+        // 公式spec準拠（Recursion）: 同名パーシャルの再帰はデータに基づき正常終端する
+        // 正当なパターンであり、循環としてエラーにしてはならない。
         let mut resolver = std::collections::HashMap::new();
-        resolver.insert("a", "{{> b}}");
-        resolver.insert("b", "{{> a}}");
+        resolver.insert("node", "{{content}}<{{#nodes}}{{>node}}{{/nodes}}>");
+        let mut leaf = Map::new();
+        leaf.insert("content", Value::String("Y".to_string()));
+        leaf.insert("nodes", Value::Array(vec![]));
+        let mut root = Map::new();
+        root.insert("content", Value::String("X".to_string()));
+        root.insert("nodes", Value::Array(vec![Value::Map(leaf)]));
+
+        let out = render_with_resolver(
+            "{{>node}}",
+            &Value::Map(root),
+            false,
+            &MapResolver(resolver),
+        )
+        .unwrap();
+        assert_eq!(out, "X<Y<>>");
+    }
+
+    #[test]
+    fn partial_infinite_recursion_hits_depth_guard() {
+        // 真に無限のパーシャル再帰は、循環検出ではなくMAX_NESTING_DEPTHで停止する。
+        let mut resolver = std::collections::HashMap::new();
+        resolver.insert("a", "{{> a}}");
         let err = render_with_resolver(
             "{{> a}}",
             &Value::Map(Map::new()),
@@ -569,7 +615,10 @@ mod tests {
             &MapResolver(resolver),
         )
         .unwrap_err();
-        assert!(matches!(err.kind, RenderErrorKind::PartialCycleDetected { .. }));
+        assert!(matches!(
+            err.kind,
+            RenderErrorKind::MaxNestingDepthExceeded { .. }
+        ));
     }
 
     #[test]
@@ -608,5 +657,100 @@ mod tests {
             err.kind,
             RenderErrorKind::MaxNestingDepthExceeded { .. }
         ));
+    }
+
+    #[test]
+    fn implicit_iterator_variable() {
+        let out = render("Hello, {{.}}!", &Value::String("world".to_string()), false).unwrap();
+        assert_eq!(out, "Hello, world!");
+    }
+
+    #[test]
+    fn implicit_iterator_in_array_section() {
+        let list = Value::Array(vec![
+            Value::String("a".to_string()),
+            Value::String("b".to_string()),
+        ]);
+        let mut root = Map::new();
+        root.insert("list", list);
+        let out = render("{{#list}}({{.}}){{/list}}", &Value::Map(root), false).unwrap();
+        assert_eq!(out, "(a)(b)");
+    }
+
+    #[test]
+    fn implicit_iterator_root_level_array() {
+        let mut item1 = Map::new();
+        item1.insert("value", Value::String("a".to_string()));
+        let mut item2 = Map::new();
+        item2.insert("value", Value::String("b".to_string()));
+        let root = Value::Array(vec![Value::Map(item1), Value::Map(item2)]);
+        let out = render("{{#.}}({{value}}){{/.}}", &root, false).unwrap();
+        assert_eq!(out, "(a)(b)");
+    }
+
+    #[test]
+    fn dotted_name_basic() {
+        let mut person = Map::new();
+        person.insert("name", Value::String("Joe".to_string()));
+        let mut root = Map::new();
+        root.insert("person", Value::Map(person));
+        let out = render("{{person.name}}", &Value::Map(root), false).unwrap();
+        assert_eq!(out, "Joe");
+    }
+
+    #[test]
+    fn dotted_name_never_treated_as_flat_key() {
+        let mut root = Map::new();
+        root.insert("a.b", Value::String("c".to_string()));
+        let out = render("[{{a.b}}]", &Value::Map(root), false).unwrap();
+        assert_eq!(out, "[]");
+    }
+
+    #[test]
+    fn dotted_name_no_masking_by_flat_key() {
+        let mut nested = Map::new();
+        nested.insert("b", Value::String("d".to_string()));
+        let mut root = Map::new();
+        root.insert("a.b", Value::String("c".to_string()));
+        root.insert("a", Value::Map(nested));
+        let out = render("{{a.b}}", &Value::Map(root), false).unwrap();
+        assert_eq!(out, "d");
+    }
+
+    #[test]
+    fn dotted_name_in_section() {
+        let mut c = Map::new();
+        c.insert("d", Value::Bool(true));
+        let mut b = Map::new();
+        b.insert("c", Value::Map(c));
+        let mut a = Map::new();
+        a.insert("b", Value::Map(b));
+        let mut root = Map::new();
+        root.insert("a", Value::Map(a));
+        let out = render(
+            "{{#a.b.c.d}}Here{{/a.b.c.d}}",
+            &Value::Map(root),
+            false,
+        )
+        .unwrap();
+        assert_eq!(out, "Here");
+    }
+
+    #[test]
+    fn partial_indent_not_applied_to_interpolated_value_newlines() {
+        // 公式spec準拠（Standalone Indentation）: インデントは値展開前のパーシャル自身の
+        // 行構造にのみ適用され、展開された値に含まれる改行には波及しない。
+        let mut resolver = std::collections::HashMap::new();
+        resolver.insert("partial", "|\n{{{content}}}\n|\n");
+        let mut data = Map::new();
+        data.insert("content", Value::String("<\n->".to_string()));
+        let out = render_with_resolver(
+            "\\\n {{>partial}}\n/\n",
+            &Value::Map(data),
+            false,
+            &MapResolver(resolver),
+        )
+        .unwrap();
+        assert_eq!(out, "\\\n |\n <\n->\n |\n/\n");
     }
 }

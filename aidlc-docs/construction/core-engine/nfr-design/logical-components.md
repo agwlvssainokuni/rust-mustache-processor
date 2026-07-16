@@ -10,28 +10,31 @@ Rendererの再帰呼び出し全体で共有・更新される内部状態。`nf
 pub(crate) struct RenderState<'a> {
     context_stack: Vec<&'a Value>,
     depth: usize,
-    partial_chain: Vec<String>,
     strict: bool,
 }
 
-pub(crate) const MAX_NESTING_DEPTH: usize = 1000;
+pub(crate) const MAX_NESTING_DEPTH: usize = 100;
 ```
 
 - `context_stack`: Functional Designで定義済みのコンテキストスタック（BR-4.1/BR-4.2）を`RenderState`に格納する形に整理
 - `depth`: セクション・パーシャルいずれの再帰前後でインクリメント/デクリメント。`MAX_NESTING_DEPTH`超過時にエラーとする（パターン1）
-- `partial_chain`: 解決中のパーシャル名を保持し、循環検出に使う（パターン2）
 - `strict`: `Mustache`エンジンの設定値をレンダリング全体で参照するためのコピー
+
+**Step8での補正（`partial_chain`削除、`MAX_NESTING_DEPTH`値変更）**:
+- 当初計画していた`partial_chain: Vec<String>`（パーシャル名チェーンによる循環検出、パターン2）は、公式spec conformanceテスト（"Recursion"）により、同名パーシャルの自己再帰がデータに基づき自然終端する正当な実装パターンであると判明したため削除した。真に無限のパーシャル再帰に対する安全装置は`depth`（`MAX_NESTING_DEPTH`）のみに一本化する
+- `MAX_NESTING_DEPTH`は当初NFR Requirements/NFR Designの例示値1000としていたが、Code Generation Step4での実測（`RUST_MIN_STACK`によるWindows既定1MiB相当のスタックサイズでのテスト）により、ガード自体が発火する前に実スタックオーバーフローが発生することが判明したため、安全マージンを持たせて100に修正した（詳細は`core-engine-code-generation-plan.md`のStep4補正記録を参照）
 
 ## RenderErrorKind の拡張
 
-`domain-entities.md`（Functional Design）で定義済みの`RenderErrorKind`に、ネスト深度超過用のバリアントを追加する:
+`domain-entities.md`（Functional Design）で定義済みの`RenderErrorKind`（`UndefinedVariable`, `PartialNotFound`, `PartialCycleDetected`の3種）を、Code Generation時に以下のように補正する:
 
 ```rust
 pub enum RenderErrorKind {
     UndefinedVariable { name: String },
-    PartialNotFound { name: String },
-    PartialCycleDetected { chain: Vec<String> },
-    MaxNestingDepthExceeded { depth: usize }, // 追加
+    PartialNotFound { name: String },       // Step8: strictモード時のみ発生するよう意味を変更（BR-5.2）
+    MaxNestingDepthExceeded { depth: usize }, // Step4で追加
+    PartialParseError { name: String, message: String }, // Step4で追加（パーシャル内容自体の構文エラー用）
+    // PartialCycleDetectedはStep8で削除（上記「Step8での補正」参照）
 }
 ```
 

@@ -74,8 +74,21 @@ Functional Designの`domain-entities.md`はValue型を`Integer`/`Float`/`HashMap
 - [x] `cargo test --lib`で全59件成功を確認
 
 ### Step 8: Spec Conformance Test Generation
-- [ ] 公式mustache/specリポジトリ（`https://github.com/mustache/spec`）より必須モジュール（comments, delimiters, interpolation, inverted, partials, sections）のJSON定義を取得し`tests/spec/fixtures/`に配置
-- [ ] `tests/spec/conformance.rs`: フィクスチャを読み込み、各テストケースをMustacheエンジンで実行し期待出力と比較する統合テストハーネスを実装（NFR-2）
+- [x] 公式mustache/specリポジトリ（`https://github.com/mustache/spec`）より必須モジュール（comments, delimiters, interpolation, inverted, partials, sections）のJSON定義を取得し`tests/spec/fixtures/`に配置（計136テストケース）
+- [x] `tests/spec/main.rs` + `tests/spec/conformance.rs`: フィクスチャを読み込み、各テストケースをMustacheエンジンで実行し期待出力と比較する統合テストハーネスを実装（NFR-2）。フィクスチャJSON解析用に`serde_json`を`[dev-dependencies]`に追加（テスト専用、ライブラリ本体の依存には影響しないため`tech-stack-decisions.md`の逸脱として許容）
+- [x] `cargo test --test spec`で136件全て成功することを確認（複数回のイテレーションで下記の設計補正を実施）
+
+**実装時の重大な補正（要記録）**: 実際に公式spec conformanceテストを実行したところ、当初の設計・実装には次の不備があり、いずれも修正した。詳細は`business-rules.md`・`business-logic-model.md`・`logical-components.md`にも反映済み:
+
+1. **暗黙のイテレータ`{{.}}`が未実装だった**: 現在のコンテキスト自体を参照する機能。当初「公式spec対象外」と誤って判断していたが、`interpolation.json`/`sections.json`に明確に含まれる必須機能だった。`renderer::resolve`に実装（BR-1.10, BR-2.6）。
+2. **ドット区切り名前（`{{a.b.c}}`）が未実装だった**: 同じく誤って対象外と判断していたが必須機能。最初のセグメントのみコンテキストスタック探索、以降は直接のキー参照として実装（BR-1.11）。データ中の`"a.b"`という単一フラットキーには絶対にマッチしないことを確認（"Dotted Names are never single keys"）。
+3. **スタンドアロンタグ判定が1行に複数のブロックタグがある場合・`\r\n`改行に対応していなかった**: 当初はタグ単体の前後テキストのみを見る局所判定だったため、`{{#a}}{{/a}}\n`のような複数タグの行や`\r\n`改行を誤判定していた。行全体を単位とする3パス構成（tokenize → 行単位スタンドアロン判定 → 木構築）に`parser.rs`を全面的に書き直した（BR-7.2〜7.4）。
+4. **スカラー真値セクションでコンテキストがプッシュされていなかった**: `{{#foo}}{{.}} is {{foo}}{{/foo}}`（foo="bar"）のようなケースで`{{.}}`が解決できなかった。Map同様にスカラー値自体もプッシュするよう修正（BR-2.4修正）。
+5. **パーシャル未解決時に常時エラーとしていた**: Application Design Q3=A/Functional Design Q3=Aの決定に基づき実装していたが、公式spec（"Failed Lookup"）は空文字列を期待していた。strictモード時のみエラーとするよう修正し、FR-7のstrictモードの対象をパーシャルにも拡張した（BR-5.2修正）。
+6. **パーシャル循環検出（名前チェーン追跡）が公式spec違反だった**: Functional Design Q4=Bで決定した設計だったが、"Recursion"テストにより同名パーシャルの自己再帰（データに基づき自然終端するツリー/リスト構造など）は正当な実装パターンであり、名前の再出現だけで一律にエラーとしてはならないと判明。`RenderState`から`partial_chain`フィールドと`RenderErrorKind::PartialCycleDetected`を削除し、`MAX_NESTING_DEPTH`（ネスト深度ガード）のみを安全装置とする設計に変更した（BR-5.5削除）。
+7. **パーシャルのインデントをレンダリング後の出力に事後適用していた**: "Standalone Indentation"テストにより、値展開（例:`{{{content}}}`が複数行の値を挿入するケース）で生じた改行にまでインデントが波及する不具合が判明。インデントは値展開前のパーシャル・テンプレート文字列自体に適用してからパース・レンダリングするよう修正した（BR-5.4修正）。
+
+上記6・7はいずれもFunctional Design/Application Designで既に承認済みだった決定を、公式spec（NFR-2、本プロジェクトの最上位の正）との矛盾が実装・検証段階で判明したために上書きしたものであり、他の補正（Value/Map、MAX_NESTING_DEPTH等）よりも重大な設計変更である。承認済み上位ドキュメントを覆す点を明示的に記録する。
 
 ### Step 9: PBT Test Generation
 - [ ] `tests/proptest/`配下に、`business-logic-model.md`のTestable Propertiesテーブルに基づくプロパティテストを実装:
@@ -84,7 +97,7 @@ Functional Designの`domain-entities.md`はValue型を`Integer`/`Float`/`HashMap
   - HTMLエスケープ/アンエスケープの往復（Round-trip）
   - セクション/逆セクションの相補性（Invariant）
   - 配列セクションの繰り返し回数（Invariant）
-  - パーシャル循環検出時の終端保証（Invariant）
+  - 無限パーシャル再帰時の終端保証（Invariant、深度ガードのみに一本化。旧「パーシャル循環検出時の終端保証」から改称）
   - DirectoryPartialResolverの解決結果安定性（Idempotence）
 - [ ] `nfr-design-patterns.md`パターン6に従い、軽量プロパティはデフォルト256ケース、重いプロパティ（Parser構造保存、循環検出）は64ケースに設定
 

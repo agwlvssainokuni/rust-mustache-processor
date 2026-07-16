@@ -11,6 +11,7 @@
 |---|---|---|---|
 | `serde` | 通常依存 | `Value`が受け入れ可能な型の`Serialize`トレイト境界 | Rustエコシステム標準のシリアライズ抽象化。JSON/YAML変換はcli側（`serde_json`/`serde_yaml`）に閉じるため、core-engineはトレイト境界のみに依存する |
 | `proptest` | 開発依存（dev-dependency） | PBT-01で識別したTestable Propertiesの実装（NFR-3, PBT-09） | Q4=Bで正式採用。Rust向けPBTフレームワークとして`requirements.md`で推奨済み。マクロベースのAPIとshrinking機能を備える |
+| `serde_json` | 開発依存（dev-dependency） | 公式mustache/spec JSONフィクスチャの読み込み（NFR-2, Code Generation Step8） | **Code Generation時に追加（要記録）**: 当初本表には未記載だったが、`tests/spec/conformance.rs`で公式spec JSONフィクスチャをパースするために必要となった。ライブラリ本体（`[dependencies]`）ではなくテスト専用の`[dev-dependencies]`に限定しており、公開クレートの依存関係グラフやビルド成果物には影響しない。手書きJSONパーサの実装は本タスクの本質的価値を持たないためYAGNIの観点からも標準クレートの採用が妥当と判断した |
 
 ## 静的解析・Lint設定
 - `lib.rs`クレートルートに`#![deny(missing_docs)]`を設定し、公開APIのrustdocコメント欠落をビルドエラーとする（Q3=B）

@@ -328,6 +328,13 @@
 
 ---
 
+## Code Generation (core-engine) - Step 8 Completed
+**Timestamp**: 2026-07-16T23:10:00Z
+**AI Response**: "Step8（Spec Conformance Test Generation）完了。公式mustache/specリポジトリより必須6モジュール（comments/delimiters/interpolation/inverted/partials/sections、計136テストケース）のJSONフィクスチャをtests/spec/fixtures/へ取得し、tests/spec/main.rs + conformance.rsでテストハーネスを実装（JSONパース用にserde_jsonをdev-dependencyへ追加、tech-stack-decisions.mdに記録）。実行の結果、当初の実装には7件の重大な不備（暗黙のイテレータ{{.}}未実装、ドット区切り名前未実装、複数ブロックタグ/\\r\\n改行でのスタンドアロン判定の不備、スカラー真値セクションでのコンテキスト非プッシュ、パーシャル未解決時の常時エラー化が公式spec違反、パーシャル循環検出がRecursionテストに違反、パーシャルインデントの事後適用による値展開改行への誤波及）が判明。parser.rsを3パス構成（tokenize→行単位スタンドアロン判定→木構築）に全面書き直し、renderer.rsのresolve/render_section/render_partialを修正し、RenderErrorKind::PartialCycleDetectedを削除。business-rules.md/business-logic-model.md/logical-components.mdに補正内容を反映。cargo test --test specで136件全て成功、ライブラリユニットテスト計72件・doctest 1件も成功を確認。承認済みのApplication Design Q3=A/Functional Design Q3=A・Q4=Bを公式spec適合の観点から上書きする重大な補正であり、計画書に詳細を記録。"
+**Context**: CONSTRUCTION - Code Generation (core-engine, Part 2 Generation, Step 8)
+
+---
+
 ## Code Generation (core-engine) - Step 5 Completed
 **Timestamp**: 2026-07-16T22:00:00Z
 **AI Response**: "Step5（PartialResolver/DirectoryPartialResolver）完了。PartialResolverトレイトはStep4でRendererが依存するため先行作成済みだったため、本Stepで`DirectoryPartialResolver`（base_dir配下の`{name}.mustache`を読み込み、component-methods.md準拠でOption<String>を返す）を実装。ユニットテスト2件（存在するファイルの解決、存在しないファイルでNone）で動作確認。"

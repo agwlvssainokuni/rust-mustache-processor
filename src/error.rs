@@ -78,15 +78,12 @@ pub enum RenderErrorKind {
         /// 未定義だった変数名。
         name: String,
     },
-    /// パーシャルの解決に失敗した（strictモードに関わらず常にエラー）。
+    /// strictモードでパーシャルの解決に失敗した（非strictモードでは空文字列として継続する。
+    /// 公式spec準拠。同名パーシャルの自己再帰は正当なパターンとして許容されるため、循環検出
+    /// ではなく`MaxNestingDepthExceeded`が安全装置として機能する）。
     PartialNotFound {
         /// 解決できなかったパーシャル名。
         name: String,
-    },
-    /// パーシャルの解決チェーンに循環参照を検出した。
-    PartialCycleDetected {
-        /// 循環を検出した時点でのパーシャル名チェーン。
-        chain: Vec<String>,
     },
     /// セクション・パーシャルの再帰ネストが最大深度を超過した。
     MaxNestingDepthExceeded {
