@@ -335,6 +335,13 @@
 
 ---
 
+## Code Generation (core-engine) - Step 9 Completed
+**Timestamp**: 2026-07-16T23:25:00Z
+**AI Response**: "Step9（PBT Test Generation）完了。tests/proptest/配下にsupport.rs（arb_value/unescape_html共通ヘルパー）と7つのプロパティテスト（text_passthrough, section_nesting, escape_roundtrip, section_complement, array_repeat, partial_recursion_guard, directory_resolver_idempotence）を実装。内部AST非公開のため全て公開API経由で検証。tech-stack-decisions.mdの方針通り軽量プロパティ256ケース・重いプロパティ64ケースに設定。cargo test --test proptestで7件全て成功、cargo test全体でも72(lib)+7(proptest)+6(spec)+1(doctest)=86件全て成功を確認。"
+**Context**: CONSTRUCTION - Code Generation (core-engine, Part 2 Generation, Step 9)
+
+---
+
 ## Code Generation (core-engine) - Step 5 Completed
 **Timestamp**: 2026-07-16T22:00:00Z
 **AI Response**: "Step5（PartialResolver/DirectoryPartialResolver）完了。PartialResolverトレイトはStep4でRendererが依存するため先行作成済みだったため、本Stepで`DirectoryPartialResolver`（base_dir配下の`{name}.mustache`を読み込み、component-methods.md準拠でOption<String>を返す）を実装。ユニットテスト2件（存在するファイルの解決、存在しないファイルでNone）で動作確認。"

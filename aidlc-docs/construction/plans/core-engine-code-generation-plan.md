@@ -91,15 +91,16 @@ Functional Designの`domain-entities.md`はValue型を`Integer`/`Float`/`HashMap
 上記6・7はいずれもFunctional Design/Application Designで既に承認済みだった決定を、公式spec（NFR-2、本プロジェクトの最上位の正）との矛盾が実装・検証段階で判明したために上書きしたものであり、他の補正（Value/Map、MAX_NESTING_DEPTH等）よりも重大な設計変更である。承認済み上位ドキュメントを覆す点を明示的に記録する。
 
 ### Step 9: PBT Test Generation
-- [ ] `tests/proptest/`配下に、`business-logic-model.md`のTestable Propertiesテーブルに基づくプロパティテストを実装:
-  - テキストのみテンプレートの透過性（Invariant）
-  - セクション入れ子構造の保存（Induction）
-  - HTMLエスケープ/アンエスケープの往復（Round-trip）
-  - セクション/逆セクションの相補性（Invariant）
-  - 配列セクションの繰り返し回数（Invariant）
-  - 無限パーシャル再帰時の終端保証（Invariant、深度ガードのみに一本化。旧「パーシャル循環検出時の終端保証」から改称）
-  - DirectoryPartialResolverの解決結果安定性（Idempotence）
-- [ ] `nfr-design-patterns.md`パターン6に従い、軽量プロパティはデフォルト256ケース、重いプロパティ（Parser構造保存、循環検出）は64ケースに設定
+- [x] `tests/proptest/`配下に、`business-logic-model.md`のTestable Propertiesテーブルに基づくプロパティテストを実装（`support.rs`に共通の`arb_value`ジェネレータとHTMLアンエスケープヘルパーを配置。内部AST（`Node`）は非公開のため、いずれも公開API（`Mustache::render_str`等）のみを用いて検証）:
+  - `text_passthrough.rs`: テキストのみテンプレートの透過性（Invariant）
+  - `section_nesting.rs`: セクション入れ子構造の保存（Induction。任意の深さのネストしたセクションが正しく開始・終了タグ対応し、内側の内容が過不足なく1回だけ出力されることを検証）
+  - `escape_roundtrip.rs`: HTMLエスケープ/アンエスケープの往復（Round-trip）
+  - `section_complement.rs`: セクション/逆セクションの相補性（Invariant、`arb_value`で生成した任意のValueに対して検証）
+  - `array_repeat.rs`: 配列セクションの繰り返し回数（Invariant）
+  - `partial_recursion_guard.rs`: 無限パーシャル再帰時の終端保証（Invariant、深度ガードのみに一本化。旧「パーシャル循環検出時の終端保証」から改称）
+  - `directory_resolver_idempotence.rs`: DirectoryPartialResolverの解決結果安定性（Idempotence）
+- [x] `nfr-design-patterns.md`パターン6に従い、軽量プロパティ（text_passthrough/escape_roundtrip/section_complement/array_repeat）はデフォルト256ケース、重いプロパティ（section_nesting/partial_recursion_guard/directory_resolver_idempotence）は64ケースに設定
+- [x] `cargo test --test proptest`で7件全て成功を確認
 
 ### Step 10: Documentation Generation
 - [ ] `src/lib.rs`のクレートレベルdocコメントに使用例（`Mustache::new().render_str(...)`）を記載
