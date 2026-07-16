@@ -238,3 +238,11 @@
 **Context**: CONSTRUCTION - NFR Requirements (core-engine, Step 6)
 
 ---
+
+## NFR Requirements (core-engine) - Approved
+**Timestamp**: 2026-07-16T20:55:00Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "core-engineユニットのNFR Requirements成果物（nfr-requirements.md, tech-stack-decisions.md）が承認された。NFR Requirementsステージ（core-engine）を完了とし、NFR Design（core-engine）に移行する。"
+**Context**: CONSTRUCTION - NFR Requirements (core-engine, approval) → NFR Design (core-engine, start)
+
+---

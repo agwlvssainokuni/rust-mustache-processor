@@ -10,7 +10,7 @@
 - [x] Step 6: NFR成果物生成
   - [x] `nfr-requirements.md`
   - [x] `tech-stack-decisions.md`
-- [ ] Step 7-9: 完了メッセージ提示・承認待ち・記録
+- [x] Step 7-9: 完了メッセージ提示・承認待ち・記録
 
 ## 前提（requirements.mdより引き継ぎ、質問不要）
 
