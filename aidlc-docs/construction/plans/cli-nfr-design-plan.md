@@ -14,10 +14,10 @@
 
 ## Plan Checklist
 
-- [ ] Step 1: NFR Requirements成果物の分析（本ファイル作成）
-- [ ] Step 2-4: 未決定論点の洗い出し・質問提示（本ファイル）
-- [ ] Step 5: ユーザー回答収集・曖昧さ分析
-- [ ] Step 6: NFR設計成果物生成（nfr-design-patterns.md, logical-components.md）
+- [x] Step 1: NFR Requirements成果物の分析（本ファイル作成）
+- [x] Step 2-4: 未決定論点の洗い出し・質問提示（本ファイル）
+- [x] Step 5: ユーザー回答収集・曖昧さ分析（Q1=B、推奨通り。曖昧・矛盾なし）
+- [x] Step 6: NFR設計成果物生成（nfr-design-patterns.md, logical-components.md）
 - [ ] Step 7-9: 完了メッセージ提示・承認待ち・記録
 
 ## 決定が必要な論点（質問）
@@ -32,4 +32,6 @@ B) 中核ロジックを`run_inner(argv) -> Result<(), CliError>`のような内
 
 C) Other（[Answer]: タグの下に詳細を記載）
 
-[Answer]:
+[Answer]: B
+
+**理由**: `ExitCode`型は内部状態を比較できる形で公開されておらず、`run(argv) -> ExitCode`単体では「どの引数の組み合わせでどのエラーが発生したか」をユニットテストで直接検証できない。中核ロジックを`Result<(), CliError>`を返す内部関数として実装しておけば、`assert!(matches!(result, Err(CliError::Args(...))))`のような形でユニットテスト・プロパティベーステスト双方から検証しやすくなる。公開シグネチャ`run(argv) -> ExitCode`自体は変更せず、その内部で`Result`ベースの関数を呼び出し、stderr出力とExitCode変換を行う薄いラッパーとして維持するため、Application Design時点の設計とも矛盾しない。

@@ -494,3 +494,18 @@
 **Context**: CONSTRUCTION - NFR Design (cli, Part 1 Planning, presented)
 
 ---
+
+## NFR Design (cli) - Question Answered with Rationale
+**Timestamp**: 2026-07-17T00:35:00Z
+**User Input**: "各質問の推奨とその理由を教えてください。" / "全て推奨通りとします。"
+**AI Response**: "Q1=B（run_inner(argv) -> Result<(), CliError>の内部関数＋run(argv) -> ExitCodeの薄いラッパー）を推奨通りに記録。理由をcli-nfr-design-plan.mdに追記。曖昧・矛盾なし。"
+**Context**: CONSTRUCTION - NFR Design (cli, Part 1 Planning, Step 5)
+
+---
+
+## NFR Design (cli) - Artifacts Generated
+**Timestamp**: 2026-07-17T00:38:00Z
+**AI Response**: "aidlc-docs/construction/cli/nfr-design/配下にnfr-design-patterns.md（Resilience/Scalability/SecurityはN/A、パターン1: Result-based Core Logic、パターン2: Atomic Output Buffering、パターン3: Per-Template Partial Resolver Construction、パターン4: Unified CliError with Display）、logical-components.md（CliErrorのFrom実装群、run_inner/runの実装スケッチ）を生成。"
+**Context**: CONSTRUCTION - NFR Design (cli, Step 6)
+
+---
