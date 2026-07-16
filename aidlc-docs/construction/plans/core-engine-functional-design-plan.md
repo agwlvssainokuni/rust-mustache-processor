@@ -11,7 +11,7 @@
   - [x] `business-logic-model.md`（Testable Properties [PBT-01] を含む）
   - [x] `business-rules.md`
   - [x] `domain-entities.md`
-- [ ] Step 7-9: 完了メッセージ提示・承認待ち・記録
+- [x] Step 7-9: 完了メッセージ提示・承認待ち・記録
 
 ## 前提（公式spec準拠、質問不要）
 

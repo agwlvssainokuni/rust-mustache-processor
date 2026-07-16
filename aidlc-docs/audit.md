@@ -208,3 +208,11 @@
 **Context**: CONSTRUCTION - Functional Design (core-engine, Step 6)
 
 ---
+
+## Functional Design (core-engine) - Approved
+**Timestamp**: 2026-07-16T20:45:00Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "core-engineユニットのFunctional Design成果物（domain-entities.md, business-rules.md, business-logic-model.md）が承認された。Functional Designステージ（core-engine）を完了とし、NFR Requirements（core-engine）に移行する。"
+**Context**: CONSTRUCTION - Functional Design (core-engine, approval) → NFR Requirements (core-engine, start)
+
+---

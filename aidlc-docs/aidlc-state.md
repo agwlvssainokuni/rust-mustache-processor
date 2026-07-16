@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Greenfield
 - **Start Date**: 2026-07-16T18:48:00Z
-- **Current Stage**: CONSTRUCTION - Functional Design (core-engine)
+- **Current Stage**: CONSTRUCTION - NFR Requirements (core-engine)
 
 ## Workspace State
 - **Existing Code**: Yes (minimal scaffold only — `cargo init`のデフォルト雛形、ビジネスロジックなし)
@@ -44,8 +44,8 @@
 ### 🟢 CONSTRUCTION PHASE
 
 #### ユニット: core-engine
-- [ ] Functional Design — EXECUTE（進行中）
-- [ ] NFR Requirements — EXECUTE（未着手）
+- [x] Functional Design — 成果物生成完了、承認済み
+- [ ] NFR Requirements — EXECUTE（進行中）
 - [ ] NFR Design — EXECUTE（未着手）
 - [ ] Infrastructure Design — SKIP（クラウドインフラなし）
 - [ ] Code Generation — EXECUTE（未着手）
@@ -64,6 +64,6 @@
 
 ## Current Status
 - **Lifecycle Phase**: CONSTRUCTION
-- **Current Stage**: Functional Design（ユニット: core-engine）
-- **Next Stage**: NFR Requirements（core-engine）
+- **Current Stage**: NFR Requirements（ユニット: core-engine）
+- **Next Stage**: NFR Design（core-engine）
 - **Status**: 進行中
