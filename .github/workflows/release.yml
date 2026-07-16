@@ -12,8 +12,24 @@ permissions:
 jobs:
   verify-version:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.resolve.outputs.version }}
     steps:
-      - run: echo "TODO Step 2"
+      - uses: actions/checkout@v4
+
+      - name: Resolve and verify version
+        id: resolve
+        shell: bash
+        run: |
+          cargo_version=$(grep -m1 '^version' Cargo.toml | sed -E 's/version *= *"([^"]+)"/\1/')
+          if [ "${{ github.ref_type }}" = "tag" ]; then
+            tag_version="${GITHUB_REF_NAME#v}"
+            if [ "$tag_version" != "$cargo_version" ]; then
+              echo "::error::Tag version ($tag_version) does not match Cargo.toml version ($cargo_version)"
+              exit 1
+            fi
+          fi
+          echo "version=$cargo_version" >> "$GITHUB_OUTPUT"
 
   test:
     needs: verify-version
