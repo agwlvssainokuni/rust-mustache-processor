@@ -54,6 +54,6 @@
 
 ## Current Status
 - **Lifecycle Phase**: INCEPTION
-- **Current Stage**: Units Generation（進行中）
+- **Current Stage**: Units Generation Part 2（Generation、進行中）
 - **Next Stage**: Functional Design（core-engineユニットから）
 - **Status**: 進行中

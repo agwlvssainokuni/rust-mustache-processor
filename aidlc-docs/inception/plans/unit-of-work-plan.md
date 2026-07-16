@@ -11,8 +11,8 @@
 - [x] Step 3-4: 決定が必要な論点を洗い出し、質問として本ファイルに埋め込み
 - [x] Step 5-6: ユーザーからの回答収集（Q1=A, Q2=A、いずれも推奨通り）
 - [x] Step 7-8: 回答の曖昧さ分析・フォローアップ（曖昧・矛盾なし、フォローアップ不要）
-- [ ] Step 9: 承認依頼
-- [ ] Step 10-11: 承認ログ記録・状態更新
+- [x] Step 9: 承認依頼
+- [x] Step 10-11: 承認ログ記録・状態更新
 
 ### Part 2 — Generation
 - [ ] `aidlc-docs/inception/application-design/unit-of-work.md` 生成（ユニット定義・コード構成方針を含む）
