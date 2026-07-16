@@ -66,12 +66,12 @@
 
 Operations PHASEに具体的なステップが定義されていないため、軽量なAI-DLCユニットとして別途進行中。
 
-- [x] Requirements Analysis — release-automation-requirements.md承認待ち
-- [ ] Application/Functional Design（軽量） — 未着手
+- [x] Requirements Analysis — release-automation-requirements.md承認済み
+- [x] Infrastructure Design（軽量） — infrastructure-design.md生成完了、承認待ち
 - [ ] Code Generation — 未着手
 
 ## Current Status
-- **Lifecycle Phase**: OPERATIONS（既存2ユニットは完了）／release-automationユニットはINCEPTION中
-- **Current Stage**: release-automation — Requirements Analysis（承認待ち）
-- **Next Stage**: release-automation — 軽量設計（Application/Functional Design相当）
-- **Status**: core-engine/cliのCONSTRUCTION PHASE完了。release-automationユニットは要件定義段階
+- **Lifecycle Phase**: OPERATIONS（既存2ユニットは完了）／release-automationユニットはCONSTRUCTION中
+- **Current Stage**: release-automation — Infrastructure Design（承認待ち）
+- **Next Stage**: release-automation — Code Generation
+- **Status**: core-engine/cliのCONSTRUCTION PHASE完了。release-automationユニットは設計段階

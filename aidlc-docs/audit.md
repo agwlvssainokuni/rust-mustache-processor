@@ -666,3 +666,18 @@
 **Context**: New Unit: release-automation — Requirements Analysis（ドキュメント生成、承認待ち）
 
 ---
+
+## Requirements Analysis (release-automation) - Approved
+**Timestamp**: 2026-07-17T02:25:00Z
+**User Input**: "Approve & Continue"
+**AI Response**: "release-automation-requirements.mdが承認された。軽量な設計ステージ（Infrastructure Design相当、ワークフロー構成の設計）に進む。"
+**Context**: New Unit: release-automation — Requirements Analysis（承認） → Infrastructure Design（開始）
+
+---
+
+## Infrastructure Design (release-automation) - Generated
+**Timestamp**: 2026-07-17T02:30:00Z
+**AI Response**: "aidlc-docs/construction/release-automation/infrastructure-design/infrastructure-design.mdを生成。ジョブ構成（verify-version→test→buildマトリクス4ターゲット→release）、GitHub-hostedランナーのネイティブビルドによりcross等の追加ツール不要である点、dtolnay/rust-toolchain・softprops/action-gh-releaseの採用理由、contents: write権限の必要性を記録。"
+**Context**: New Unit: release-automation — Infrastructure Design（成果物生成、承認待ち）
+
+---
