@@ -619,3 +619,186 @@ impl SerializeStructVariant for MapSerializer {
         Ok(finish_map(self.map, self.variant))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde::Serialize;
+
+    #[test]
+    fn is_truthy_null_and_bool() {
+        assert!(!Value::Null.is_truthy());
+        assert!(!Value::Bool(false).is_truthy());
+        assert!(Value::Bool(true).is_truthy());
+    }
+
+    #[test]
+    fn is_truthy_array() {
+        assert!(!Value::Array(vec![]).is_truthy());
+        assert!(Value::Array(vec![Value::Null]).is_truthy());
+    }
+
+    #[test]
+    fn is_truthy_empty_string_and_empty_map_are_truthy() {
+        // BR-2.1〜BR-2.4: 公式spec準拠で空文字列・空Mapはtruthy
+        assert!(Value::String(String::new()).is_truthy());
+        assert!(Value::Map(Map::new()).is_truthy());
+    }
+
+    #[test]
+    fn is_truthy_numbers_including_zero() {
+        // 0も0.0も非0の数値と同様に真として扱う
+        assert!(Value::Integer(0).is_truthy());
+        assert!(Value::Float(0.0).is_truthy());
+        assert!(Value::Integer(-1).is_truthy());
+    }
+
+    #[test]
+    fn get_on_map_and_non_map() {
+        let mut map = Map::new();
+        map.insert("k", Value::Integer(1));
+        let v = Value::Map(map);
+        assert_eq!(v.get("k"), Some(&Value::Integer(1)));
+        assert_eq!(v.get("missing"), None);
+        assert_eq!(Value::Integer(1).get("k"), None);
+    }
+
+    #[test]
+    fn iter_on_array_and_non_array() {
+        let v = Value::Array(vec![Value::Integer(1), Value::Integer(2)]);
+        let collected: Vec<&Value> = v.iter().unwrap().collect();
+        assert_eq!(collected, vec![&Value::Integer(1), &Value::Integer(2)]);
+        assert!(Value::Integer(1).iter().is_none());
+    }
+
+    #[test]
+    fn map_preserves_insertion_order() {
+        let mut map = Map::new();
+        map.insert("z", Value::Integer(1));
+        map.insert("a", Value::Integer(2));
+        map.insert("m", Value::Integer(3));
+        let keys: Vec<&str> = map.iter().map(|(k, _)| k).collect();
+        assert_eq!(keys, vec!["z", "a", "m"]);
+    }
+
+    #[test]
+    fn map_insert_overwrites_existing_key_without_reordering() {
+        let mut map = Map::new();
+        map.insert("a", Value::Integer(1));
+        map.insert("b", Value::Integer(2));
+        let old = map.insert("a", Value::Integer(99));
+        assert_eq!(old, Some(Value::Integer(1)));
+        let keys: Vec<&str> = map.iter().map(|(k, _)| k).collect();
+        assert_eq!(keys, vec!["a", "b"]);
+        assert_eq!(map.get("a"), Some(&Value::Integer(99)));
+    }
+
+    #[derive(Serialize)]
+    struct Person {
+        name: String,
+        age: u32,
+        active: bool,
+        nickname: Option<String>,
+    }
+
+    #[test]
+    fn from_serialize_struct() {
+        let person = Person {
+            name: "Alice".to_string(),
+            age: 30,
+            active: true,
+            nickname: None,
+        };
+        let value = Value::from_serialize(&person).unwrap();
+        match value {
+            Value::Map(map) => {
+                assert_eq!(map.get("name"), Some(&Value::String("Alice".to_string())));
+                assert_eq!(map.get("age"), Some(&Value::Integer(30)));
+                assert_eq!(map.get("active"), Some(&Value::Bool(true)));
+                assert_eq!(map.get("nickname"), Some(&Value::Null));
+            }
+            other => panic!("expected Map, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn from_serialize_primitives() {
+        assert_eq!(Value::from_serialize(&42i32).unwrap(), Value::Integer(42));
+        assert_eq!(Value::from_serialize(&1.5f64).unwrap(), Value::Float(1.5));
+        assert_eq!(
+            Value::from_serialize(&"hi").unwrap(),
+            Value::String("hi".to_string())
+        );
+        assert_eq!(Value::from_serialize(&true).unwrap(), Value::Bool(true));
+    }
+
+    #[test]
+    fn from_serialize_vec() {
+        let v = vec![1, 2, 3];
+        let value = Value::from_serialize(&v).unwrap();
+        assert_eq!(
+            value,
+            Value::Array(vec![
+                Value::Integer(1),
+                Value::Integer(2),
+                Value::Integer(3),
+            ])
+        );
+    }
+
+    #[test]
+    fn from_serialize_map() {
+        let mut m = std::collections::BTreeMap::new();
+        m.insert("x", 1);
+        m.insert("y", 2);
+        let value = Value::from_serialize(&m).unwrap();
+        match value {
+            Value::Map(map) => {
+                assert_eq!(map.get("x"), Some(&Value::Integer(1)));
+                assert_eq!(map.get("y"), Some(&Value::Integer(2)));
+            }
+            other => panic!("expected Map, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn from_serialize_option_some() {
+        let v: Option<i32> = Some(5);
+        assert_eq!(Value::from_serialize(&v).unwrap(), Value::Integer(5));
+    }
+
+    #[test]
+    fn from_serialize_nested_struct() {
+        #[derive(Serialize)]
+        struct Outer {
+            items: Vec<Person>,
+        }
+        let outer = Outer {
+            items: vec![Person {
+                name: "Bob".to_string(),
+                age: 20,
+                active: false,
+                nickname: Some("B".to_string()),
+            }],
+        };
+        let value = Value::from_serialize(&outer).unwrap();
+        match value {
+            Value::Map(map) => match map.get("items") {
+                Some(Value::Array(items)) => {
+                    assert_eq!(items.len(), 1);
+                    match &items[0] {
+                        Value::Map(inner) => {
+                            assert_eq!(
+                                inner.get("nickname"),
+                                Some(&Value::String("B".to_string()))
+                            );
+                        }
+                        other => panic!("expected Map, got {other:?}"),
+                    }
+                }
+                other => panic!("expected Array, got {other:?}"),
+            },
+            other => panic!("expected Map, got {other:?}"),
+        }
+    }
+}

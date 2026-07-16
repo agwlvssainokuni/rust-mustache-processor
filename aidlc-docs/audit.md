@@ -321,6 +321,13 @@
 
 ---
 
+## Code Generation (core-engine) - Step 7 Completed
+**Timestamp**: 2026-07-16T22:25:00Z
+**AI Response**: "Step7（ユニットテスト）完了。parser.rs（17件）・renderer.rs（21件）・partial.rs（2件）・lib.rs（5件）はStep3〜6で前倒し実施済みだったため、本Stepでは残っていたvalue.rsのユニットテスト14件（is_truthy各パターン、get/iter、Map挿入順序保持と上書き、from_serialize: プリミティブ/struct/Vec/BTreeMap/Option/ネスト構造）を実装。cargo test --libでライブラリ全体59件が成功することを確認。"
+**Context**: CONSTRUCTION - Code Generation (core-engine, Part 2 Generation, Step 7)
+
+---
+
 ## Code Generation (core-engine) - Step 5 Completed
 **Timestamp**: 2026-07-16T22:00:00Z
 **AI Response**: "Step5（PartialResolver/DirectoryPartialResolver）完了。PartialResolverトレイトはStep4でRendererが依存するため先行作成済みだったため、本Stepで`DirectoryPartialResolver`（base_dir配下の`{name}.mustache`を読み込み、component-methods.md準拠でOption<String>を返す）を実装。ユニットテスト2件（存在するファイルの解決、存在しないファイルでNone）で動作確認。"

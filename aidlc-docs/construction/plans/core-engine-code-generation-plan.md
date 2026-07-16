@@ -67,9 +67,11 @@ Functional Designの`domain-entities.md`はValue型を`Integer`/`Float`/`HashMap
 **実装時の追加補正（要記録）**: `Cargo.toml`の`[lib]`セクションにライブラリ名を指定していなかったため、パッケージ名`rust-mustache-processor`由来の既定クレート名`rust_mustache_processor`になっていた。doctestで利用しやすい名前とするため`name = "mustache_processor"`を明示した（Step1のCargo.toml内容への軽微な追加補正）。
 
 ### Step 7: Business Logic Unit Testing
-- [ ] `value.rs`内に`#[cfg(test)]`ユニットテスト（is_truthy各パターン、get/iter、from_serialize）
-- [ ] `parser.rs`内に`#[cfg(test)]`ユニットテスト（各タグ種別、デリミタ変更、スタンドアロントリミング、構文エラー）
-- [ ] `renderer.rs`内に`#[cfg(test)]`ユニットテスト（エスケープ、セクション各パターン、strictモード、パーシャル未解決/循環/深度超過）
+- [x] `value.rs`内に`#[cfg(test)]`ユニットテスト14件（is_truthy各パターン、get/iter、Map挿入順序、from_serialize: プリミティブ/struct/Vec/Map/Option/ネスト構造）
+- [x] `parser.rs`内に`#[cfg(test)]`ユニットテスト17件（各タグ種別、デリミタ変更、スタンドアロントリミング、構文エラー）— Step3で前倒し実施済み
+- [x] `renderer.rs`内に`#[cfg(test)]`ユニットテスト21件（エスケープ、セクション各パターン、strictモード、パーシャル未解決/循環/深度超過）— Step4で前倒し実施済み
+- [x] `lib.rs`内に統合テスト5件（render_str/parse+render再利用/エラー伝播/PartialResolver連携）、`partial.rs`内にユニットテスト2件 — Step5/6で前倒し実施済み
+- [x] `cargo test --lib`で全59件成功を確認
 
 ### Step 8: Spec Conformance Test Generation
 - [ ] 公式mustache/specリポジトリ（`https://github.com/mustache/spec`）より必須モジュール（comments, delimiters, interpolation, inverted, partials, sections）のJSON定義を取得し`tests/spec/fixtures/`に配置
