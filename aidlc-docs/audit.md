@@ -433,3 +433,12 @@
 **Context**: CONSTRUCTION - Functional Design (cli, Part 1 Planning, Q5, 質問回答フェーズ完了)
 
 ---
+
+## Functional Design (cli) - Data Argument Conflict Discovered and Resolved
+**Timestamp**: 2026-07-16T23:59:30Z
+**AI Response**: "domain-entities.md作成準備中、テンプレートを複数位置引数（Vec<PathBuf>）にしたことで、FR-5が本来許容していた「データファイルを位置引数で指定」との両立が困難（clapで位置引数の何番目がテンプレートか判別不能）と判明。ユーザーに選択肢（--dataフラグ新設 / データは標準入力のみに制限）を提示。"
+**User Input**: "--dataフラグを新設（推奨）"
+**AI Response**: "データファイルは--data <file>フラグで指定する方式に確定。未指定時は従来通り標準入力がデフォルト。cli-functional-design-plan.mdのQuestion 1・前提セクションに補正として記録。"
+**Context**: CONSTRUCTION - Functional Design (cli, Part 1 Planning, 追加補正)
+
+---
