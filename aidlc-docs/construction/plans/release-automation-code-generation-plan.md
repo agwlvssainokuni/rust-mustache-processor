@@ -32,3 +32,10 @@
 - ドキュメントサマリーが生成されていること
 
 このプランがrelease-automationユニットのCode Generationにおける単一の情報源（single source of truth）である。
+
+## 承認後の追加補正（要記録）
+
+Code Generation承認後、`v0.1.0`タグによる初回リリース実行で以下の問題を発見し、修正した（詳細は`aidlc-docs/construction/release-automation/code/summary.md`参照）:
+
+- Node.js 20非推奨警告への対応として、使用アクションのバージョンを更新（`actions/checkout@v4→v7`等）
+- `macos-13`ランナーのビルドジョブが進行しない事象を確認し、macOS x86_64ターゲットをビルドマトリクスから削除（対象を3プラットフォームに変更）

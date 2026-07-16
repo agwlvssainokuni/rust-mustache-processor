@@ -10,11 +10,9 @@
 flowchart LR
     A[verify-version\nタグ名とCargo.toml versionの一致検証] --> B[test\ncargo test]
     B --> C1[build linux-x86_64]
-    B --> C2[build macos-x86_64]
     B --> C3[build macos-aarch64]
     B --> C4[build windows-x86_64]
     C1 --> D[release\nGitHub Release作成 + 全アセット添付]
-    C2 --> D
     C3 --> D
     C4 --> D
 ```
@@ -35,9 +33,10 @@ GitHub-hosted runnerはターゲットにネイティブ対応しているため
 | ターゲット | Runner | target triple |
 |---|---|---|
 | Linux x86_64 | `ubuntu-latest` | `x86_64-unknown-linux-gnu` |
-| macOS x86_64 | `macos-13`（Intel） | `x86_64-apple-darwin` |
 | macOS aarch64 | `macos-14`（Apple Silicon） | `aarch64-apple-darwin` |
 | Windows x86_64 | `windows-latest` | `x86_64-pc-windows-msvc` |
+
+macOS x86_64（`x86_64-apple-darwin`／`macos-13`）は対象外（「実装時の追加補正」参照）。
 
 各ジョブで以下を実施:
 1. `dtolnay/rust-toolchain@stable`でツールチェインをセットアップ（`actions-rs/toolchain`は現在メンテナンスされていないため不採用）
@@ -79,3 +78,5 @@ on:
 ## 実装時の追加補正（要記録）
 
 - **releaseジョブに`if: github.ref_type == 'tag'`を追加**（Code Generation Step 5）: `workflow_dispatch`（手動起動）はタグを伴わないブランチ実行もあり得るため、その場合はビルド検証のみに留め、意図しないリリース作成（タグ不在での実行）を防ぐ。FR-2（手動起動対応）はビルド・テストの動作確認用途として維持しつつ、リリース作成自体はタグpush時のみに限定した。
+- **使用アクションをNode.js 24対応版へ更新**（`v0.1.0`実リリース実行時）: `actions/checkout@v4→v7`, `actions/upload-artifact@v4→v7`, `actions/download-artifact@v4→v8`, `softprops/action-gh-release@v2→v3`。詳細は`aidlc-docs/construction/release-automation/code/summary.md`参照。
+- **macOS x86_64（`x86_64-apple-darwin`／`macos-13`）ターゲットを削除**（`v0.1.0`実リリース実行時）: `macos-13`ランナーのジョブが長時間キューから進行せずcancelledとなる事象を確認。ユーザー指示によりビルドマトリクスから削除し、対象を3プラットフォーム（Linux x86_64・macOS aarch64・Windows x86_64）に変更した。

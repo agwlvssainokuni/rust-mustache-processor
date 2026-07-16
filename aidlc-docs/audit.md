@@ -791,3 +791,11 @@
 **User Input**: "今すぐ最新バージョンに更新する（推奨）"
 **AI Response**: "release.yml内のアクションバージョンを更新: actions/checkout@v4→v7, actions/upload-artifact@v4→v7, actions/download-artifact@v4→v8, softprops/action-gh-release@v2→v3。dtolnay/rust-toolchain@stableはブランチ追従のため変更なし。YAML構文検証OK。summary.mdに補正内容を追記。この修正は実行中のv0.1.0リリースには影響せず、次回タグpushから適用される。"
 **Context**: New Unit: release-automation — Code Generation（アクションバージョン補正、追加コミット）
+
+---
+
+## Ad-hoc Request: v0.1.0再実行のためmacOS x86_64を除外
+**Timestamp**: 2026-07-17T04:10:00Z
+**User Input**: "macos-13 が終わらないので除外。"
+**AI Response**: "v0.1.0の初回リリース実行でmacos-13ランナーのビルドジョブがキューから進行せず、最終的にcancelledとなったことを確認（GitHub Releasesは未作成のまま）。ユーザー指示によりbuildジョブのマトリクスからmacos-13/x86_64-apple-darwinエントリを削除。release-automation-requirements.md（FR-3、対象外事項、実装時の追加補正）、infrastructure-design.md（ジョブ構成図、ターゲット表、実装時の追加補正）、release-automation-code-generation-plan.md（承認後の追加補正）、summary.md、README.md/README.en.mdの対応プラットフォーム記載を全て3プラットフォーム（Linux x86_64・macOS aarch64・Windows x86_64）に修正。"
+**Context**: New Unit: release-automation — macOS x86_64ターゲット削除（設計・要件の補正）
