@@ -53,9 +53,9 @@
 #### ユニット: cli
 - [x] Functional Design — 成果物生成完了、承認済み
 - [x] NFR Requirements — 成果物生成完了、承認済み
-- [ ] NFR Design — EXECUTE（進行中）
+- [x] NFR Design — 成果物生成完了、承認済み
 - [ ] Infrastructure Design — SKIP（クラウドインフラなし）
-- [ ] Code Generation — EXECUTE（未着手）
+- [ ] Code Generation — EXECUTE（進行中）
 
 - [ ] Build and Test — EXECUTE（全ユニット完了後、常時）
 
@@ -64,6 +64,6 @@
 
 ## Current Status
 - **Lifecycle Phase**: CONSTRUCTION
-- **Current Stage**: NFR Design（ユニット: cli）
-- **Next Stage**: Code Generation（cli）
+- **Current Stage**: Code Generation（ユニット: cli）
+- **Next Stage**: Build and Test
 - **Status**: 進行中

@@ -509,3 +509,11 @@
 **Context**: CONSTRUCTION - NFR Design (cli, Step 6)
 
 ---
+
+## NFR Design (cli) - Approved
+**Timestamp**: 2026-07-17T00:40:00Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: "cliユニットのNFR Design成果物（nfr-design-patterns.md, logical-components.md）が承認された。NFR Designステージ（cli）を完了とし、Code Generation（cli）に移行する。"
+**Context**: CONSTRUCTION - NFR Design (cli, approval) → Code Generation (cli, start)
+
+---
