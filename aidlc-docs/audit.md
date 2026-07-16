@@ -109,3 +109,18 @@
 **Context**: "Application Design・Units Generation（2ユニット: core-engine, cli）をEXECUTE、User Stories・Infrastructure DesignをSKIPと判定。Construction PhaseはFunctional Design/NFR Requirements/NFR Designを各ユニットでEXECUTE。Code Generation・Build and Testは常時EXECUTE。"
 
 ---
+
+## Workflow Planning - Approved
+**Timestamp**: 2026-07-16T19:49:00Z
+**User Input**: "承認します。Application Designに進めてください。"
+**AI Response**: "execution-plan.mdが承認された。Workflow Planningステージを完了とし、Application Designステージに移行する。"
+**Context**: INCEPTION - Workflow Planning (approval) → Application Design (start)
+
+---
+
+## Application Design - Plan and Questions Presented
+**Timestamp**: 2026-07-16T19:52:00Z
+**AI Response**: "aidlc-docs/inception/plans/application-design-plan.mdを作成。core-engine/cliの2ユニット構成を前提に、公開API形状・パーシャル解決の抽象化レベル・パーシャル未解決時のエラータイミング・JSON/YAMLパースの配置・エラー型の粒度の5問を設計判断のための質問として提示。回答待ち。"
+**Context**: INCEPTION - Application Design (Step 5-6, Gate)
+
+---
