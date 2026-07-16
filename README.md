@@ -113,8 +113,10 @@ Options:
 
 ```toml
 [dependencies]
-mustache_processor = { path = "../rust-mustache-processor" }
+mustache_processor = { path = "../rust-mustache-processor", default-features = false }
 ```
+
+`default-features = false`を指定すると、CLI専用の依存（`clap`/`serde_json`/`serde_norway`）を含まない最小限の依存関係（`serde`のみ）でライブラリを利用できます。指定しない場合はデフォルトの`cli` featureが有効になり、これらも推移的に含まれます。
 
 ```rust
 use mustache_processor::Mustache;

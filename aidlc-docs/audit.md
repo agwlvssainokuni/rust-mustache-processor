@@ -806,3 +806,27 @@
 **Timestamp**: 2026-07-17T04:15:00Z
 **AI Response**: "既存のv0.1.0タグ（macos-13を含む旧構成でのcancelled実行）をリモート・ローカルから削除し、修正済みコミットをmainにpush後、v0.1.0タグを作り直して再push（run ID: 29522971431）。verify-version/test/build（linux, macos-aarch64, windows）/releaseの全ジョブが成功。GitHub Release「mustache 0.1.0」が実際に作成され、3プラットフォーム分のアーカイブ（mustache-0.1.0-x86_64-unknown-linux-gnu.tar.gz, mustache-0.1.0-aarch64-apple-darwin.tar.gz, mustache-0.1.0-x86_64-pc-windows-msvc.zip）がアセットとして添付されたことをGitHub API経由で確認した。"
 **Context**: New Unit: release-automation — v0.1.0リリース完了（実地検証成功）
+
+---
+
+## Ad-hoc Request: ライブラリ利用者の推移的依存最小化
+**Timestamp**: 2026-07-17T04:30:00Z
+**User Input**: "他のプログラムがライブラリとして使う時に、推移的依存を最小限にしたいのだけれど、そうなっていますか？"
+**AI Response**: "`cargo build --lib`実測で、単一パッケージのlib/bin共有`[dependencies]`構成によりclapがライブラリビルドにも含まれてしまうことを確認・報告。修正案（clap/serde_json/serde_norwayをoptional化しcli featureにゲート）を提示。AI-DLCプロセス上の位置づけ（新規ユニットではなく、core-engineの既承認Code Generationへの事後補正、serde_yaml非推奨対応と同じパターン）を説明した。"
+**Context**: 既存ユニット補正 — core-engine Cargo.toml依存関係の最小化
+
+---
+
+## Ad-hoc Request - Approved
+**Timestamp**: 2026-07-17T04:32:00Z
+**User Input**: "OKです" → "一つ伝え漏れていました。微修正ですので、パッチレベルを1上げてください。"
+**AI Response**: "Cargo.tomlのclap/serde_json/serde_norwayをoptional化し、cli feature（default = [\"cli\"]）でゲート。[[bin]]にrequired-features = [\"cli\"]を追加。パッケージversionを0.1.0→0.1.1にパッチアップ。cargo clean後の完全クリーンビルドで、cargo build --lib --no-default-featuresがclap/serde_json/serde_norway及びその推移的依存を一切コンパイルしないことを実測確認。cargo test（デフォルトfeature、119テスト実行単位）とcargo test --lib --no-default-features（lib単体72テスト）がいずれも成功することも確認。core-engineのtech-stack-decisions.mdとcode/summary.mdに補正内容を記録。"
+**Context**: 既存ユニット補正 — core-engine Cargo.toml依存関係最小化、v0.1.1
+
+---
+
+## Ad-hoc Request: README修正要否の確認
+**Timestamp**: 2026-07-17T04:33:00Z
+**User Input**: "念の為確認です。README の修正は不要ですか？"
+**AI Response**: "README.md/README.en.mdの「ライブラリとしての使い方」節が、featureゲート追加前の`[dependencies] mustache_processor = { path = ... }`のままだと、デフォルトのcli featureが有効になりclap等も付いてくることを確認。両ファイルに`default-features = false`指定の説明を追記した。"
+**Context**: 既存ユニット補正 — README追記（依存最小化の使い方明記）

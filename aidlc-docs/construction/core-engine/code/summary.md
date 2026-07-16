@@ -52,6 +52,15 @@
 4. **パーシャル内容自体の構文エラー**（Step4）: `RenderErrorKind::PartialParseError`を追加
 5. **公式spec conformanceによる7件の重大補正**（Step8）: 暗黙のイテレータ`{{.}}`、ドット区切り名前、複数タグ/`\r\n`を考慮したスタンドアロン判定の行単位化、スカラー真値セクションでのコンテキストプッシュ、パーシャル未解決のデフォルト空文字列化（strictモード時のみエラー）、パーシャル循環検出の削除（深度ガードのみに一本化）、パーシャルインデントの値展開前適用
 
+## 承認後の追加補正（v0.1.1、要記録）
+
+Code Generation承認後、ユーザーから「ライブラリ利用者の推移的依存を最小限にしたい」との要望を受け対応。詳細は`nfr-requirements/tech-stack-decisions.md`の該当節を参照。
+
+- `Cargo.toml`の`clap`/`serde_json`/`serde_norway`を`optional = true`にし、`cli` feature（`default = ["cli"]`）にゲート。`[[bin]]`に`required-features = ["cli"]`を追加
+- `cargo build --lib --no-default-features`のクリーンビルドで、ライブラリが`serde`系クレートのみに依存し`clap`等を一切コンパイルしないことを実測確認
+- パッケージversionを`0.1.0`→`0.1.1`にパッチアップ
+- README.md/README.en.mdの「ライブラリとしての使い方」節に`default-features = false`の指定方法と効果を追記
+
 ## 未対応・対象外
 
 - ラムダ、テンプレート継承等のオプションモジュール（FR-4/Q3=Bにより対象外）

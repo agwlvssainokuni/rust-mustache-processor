@@ -113,8 +113,10 @@ Options:
 
 ```toml
 [dependencies]
-mustache_processor = { path = "../rust-mustache-processor" }
+mustache_processor = { path = "../rust-mustache-processor", default-features = false }
 ```
+
+With `default-features = false`, the library depends only on `serde`, excluding the CLI-only dependencies (`clap`/`serde_json`/`serde_norway`). Without it, the default `cli` feature is enabled and those are pulled in transitively as well.
 
 ```rust
 use mustache_processor::Mustache;

@@ -24,6 +24,16 @@
   - 構造化されたテンプレート生成を伴う重いプロパティ（例: Parserの入れ子構造保存、パーシャル循環検出）: 64ケース程度に調整し、CI実行時間を抑制する（具体的な調整値はCode Generation時のテスト実装で確定する）
 - 失敗時のシード値はテスト出力に含める（`proptest`標準機能、追加設定不要）
 
+## ライブラリ利用者向け依存関係の最小化（v0.1.1、要記録）
+
+**背景**: 単一パッケージでlib（`mustache_processor`）とbin（`mustache`）を提供する構成では、`Cargo.toml`の`[dependencies]`テーブルがlib/bin両ターゲットで共有される。これにより、CLI専用の`clap`/`serde_json`/`serde_norway`が、ライブラリ利用者（`mustache_processor`をCargo依存として追加する他プロジェクト）にも推移的に伝播していた。`cargo build --lib`実測で、ライブラリのみをビルドしても`clap`が再コンパイルされることを確認し、問題として顕在化した。
+
+**対応**: `clap`/`serde_json`/`serde_norway`を`optional = true`にし、`cli` featureにまとめてゲート（`default = ["cli"]`）。`[[bin]]`に`required-features = ["cli"]`を追加。ライブラリ利用者は`mustache_processor = { version = "0.1", default-features = false }`と指定することで、`serde`（および`serde`の推移的依存である`serde_core`/`serde_derive`/`syn`/`quote`/`proc-macro2`/`unicode-ident`）のみに依存を絞れる。
+
+**検証**: `cargo clean`後の完全クリーンビルドで、`cargo build --lib --no-default-features`が`clap`/`clap_builder`/`clap_derive`/`clap_lex`/`anstream`等、`serde_json`、`serde_norway`（`indexmap`/`hashbrown`等含む）を一切コンパイルしないことを確認。`cargo build`（デフォルトfeature、`cli`込み）・`cargo test`（全119テスト実行単位）・`cargo test --lib --no-default-features`（lib単体72テスト）がいずれも成功することも確認済み。
+
+**バージョン**: この変更に伴いパッケージversionを`0.1.0`→`0.1.1`にパッチアップ。
+
 ## 除外した選択肢
 - ストリーミング出力用クレート（例: `io::Write`向けの追加抽象化）: Q1=AによりString返却のみで十分と判断したため導入しない
 - 正規表現エンジン（`regex`等）: Mustacheのタグ検出は単純な文字列走査で実装可能であり、正規表現は不要と判断
