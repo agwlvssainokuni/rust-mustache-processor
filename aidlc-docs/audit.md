@@ -918,3 +918,11 @@
 **User Input**: "OK"
 **AI Response**: "mustache-optional-modules-execution-plan.mdのFunctional Design項目に、承認前レビューで追加された設計項目（ネスト深度ガードの結線、Lambdaのtrait境界決定）を明記。実行計画を承認済みとしてFunctional Design（core-engineユニット）へ進行。"
 **Context**: INCEPTION PHASE — Workflow Planning（Mustacheオプションモジュール）承認完了、Functional Designへ移行
+
+---
+
+## Functional Design: 計画・質問作成
+**Timestamp**: 2026-07-30T00:40:00Z
+**User Input**: （承認済み実行計画を受けての自動進行、追加のユーザー入力なし）
+**AI Response**: "unit-of-work.md、既存business-rules.md/domain-entities.md、および実装済みソース（src/value.rs, src/ast.rs, src/error.rs, src/partial.rs）を確認しユニットコンテキストを分析。core-engine-mustache-optional-modules-functional-design-plan.mdを作成し、9問の設計論点（ラムダのRust関数シグネチャ、返り値の再パース方針、エスケープ規則、PartialEq/Clone実装方針、セクション生テキスト取得方式、継承の非$blockコンテンツ/単独$blockの扱い、動的名前解決の適用範囲）を提示。"
+**Context**: CONSTRUCTION PHASE — Functional Design（core-engine、Mustacheオプションモジュール）計画・質問作成完了
