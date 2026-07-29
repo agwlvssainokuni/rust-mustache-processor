@@ -926,3 +926,19 @@
 **User Input**: （承認済み実行計画を受けての自動進行、追加のユーザー入力なし）
 **AI Response**: "unit-of-work.md、既存business-rules.md/domain-entities.md、および実装済みソース（src/value.rs, src/ast.rs, src/error.rs, src/partial.rs）を確認しユニットコンテキストを分析。core-engine-mustache-optional-modules-functional-design-plan.mdを作成し、9問の設計論点（ラムダのRust関数シグネチャ、返り値の再パース方針、エスケープ規則、PartialEq/Clone実装方針、セクション生テキスト取得方式、継承の非$blockコンテンツ/単独$blockの扱い、動的名前解決の適用範囲）を提示。"
 **Context**: CONSTRUCTION PHASE — Functional Design（core-engine、Mustacheオプションモジュール）計画・質問作成完了
+
+---
+
+## Functional Design: 推奨理由の説明
+**Timestamp**: 2026-07-30T00:43:00Z
+**User Input**: "各質問の推奨とその理由を教えてください。"
+**AI Response**: "全9問について推奨案（すべてA）と理由をチャットで説明した。"
+**Context**: CONSTRUCTION PHASE — Functional Design（core-engine、Mustacheオプションモジュール）推奨理由の提示
+
+---
+
+## Functional Design - Approved
+**Timestamp**: 2026-07-30T00:44:00Z
+**User Input**: "全て推奨通りとします。"
+**AI Response**: "core-engine-mustache-optional-modules-functional-design-plan.mdの全9問にEditツールで回答（すべてA）と理由を直接記入した。矛盾・曖昧性なしと判定し、計画チェックリストのStep5を完了に更新。"
+**Context**: CONSTRUCTION PHASE — Functional Design（core-engine、Mustacheオプションモジュール）質問回答完了
