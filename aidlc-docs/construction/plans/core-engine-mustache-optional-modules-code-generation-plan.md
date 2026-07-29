@@ -10,11 +10,11 @@
 
 - [x] Step 1: 公式spec fixture取得（`~lambdas.json`, `~inheritance.json`, `~dynamic-names.json`をmustache/specリポジトリから取得し`tests/spec/fixtures/`に配置）
 - [x] Step 2: `Value::Lambda`実装（`src/value.rs`）
-- [ ] Step 3: AST拡張（`src/ast.rs`）
-- [ ] Step 4: パーサー拡張（`src/parser.rs`）
-- [ ] Step 5: レンダラー拡張 — ラムダ（`src/renderer.rs`）
-- [ ] Step 6: レンダラー拡張 — テンプレート継承（`src/renderer.rs`）
-- [ ] Step 7: レンダラー拡張 — 動的パーシャル名（`src/renderer.rs`）
+- [x] Step 3: AST拡張（`src/ast.rs`）
+- [x] Step 4: パーサー拡張（`src/parser.rs`）
+- [x] Step 5: レンダラー拡張 — ラムダ（`src/renderer.rs`）
+- [x] Step 6: レンダラー拡張 — テンプレート継承（`src/renderer.rs`）
+- [x] Step 7: レンダラー拡張 — 動的パーシャル名（`src/renderer.rs`）
 - [ ] Step 8: spec conformanceテスト統合・是正ループ（`tests/spec/`）
 - [ ] Step 9: ユニットテスト追加（`src/value.rs`, `src/renderer.rs`等の`#[cfg(test)]`）
 - [ ] Step 10: プロパティベーステスト追加（`tests/proptest/`）

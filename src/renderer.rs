@@ -14,8 +14,11 @@
 
 //! ASTを`Value`コンテキストに対して評価し、出力文字列を生成するレンダラー（非公開）。
 
-use crate::ast::{Node, SourcePosition};
-use crate::error::{RenderError, RenderErrorKind};
+use std::collections::HashMap;
+use std::rc::Rc;
+
+use crate::ast::{Node, PartialName, SourcePosition};
+use crate::error::{ParseError, RenderError, RenderErrorKind};
 use crate::partial::PartialResolver;
 use crate::value::Value;
 
@@ -53,18 +56,45 @@ pub(crate) fn render_nodes(
         match node {
             Node::Text(text) => out.push_str(text),
             Node::Variable { name, escape, pos } => {
-                render_variable(name, *escape, *pos, state, out)?;
+                render_variable(name, *escape, *pos, state, partial_resolver, out)?;
             }
             Node::Section {
                 name,
                 inverted,
                 children,
+                raw,
+                open,
+                close,
                 pos,
             } => {
-                render_section(name, *inverted, children, *pos, state, partial_resolver, out)?;
+                render_section(
+                    name,
+                    *inverted,
+                    children,
+                    raw,
+                    open,
+                    close,
+                    *pos,
+                    state,
+                    partial_resolver,
+                    out,
+                )?;
             }
             Node::Partial { name, indent, pos } => {
                 render_partial(name, indent, *pos, state, partial_resolver, out)?;
+            }
+            Node::Parent {
+                name,
+                children,
+                indent,
+                pos,
+            } => {
+                render_parent(name, children, indent, *pos, state, partial_resolver, out)?;
+            }
+            Node::Block { children, .. } => {
+                // BR-10.4: オーバーライド解決を経由しない場合（またはrender_parentでの
+                // 置換を既に済ませた後）、単に自身のchildrenを表示する。
+                render_nodes(children, state, partial_resolver, out)?;
             }
         }
     }
@@ -108,6 +138,7 @@ fn render_variable(
     escape: bool,
     pos: SourcePosition,
     state: &mut RenderState,
+    partial_resolver: Option<&dyn PartialResolver>,
     out: &mut String,
 ) -> Result<(), RenderError> {
     match resolve(state, name) {
@@ -122,6 +153,10 @@ fn render_variable(
                 ));
             }
         }
+        Some(Value::Lambda(f)) => {
+            let f = Rc::clone(f);
+            render_lambda_interpolation(&f, escape, pos, state, partial_resolver, out)?;
+        }
         Some(v) => {
             let rendered = stringify(v);
             if escape {
@@ -132,6 +167,49 @@ fn render_variable(
         }
     }
     Ok(())
+}
+
+/// ラムダのインターポレーション文脈での呼び出し（BR-9.1〜BR-9.4）。
+fn render_lambda_interpolation(
+    f: &Rc<dyn Fn(&str) -> String>,
+    escape: bool,
+    pos: SourcePosition,
+    state: &mut RenderState,
+    partial_resolver: Option<&dyn PartialResolver>,
+    out: &mut String,
+) -> Result<(), RenderError> {
+    // BR-9.2: インターポレーション文脈では空文字列を引数として呼び出す。
+    // BR-9.3b: 参照の都度呼び出す（キャッシュしない）。
+    let result = f("");
+    // BR-9.3: インターポレーション文脈は常にデフォルトデリミタで再パースする
+    // （crate::parser::parseは常にデフォルトデリミタから開始するため、そのまま利用できる）。
+    let nodes = crate::parser::parse(&result).map_err(|e| lambda_parse_error(pos, &e))?;
+    let mut rendered = String::new();
+    enter_depth(state, pos)?;
+    let render_result = render_nodes(&nodes, state, partial_resolver, &mut rendered);
+    state.depth -= 1;
+    render_result?;
+    // BR-9.4: 通常の変数展開と同じエスケープ規則を適用する。
+    if escape {
+        push_escaped(out, &rendered);
+    } else {
+        out.push_str(&rendered);
+    }
+    Ok(())
+}
+
+/// ラムダの返り値（再パース用に合成した文字列）内での`ParseError`の行・列は
+/// 実テンプレート上の位置として意味を持たないため、呼び出し元タグの位置（`pos`）を使う。
+fn lambda_parse_error(pos: SourcePosition, parse_err: &ParseError) -> RenderError {
+    RenderError {
+        kind: RenderErrorKind::PartialParseError {
+            name: "<lambda>".to_string(),
+            message: parse_err.message.clone(),
+        },
+        line: pos.line,
+        column: pos.column,
+        message: format!("failed to parse lambda output: {}", parse_err.message),
+    }
 }
 
 /// 値の文字列化（BR-1.3〜BR-1.8）。
@@ -193,6 +271,9 @@ fn render_section(
     name: &str,
     inverted: bool,
     children: &[Node],
+    raw: &str,
+    open: &str,
+    close: &str,
     pos: SourcePosition,
     state: &mut RenderState,
     partial_resolver: Option<&dyn PartialResolver>,
@@ -200,6 +281,8 @@ fn render_section(
 ) -> Result<(), RenderError> {
     let value = resolve(state, name);
     // BR-2.5: 未定義キーは単に偽として扱う（strictモードでもエラーにならない）。
+    // BR-9.5: ラムダは常にtruthy（is_truthyがtrueを返すため、逆セクションでは
+    // ここで非表示となり、呼び出しは発生しない）。
     let truthy = value.is_some_and(Value::is_truthy);
     let should_render = if inverted { !truthy } else { truthy };
 
@@ -208,6 +291,10 @@ fn render_section(
     }
 
     match value {
+        Some(Value::Lambda(f)) if !inverted => {
+            let f = Rc::clone(f);
+            render_lambda_section(&f, raw, open, close, pos, state, partial_resolver, out)?;
+        }
         Some(Value::Array(items)) if !inverted => {
             // BR-2.2: 配列は各要素をコンテキストにプッシュして繰り返す。
             for item in items {
@@ -243,14 +330,66 @@ fn render_section(
     Ok(())
 }
 
+/// ラムダのセクション文脈での呼び出し（BR-9.1〜BR-9.3）。
+#[allow(clippy::too_many_arguments)]
+fn render_lambda_section(
+    f: &Rc<dyn Fn(&str) -> String>,
+    raw: &str,
+    open: &str,
+    close: &str,
+    pos: SourcePosition,
+    state: &mut RenderState,
+    partial_resolver: Option<&dyn PartialResolver>,
+    out: &mut String,
+) -> Result<(), RenderError> {
+    // BR-9.2: セクション文脈ではセクション本体の生テキストを引数として呼び出す。
+    // BR-9.3b: 参照の都度呼び出す（キャッシュしない）。
+    let result = f(raw);
+    // BR-9.3: セクション文脈は、そのセクションタグが書かれた時点で有効だった
+    // デリミタで再パースする（インターポレーション文脈のデフォルトデリミタとは異なる）。
+    // crate::parser::parseは常にデフォルトデリミタから開始するため、デフォルト以外の
+    // デリミタで再パースするには、先頭にデリミタ変更タグを合成して付与する。
+    let synthetic;
+    let to_parse: &str = if open == "{{" && close == "}}" {
+        &result
+    } else {
+        synthetic = format!("{{{{={open} {close}=}}}}{result}");
+        &synthetic
+    };
+    let nodes = crate::parser::parse(to_parse).map_err(|e| lambda_parse_error(pos, &e))?;
+    enter_depth(state, pos)?;
+    let render_result = render_nodes(&nodes, state, partial_resolver, out);
+    state.depth -= 1;
+    render_result
+}
+
 fn render_partial(
-    name: &str,
+    name: &PartialName,
     indent: &str,
     pos: SourcePosition,
     state: &mut RenderState,
     partial_resolver: Option<&dyn PartialResolver>,
     out: &mut String,
 ) -> Result<(), RenderError> {
+    // BR-11.1/BR-11.2: 動的パーシャル名（`{{>* name}}`）はコンテキストから解決した
+    // 文字列をパーシャル名とする。非文字列・未定義はBR-5.2と同じ未解決パーシャル扱い。
+    let resolved_name: String = match name {
+        PartialName::Static(n) => n.clone(),
+        PartialName::Dynamic(var) => match resolve(state, var) {
+            Some(Value::String(s)) => s.clone(),
+            _ => {
+                if state.strict {
+                    return Err(mk_render_error(
+                        RenderErrorKind::PartialNotFound { name: var.clone() },
+                        pos,
+                    ));
+                }
+                return Ok(());
+            }
+        },
+    };
+    let name = resolved_name.as_str();
+
     // BR-5.1/BR-5.2: 遅延評価で解決する。公式spec準拠でデフォルト（非strict）は
     // 空文字列として継続し、strictモードでは検出目的でエラーとする
     // （リゾルバ未設定・名前未解決のいずれも同様に扱う）。
@@ -296,6 +435,136 @@ fn render_partial(
     let result = render_nodes(&nodes, state, partial_resolver, out);
     state.depth -= 1;
     result
+}
+
+/// テンプレート継承の親タグ（`{{<parent}}...{{/parent}}`）を解決・レンダリングする
+/// （BR-10.1〜BR-10.3、BR-10.6）。
+#[allow(clippy::too_many_arguments)]
+fn render_parent(
+    name: &str,
+    children: &[Node],
+    indent: &str,
+    pos: SourcePosition,
+    state: &mut RenderState,
+    partial_resolver: Option<&dyn PartialResolver>,
+    out: &mut String,
+) -> Result<(), RenderError> {
+    // BR-10.1: 親テンプレートの解決は既存のパーシャル解決と同じ仕組み・同じ挙動。
+    let content = match partial_resolver.and_then(|r| r.resolve(name)) {
+        Some(c) => c,
+        None => {
+            if state.strict {
+                return Err(mk_render_error(
+                    RenderErrorKind::PartialNotFound {
+                        name: name.to_string(),
+                    },
+                    pos,
+                ));
+            }
+            return Ok(());
+        }
+    };
+
+    // BR-10.6: インデントは値展開前の親テンプレート文字列自体に適用する（パーシャルと同様）。
+    let indented_content = if indent.is_empty() {
+        content
+    } else {
+        indent_source(&content, indent)
+    };
+
+    let parent_nodes = crate::parser::parse(&indented_content).map_err(|parse_err| RenderError {
+        kind: RenderErrorKind::PartialParseError {
+            name: name.to_string(),
+            message: parse_err.message.clone(),
+        },
+        line: parse_err.line,
+        column: parse_err.column,
+        message: format!("failed to parse parent '{name}': {}", parse_err.message),
+    })?;
+
+    // BR-10.2: 自身のchildren（Node::Blockのみ）からオーバーライドマップを構築し、
+    // 親の木の中の同名Node::Blockをオーバーライド内容に差し替える。
+    let overrides = build_block_overrides(children);
+    let substituted = substitute_blocks(&parent_nodes, &overrides);
+
+    // 多段継承（親がさらに別の親を継承する等）も既存のMAX_NESTING_DEPTHガードで
+    // 安全性を担保する。
+    enter_depth(state, pos)?;
+    let result = render_nodes(&substituted, state, partial_resolver, out);
+    state.depth -= 1;
+    result
+}
+
+/// `{{<parent}}`の直下の`Node::Block`のみを収集し、「ブロック名→差し替え内容」の
+/// マップを構築する（BR-10.2）。`Node::Block`以外の内容は無視する。
+fn build_block_overrides(children: &[Node]) -> HashMap<String, Vec<Node>> {
+    let mut overrides = HashMap::new();
+    for child in children {
+        if let Node::Block { name, children, .. } = child {
+            overrides.insert(name.clone(), children.clone());
+        }
+    }
+    overrides
+}
+
+/// ノード木を再帰的に走査し、`overrides`に同名のエントリを持つ`Node::Block`の
+/// `children`をオーバーライド内容に差し替える（BR-10.3）。オーバーライド内容自体は
+/// 再帰的な差し替えの対象にしない（無限ループ・多段の意図しない伝播を避けるため）。
+fn substitute_blocks(nodes: &[Node], overrides: &HashMap<String, Vec<Node>>) -> Vec<Node> {
+    nodes
+        .iter()
+        .map(|n| substitute_blocks_node(n, overrides))
+        .collect()
+}
+
+fn substitute_blocks_node(node: &Node, overrides: &HashMap<String, Vec<Node>>) -> Node {
+    match node {
+        Node::Block {
+            name,
+            children,
+            pos,
+        } => {
+            let new_children = match overrides.get(name) {
+                Some(override_children) => override_children.clone(),
+                None => substitute_blocks(children, overrides),
+            };
+            Node::Block {
+                name: name.clone(),
+                children: new_children,
+                pos: *pos,
+            }
+        }
+        Node::Section {
+            name,
+            inverted,
+            children,
+            raw,
+            open,
+            close,
+            pos,
+        } => Node::Section {
+            name: name.clone(),
+            inverted: *inverted,
+            children: substitute_blocks(children, overrides),
+            raw: raw.clone(),
+            open: open.clone(),
+            close: close.clone(),
+            pos: *pos,
+        },
+        Node::Parent {
+            name,
+            children,
+            indent,
+            pos,
+        } => Node::Parent {
+            name: name.clone(),
+            children: substitute_blocks(children, overrides),
+            indent: indent.clone(),
+            pos: *pos,
+        },
+        // Text/Variable/Partialはネストしたchildrenを持たないため対象外。
+        other => other.clone(),
+    }
 }
 
 /// パーシャルのテンプレート文字列に対し、各行（末尾改行のない最終行を除く）へ

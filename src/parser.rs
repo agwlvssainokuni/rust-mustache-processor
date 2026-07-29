@@ -21,22 +21,28 @@
 //!    `\r\n`改行にも対応するため、単純な前後トークンの局所判定ではなく行単位で判定する）
 //! 3. `build_tree`: クリーニング済みの`Atom`列からセクションの入れ子構造を持つASTを構築する
 
-use crate::ast::{Node, SourcePosition};
+use crate::ast::{Node, PartialName, SourcePosition};
 use crate::error::{ParseError, ParseErrorKind};
 
 /// テンプレート文字列からASTノード列を生成する。
 pub(crate) fn parse(template: &str) -> Result<Vec<Node>, ParseError> {
     let atoms = tokenize(template)?;
     let atoms = apply_standalone_trimming(atoms);
-    build_tree(atoms)
+    build_tree(template, atoms)
 }
 
 enum ParsedTag {
     Variable { name: String, escape: bool },
     SectionStart { name: String },
     Inverted { name: String },
+    /// セクション・テンプレート継承（Parent/Block）いずれの終了タグも兼ねる
+    /// （`{{/name}}`という同一構文で、どの種別を閉じるかはスタック側で判定するため）。
     SectionEnd { name: String },
-    Partial { name: String },
+    Partial { name: String, dynamic: bool },
+    /// `{{<parent}}`（テンプレート継承、`~inheritance`対応）。
+    ParentStart { name: String },
+    /// `{{$block}}`（テンプレート継承のブロック、`~inheritance`対応）。
+    BlockStart { name: String },
     Comment,
     DelimChange { open: String, close: String },
 }
@@ -57,6 +63,13 @@ enum Atom {
     Tag {
         parsed: ParsedTag,
         pos: SourcePosition,
+        /// タグ全体（`{{`〜`}}`）の元テンプレート文字列中の開始バイトオフセット。
+        start: usize,
+        /// 同終了バイトオフセット（`}}`直後）。
+        end: usize,
+        /// このタグがパースされた時点で有効だったデリミタ。
+        open: String,
+        close: String,
     },
 }
 
@@ -70,6 +83,10 @@ enum Item {
         parsed: ParsedTag,
         pos: SourcePosition,
         indent: String,
+        start: usize,
+        end: usize,
+        open: String,
+        close: String,
     },
 }
 
@@ -110,6 +127,10 @@ fn tokenize(template: &str) -> Result<Vec<Atom>, ParseError> {
         atoms.push(Atom::Tag {
             parsed,
             pos: tag_pos,
+            start: tag_start,
+            end: tag_end,
+            open: open.clone(),
+            close: close.clone(),
         });
         scanner.advance_to(tag_end);
     }
@@ -170,10 +191,21 @@ fn apply_standalone_trimming(atoms: Vec<Atom>) -> Vec<Item> {
         .into_iter()
         .map(|a| match a {
             Atom::Text { content, newline } => Item::Text { content, newline },
-            Atom::Tag { parsed, pos } => Item::Tag {
+            Atom::Tag {
+                parsed,
+                pos,
+                start,
+                end,
+                open,
+                close,
+            } => Item::Tag {
                 parsed,
                 pos,
                 indent: String::new(),
+                start,
+                end,
+                open,
+                close,
             },
         })
         .collect();
@@ -195,10 +227,16 @@ fn apply_standalone_trimming(atoms: Vec<Atom>) -> Vec<Item> {
             continue;
         }
 
-        // インデント採取: パーシャルタグの直前がTextであれば、その内容をindentとする
-        // （除去される前に確定させておく必要がある）。
+        // インデント採取: パーシャルタグ・親タグ（BR-10.6）の直前がTextであれば、
+        // その内容をindentとする（除去される前に確定させておく必要がある）。
         for i in start..end {
-            if matches!(&items[i], Item::Tag { parsed: ParsedTag::Partial { .. }, .. }) {
+            if matches!(
+                &items[i],
+                Item::Tag {
+                    parsed: ParsedTag::Partial { .. } | ParsedTag::ParentStart { .. },
+                    ..
+                }
+            ) {
                 let indent_text = if i > start {
                     match &items[i - 1] {
                         Item::Text { content, .. } => content.clone(),
@@ -225,9 +263,45 @@ fn apply_standalone_trimming(atoms: Vec<Atom>) -> Vec<Item> {
     items
 }
 
-/// Pass 3: クリーニング済みの`Item`列からセクション木を構築する。
-fn build_tree(items: Vec<Item>) -> Result<Vec<Node>, ParseError> {
-    let mut stack: Vec<(String, bool, Vec<Node>, SourcePosition)> = Vec::new();
+/// スタック上で開いたままの入れ子構造（セクション／テンプレート継承のParent・Block）。
+enum Frame {
+    Section {
+        name: String,
+        inverted: bool,
+        parent: Vec<Node>,
+        pos: SourcePosition,
+        open: String,
+        close: String,
+        /// セクション本体の生テキスト（BR-9.2）の開始バイトオフセット
+        /// （開始タグの`end`）。
+        body_start: usize,
+    },
+    Parent {
+        name: String,
+        parent: Vec<Node>,
+        pos: SourcePosition,
+        indent: String,
+    },
+    Block {
+        name: String,
+        parent: Vec<Node>,
+        pos: SourcePosition,
+    },
+}
+
+impl Frame {
+    fn name_and_pos(&self) -> (&str, SourcePosition) {
+        match self {
+            Frame::Section { name, pos, .. } => (name, *pos),
+            Frame::Parent { name, pos, .. } => (name, *pos),
+            Frame::Block { name, pos, .. } => (name, *pos),
+        }
+    }
+}
+
+/// Pass 3: クリーニング済みの`Item`列からセクション・テンプレート継承の木を構築する。
+fn build_tree(template: &str, items: Vec<Item>) -> Result<Vec<Node>, ParseError> {
+    let mut stack: Vec<Frame> = Vec::new();
     let mut current: Vec<Node> = Vec::new();
 
     for item in items {
@@ -249,17 +323,50 @@ fn build_tree(items: Vec<Item>) -> Result<Vec<Node>, ParseError> {
                 parsed,
                 pos,
                 indent,
+                start,
+                end,
+                open,
+                close,
             } => match parsed {
                 ParsedTag::Variable { name, escape } => {
                     current.push(Node::Variable { name, escape, pos });
                 }
                 ParsedTag::SectionStart { name } => {
                     let parent = std::mem::take(&mut current);
-                    stack.push((name, false, parent, pos));
+                    stack.push(Frame::Section {
+                        name,
+                        inverted: false,
+                        parent,
+                        pos,
+                        open,
+                        close,
+                        body_start: end,
+                    });
                 }
                 ParsedTag::Inverted { name } => {
                     let parent = std::mem::take(&mut current);
-                    stack.push((name, true, parent, pos));
+                    stack.push(Frame::Section {
+                        name,
+                        inverted: true,
+                        parent,
+                        pos,
+                        open,
+                        close,
+                        body_start: end,
+                    });
+                }
+                ParsedTag::ParentStart { name } => {
+                    let parent = std::mem::take(&mut current);
+                    stack.push(Frame::Parent {
+                        name,
+                        parent,
+                        pos,
+                        indent,
+                    });
+                }
+                ParsedTag::BlockStart { name } => {
+                    let parent = std::mem::take(&mut current);
+                    stack.push(Frame::Block { name, parent, pos });
                 }
                 ParsedTag::SectionEnd { name } => match stack.pop() {
                     None => {
@@ -268,23 +375,71 @@ fn build_tree(items: Vec<Item>) -> Result<Vec<Node>, ParseError> {
                             pos,
                         ));
                     }
-                    Some((open_name, inverted, parent, start_pos)) => {
+                    Some(frame) => {
+                        let (open_name, open_pos) = frame.name_and_pos();
                         if open_name != name {
                             return Err(to_parse_error(
                                 ParseErrorKind::UnbalancedSection { name },
                                 pos,
                             ));
                         }
-                        let children = std::mem::replace(&mut current, parent);
-                        current.push(Node::Section {
-                            name: open_name,
-                            inverted,
-                            children,
-                            pos: start_pos,
-                        });
+                        match frame {
+                            Frame::Section {
+                                name: open_name,
+                                inverted,
+                                parent,
+                                open,
+                                close,
+                                body_start,
+                                ..
+                            } => {
+                                let children = std::mem::replace(&mut current, parent);
+                                let raw = template[body_start..start].to_string();
+                                current.push(Node::Section {
+                                    name: open_name,
+                                    inverted,
+                                    children,
+                                    raw,
+                                    open,
+                                    close,
+                                    pos: open_pos,
+                                });
+                            }
+                            Frame::Parent {
+                                name: open_name,
+                                parent,
+                                indent,
+                                ..
+                            } => {
+                                let children = std::mem::replace(&mut current, parent);
+                                current.push(Node::Parent {
+                                    name: open_name,
+                                    children,
+                                    indent,
+                                    pos: open_pos,
+                                });
+                            }
+                            Frame::Block {
+                                name: open_name,
+                                parent,
+                                ..
+                            } => {
+                                let children = std::mem::replace(&mut current, parent);
+                                current.push(Node::Block {
+                                    name: open_name,
+                                    children,
+                                    pos: open_pos,
+                                });
+                            }
+                        }
                     }
                 },
-                ParsedTag::Partial { name } => {
+                ParsedTag::Partial { name, dynamic } => {
+                    let name = if dynamic {
+                        PartialName::Dynamic(name)
+                    } else {
+                        PartialName::Static(name)
+                    };
                     current.push(Node::Partial { name, indent, pos });
                 }
                 ParsedTag::Comment => {}
@@ -293,9 +448,12 @@ fn build_tree(items: Vec<Item>) -> Result<Vec<Node>, ParseError> {
         }
     }
 
-    if let Some((name, _, _, pos)) = stack.pop() {
+    if let Some(frame) = stack.pop() {
+        let (name, pos) = frame.name_and_pos();
         return Err(to_parse_error(
-            ParseErrorKind::UnbalancedSection { name },
+            ParseErrorKind::UnbalancedSection {
+                name: name.to_string(),
+            },
             pos,
         ));
     }
@@ -404,7 +562,23 @@ fn parse_tag_content(raw: &str) -> Result<ParsedTag, ParseErrorKind> {
         '/' => ParsedTag::SectionEnd {
             name: rest_after_sigil(),
         },
-        '>' => ParsedTag::Partial {
+        '>' => {
+            let rest = rest_after_sigil();
+            match rest.strip_prefix('*') {
+                Some(stripped) => ParsedTag::Partial {
+                    name: stripped.trim().to_string(),
+                    dynamic: true,
+                },
+                None => ParsedTag::Partial {
+                    name: rest,
+                    dynamic: false,
+                },
+            }
+        }
+        '<' => ParsedTag::ParentStart {
+            name: rest_after_sigil(),
+        },
+        '$' => ParsedTag::BlockStart {
             name: rest_after_sigil(),
         },
         '!' => ParsedTag::Comment,
@@ -436,8 +610,10 @@ fn parse_tag_content(raw: &str) -> Result<ParsedTag, ParseErrorKind> {
         ParsedTag::SectionStart { name }
         | ParsedTag::Inverted { name }
         | ParsedTag::SectionEnd { name }
-        | ParsedTag::Partial { name }
+        | ParsedTag::ParentStart { name }
+        | ParsedTag::BlockStart { name }
         | ParsedTag::Variable { name, .. } => name.is_empty(),
+        ParsedTag::Partial { name, .. } => name.is_empty(),
         _ => false,
     };
     if name_empty {
@@ -588,7 +764,11 @@ mod tests {
     #[test]
     fn partial_standalone_captures_indent() {
         let nodes = parse_ok("  {{> p}}\n");
-        assert!(matches!(&nodes[0], Node::Partial { name, indent, .. } if name == "p" && indent == "  "));
+        assert!(matches!(
+            &nodes[0],
+            Node::Partial { name: PartialName::Static(n), indent, .. }
+                if n == "p" && indent == "  "
+        ));
     }
 
     #[test]

@@ -1014,3 +1014,11 @@
 **User Input**: （承認済み計画に基づく自動進行、追加のユーザー入力なし）
 **AI Response**: "src/value.rsのValue列挙型に`Lambda(Rc<dyn Fn(&str) -> String>)`を追加。derive(Debug, Clone, PartialEq)を手動実装に置き換え（Lambda以外は従来通りの挙動、Lambdaが関わるPartialEqは常にfalse、BR-9.6/BR-9.7）。is_truthyにLambda常にtrueを追加（BR-9.5）。ビルド確認でsrc/renderer.rsのstringify関数がValueの非網羅パターンでコンパイルエラーとなったため、Value::Lambdaはstringifyに到達する前にインターセプトされる設計（Step 5で実装）であることを示すunreachable!のプレースホルダを追加し、ビルド成功を確認した。"
 **Context**: CONSTRUCTION PHASE — Code Generation Part 2 Step 2（core-engine、Mustacheオプションモジュール）完了
+
+---
+
+## Code Generation Part 2 Step 3-7: AST・パーサー・レンダラー拡張
+**Timestamp**: 2026-07-30T01:40:00Z
+**User Input**: （承認済み計画に基づく自動進行、追加のユーザー入力なし）
+**AI Response**: "Step 3: src/ast.rsにPartialName（Static/Dynamic）、Node::Section拡張（raw/open/close）、Node::Parent、Node::Blockを追加。Step 4: src/parser.rsをFrame方式に書き換え、親タグ（<）・ブロックタグ（$）・動的パーシャル（>*）の判定、セクション生テキスト・デリミタの記録、スタンドアロン判定へのインデント採取拡張を実装。Step 5: src/renderer.rsにrender_lambda_interpolation/render_lambda_sectionを追加し、BR-9.1〜BR-9.4（インターポレーションは常にデフォルトデリミタ、セクションは合成デリミタ変更タグで現在のデリミタを再現）を実装。Step 6: render_parent/build_block_overrides/substitute_blocksを追加し、BR-10.1〜BR-10.4（オーバーライドマップ構築→木の差し替え→レンダリング）を実装。Step 7: render_partialをPartialName対応に変更しBR-11.1/11.2を実装。fixtureで発見したデリミタ非対称性（Step1是正）を実装に反映。cargo build --lib成功、既存ユニットテスト72件・spec conformanceテスト（既存6モジュール）6件すべて成功、リグレッションなしを確認。"
+**Context**: CONSTRUCTION PHASE — Code Generation Part 2 Step 3-7（core-engine、Mustacheオプションモジュール）完了

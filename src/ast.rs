@@ -21,6 +21,16 @@ pub(crate) struct SourcePosition {
     pub(crate) column: usize,
 }
 
+/// パーシャル名の指定方法（BR-11.1、`~dynamic-names`対応）。
+#[derive(Debug, Clone, PartialEq)]
+pub(crate) enum PartialName {
+    /// `{{> name}}`。テンプレート中に直接書かれた静的な名前。
+    Static(String),
+    /// `{{>* name}}`。`name`は変数名であり、レンダリング時にコンテキストから
+    /// 解決した文字列をパーシャル名として用いる。
+    Dynamic(String),
+}
+
 /// Parserが生成し、Rendererが消費する中間表現。
 #[derive(Debug, Clone, PartialEq)]
 pub(crate) enum Node {
@@ -34,11 +44,35 @@ pub(crate) enum Node {
         name: String,
         inverted: bool,
         children: Vec<Node>,
+        /// セクション本体（開始タグ直後〜終了タグ直前）の生テキスト。
+        /// ラムダのセクション文脈呼び出し（BR-9.2）に使用する。
+        raw: String,
+        /// このセクションタグがパースされた時点で有効だったデリミタ（開始側）。
+        /// ラムダのセクション文脈での返り値再パース（BR-9.3）に使用する。
+        open: String,
+        /// 同上（終了側）。
+        close: String,
         pos: SourcePosition,
     },
     Partial {
-        name: String,
+        name: PartialName,
         indent: String,
+        pos: SourcePosition,
+    },
+    /// `{{<parent}}...{{/parent}}`（テンプレート継承、`~inheritance`対応）。
+    /// `name`は常に静的指定のみサポートする（BR-11.3）。
+    Parent {
+        name: String,
+        /// 直下の`Node::Block`のみがオーバーライドとして意味を持つ（BR-10.2）。
+        children: Vec<Node>,
+        indent: String,
+        pos: SourcePosition,
+    },
+    /// `{{$block}}...{{/block}}`（テンプレート継承のブロック）。
+    /// `Node::Parent`の内側（オーバーライド定義）・外側（単独評価、BR-10.4）の両方で使う。
+    Block {
+        name: String,
+        children: Vec<Node>,
         pos: SourcePosition,
     },
 }
