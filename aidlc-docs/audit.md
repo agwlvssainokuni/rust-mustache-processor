@@ -1110,3 +1110,11 @@
 **User Input**: "Approve & Continue"
 **AI Response**: "Build and Test（Mustacheオプションモジュール）を承認済みとしてOPERATIONS PHASEへ進行。OperationsはCLAUDE.md上プレースホルダのため、具体的な次アクション（v0.2.0リリース等）はユーザー指示待ち。"
 **Context**: CONSTRUCTION PHASE完了（Mustacheオプションモジュール拡張）、OPERATIONS PHASEへ移行
+
+---
+
+## Ad-hoc Request: v0.2.0リリース
+**Timestamp**: 2026-07-30T03:15:00Z
+**User Input**: "Push it, and tag v0.2.0"
+**AI Response**: "mainブランチは既にリモートと同期済みだった。v0.2.0タグを作成しpush（run ID: 30479167958）。verify-version/test/build（linux, macos-aarch64, windows）/releaseの全ジョブが一発で成功。GitHub Release「mustache 0.2.0」が作成され、3プラットフォーム分のアーカイブ（mustache-0.2.0-aarch64-apple-darwin.tar.gz、mustache-0.2.0-x86_64-pc-windows-msvc.zip、mustache-0.2.0-x86_64-unknown-linux-gnu.tar.gz）がアセットとして添付されたことを確認した。バックグラウンドポーリングで再度zshの`status`予約変数問題（既知）が発生し、`run_status`に変数名変更して解消。"
+**Context**: OPERATIONS PHASE — v0.2.0リリース完了（実地検証成功、Mustacheオプションモジュール フルサポート初のリリース）

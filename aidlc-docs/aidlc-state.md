@@ -91,7 +91,7 @@ Mustache公式spec準拠のオプションモジュール3種（`~lambdas`, `~in
 - [x] Build and Test — cargo build/cargo test（既定）全成功を確認。既知の制限4件は`#[ignore]`で分離しrelease-automationのテストゲートをブロックしないことを確認
 
 ## Current Status
-- **Lifecycle Phase**: OPERATIONS（プレースホルダ、Mustacheオプションモジュール拡張: CONSTRUCTION全ステージ完了・承認済み）
-- **Current Stage**: —（CONSTRUCTION完了、OPERATIONSは具体的なステップ未定義）
-- **Next Stage**: —（ユーザー指示次第でv0.2.0タグ付け・リリースへ）
-- **Status**: v0.1.1は正式リリース済み（https://github.com/agwlvssainokuni/rust-mustache-processor/releases/tag/v0.1.1）。Mustacheオプションモジュール フルサポートはRequirements Analysis〜Build and Testの全ステージが完了・承認済み（バージョン0.2.0、ローカルのCargo.tomlに反映済み・未リリース）。spec準拠: 必須6モジュール136/136、~lambdas 10/10、~dynamic-names 21/21、~inheritance 23/27（既知の制限、BR-10.7参照。`cargo test`既定実行はクリーンに成功し、release-automationのテストゲートは問題なく通過する）
+- **Lifecycle Phase**: OPERATIONS（プレースホルダ）。全ユニット・全拡張がCONSTRUCTION完了・v0.2.0リリース済み
+- **Current Stage**: —（現時点でAI-DLCワークフロー上実行可能な作業はない）
+- **Next Stage**: —（フォローアップ課題: ブロックの再インデント処理、BR-10.7）
+- **Status**: v0.2.0が正式リリース済み（https://github.com/agwlvssainokuni/rust-mustache-processor/releases/tag/v0.2.0）。Mustacheオプションモジュール フルサポート（ラムダ・テンプレート継承・動的パーシャル名）を含む。spec準拠: 必須6モジュール136/136、~lambdas 10/10、~dynamic-names 21/21、~inheritance 23/27（既知の制限、BR-10.7参照）
