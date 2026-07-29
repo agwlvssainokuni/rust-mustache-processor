@@ -974,3 +974,43 @@
 **User Input**: （承認済みFunctional Designを受けての自動進行、追加のユーザー入力なし）
 **AI Response**: "core-engine-mustache-optional-modules-code-generation-plan.mdを作成。13ステップ（fixture取得、Value::Lambda実装、AST拡張、パーサー拡張、レンダラー拡張×3(ラムダ/継承/動的パーシャル名)、spec conformance是正ループ、ユニットテスト、PBT、バージョン更新、ドキュメント更新、Summary作成）で構成。ユーザーに承認を依頼。"
 **Context**: CONSTRUCTION PHASE — Code Generation Part 1 (Planning)（core-engine、Mustacheオプションモジュール）計画作成完了、承認待ち
+
+---
+
+## Code Generation Part 1: コミット粒度の確認
+**Timestamp**: 2026-07-30T01:00:00Z
+**User Input**: "どのタイミングでコミットを予定していますか？"
+**AI Response**: "13ステップの各Step完了ごとに1コミットを予定していると回答。Step 8（spec conformance是正ループ）は是正量に応じてまとめるか分割するか判断する旨を説明した。"
+**Context**: CONSTRUCTION PHASE — Code Generation Part 1（core-engine、Mustacheオプションモジュール）コミット方針の説明
+
+---
+
+## ドキュメントのパス表記修正
+**Timestamp**: 2026-07-30T01:02:00Z
+**User Input**: "ワークスペースルートは「~/Documents」の形で書いて。"
+**AI Response**: "aidlc-state.mdとcore-engine-mustache-optional-modules-code-generation-plan.mdのワークスペースルート表記を、フルの絶対パス（/Users/agawa/Documents/...）から~/Documents/...形式に修正した。今後のドキュメント記載方針としてメモリに保存。"
+**Context**: ドキュメント表記修正（横断的な指摘）
+
+---
+
+## Code Generation Part 1 - Approved
+**Timestamp**: 2026-07-30T01:03:00Z
+**User Input**: "承認します。Step 1から進めてください。"
+**AI Response**: "core-engine-mustache-optional-modules-code-generation-plan.mdを承認済みとしてPart 2（Generation）Step 1へ着手。"
+**Context**: CONSTRUCTION PHASE — Code Generation Part 1承認完了、Part 2 Step 1へ移行
+
+---
+
+## Code Generation Part 1: コミット粒度の確認
+**Timestamp**: 2026-07-30T01:00:00Z
+**User Input**: "どのタイミングでコミットを予定していますか？"
+**AI Response**: "13ステップの各Step完了ごとに1コミットを予定していると回答。Step 8（spec conformance是正ループ）は是正量に応じてまとめるか分割するか判断する旨を説明した。"
+**Context**: CONSTRUCTION PHASE — Code Generation Part 1（core-engine、Mustacheオプションモジュール）コミット方針の説明
+
+---
+
+## Code Generation Part 1 - Approved
+**Timestamp**: 2026-07-30T01:01:00Z
+**User Input**: "承認します。Step 1から進めてください。"
+**AI Response**: "core-engine-mustache-optional-modules-code-generation-plan.mdを承認済みとしてPart 2（Generation）Step 1へ着手。"
+**Context**: CONSTRUCTION PHASE — Code Generation Part 1承認完了、Part 2 Step 1へ移行
