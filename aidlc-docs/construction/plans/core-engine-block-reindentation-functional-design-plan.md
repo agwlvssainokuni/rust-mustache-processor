@@ -23,10 +23,10 @@
 
 ## Functional Design ステップ
 
-- [ ] Step 1: 質問への回答を収集・分析
-- [ ] Step 2: `business-rules.md`のBR-10.7を確定アルゴリズムで書き換え
-- [ ] Step 3: `domain-entities.md`の`Node::Block`定義を更新（新規フィールド）
-- [ ] Step 4: `business-logic-model.md`にブロック再インデントの処理フローとTestable Propertiesを追記
+- [x] Step 1: 質問への回答を収集・分析（全問A、承認済み）
+- [x] Step 2: `business-rules.md`のBR-10.7を確定アルゴリズム（BR-10.7〜BR-10.13）で書き換え
+- [x] Step 3: `domain-entities.md`の`Node::Block`定義を更新（`raw`/clearance4値/`open_indent`を追加、`RenderState.block_overrides`の型変更を記録）
+- [x] Step 4: `business-logic-model.md`にパーサー拡張・レンダラー拡張の処理フロー（6ステップ）とTestable Propertiesを追記
 - [ ] Step 5: 完了報告・承認待ち
 
 ## 質問

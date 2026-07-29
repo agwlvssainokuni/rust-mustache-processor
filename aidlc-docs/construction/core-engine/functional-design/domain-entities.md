@@ -71,7 +71,17 @@ pub(crate) enum Node {
     Partial { name: PartialName, indent: String, pos: SourcePosition },
     // 以下2種はv0.2.0でテンプレート継承（~inheritance）対応のため追加
     Parent { name: String, children: Vec<Node>, indent: String, pos: SourcePosition },  // {{<parent}}...{{/parent}}。nameは常に静的（Q9=A）、indentはBR-10.6
-    Block { name: String, children: Vec<Node>, pos: SourcePosition },  // {{$block}}...{{/block}}
+    Block {
+        name: String,
+        children: Vec<Node>,
+        raw: String,               // v0.2.1追加（BR-10.7〜）: 開始タグ直後〜終了タグ直前の生テキスト。差し替え内容として使う場合の再インデント処理（BR-10.10）に使用
+        open_clears_start: bool,   // v0.2.1追加: 開始タグが行頭clearするか（BR-10.8）
+        open_clears_end: bool,     // v0.2.1追加: 開始タグが行末clearするか（BR-10.8）
+        close_clears_start: bool,  // v0.2.1追加: 終了タグが行頭clearするか（BR-10.8）
+        close_clears_end: bool,    // v0.2.1追加: 終了タグが行末clearするか（BR-10.8）
+        open_indent: String,       // v0.2.1追加: 開始タグ直前の行頭空白。展開箇所として使う場合、Rule4 Step2（BR-10.11）で使用
+        pos: SourcePosition,
+    },  // {{$block}}...{{/block}}
 }
 ```
 
@@ -82,7 +92,8 @@ pub(crate) enum Node {
 - `Section.open`/`Section.close`（v0.2.0追加、fixture精査で発見）: パース時点でそのセクションタグに対して有効だったデリミタ文字列を保持する。ラムダのセクション文脈での返り値再パース（BR-9.3）にのみ使用する。インターポレーション文脈のラムダは常にデフォルトデリミタを使うため、`Variable`ノードには同種のフィールドは不要
 - `Node::Parent`の本体（`children`）は、直下の`Node::Block`のみがオーバーライドとして意味を持ち、それ以外の内容（`Node::Text`等）は無視される（BR-10.2）
 - `Node::Parent.indent`は`Node::Partial.indent`と同様、スタンドアロン時の行頭空白を保持し、親テンプレート文字列（値展開前）の各行に適用する（BR-10.6）
-- `Node::Block`は`{{<parent}}`の内側（オーバーライド定義）と外側（単独評価、デフォルト内容の表示）の両方で同じ構造を使う（BR-10.4）
+- `Node::Block`は`{{<parent}}`の内側（オーバーライド定義＝「引数ブロック」）と外側（単独評価・デフォルト内容の表示＝「パラメータブロック」）の両方で同じ構造を使う（BR-10.4）。`raw`/`open_clears_*`/`close_clears_*`/`open_indent`はパース時点で役割に関わらず一律に記録し、どちらの役割で使われるか（差し替え内容として使うか、展開箇所として使うか）はレンダリング時（`RenderState.block_overrides`にその名前のエントリがあるか）に初めて決まる。そのため`intrinsic indentation`の判定条件（BR-10.9）は役割ごとに異なる閾値をレンダリング時に適用する
+- `RenderState.block_overrides`（v0.2.1で`Vec<HashMap<String, Vec<Node>>>`から`Vec<HashMap<String, Node>>`に変更）は、差し替え内容の`Node::Block`そのもの（`children`だけでなく`raw`/clearance情報を含む全体）を保持する。BR-10.10の再インデント処理に必要なため
 
 ## Template（公開）
 

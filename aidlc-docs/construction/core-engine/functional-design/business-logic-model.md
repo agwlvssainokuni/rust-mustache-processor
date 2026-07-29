@@ -39,8 +39,25 @@
 
 - `Node::Variable`/`Node::Section`の名前解決で得た値が`Value::Lambda`だった場合、BR-9.1〜BR-9.5に従いラムダを呼び出し、結果を再パース・再レンダリングして出力に追加する
 - `Node::Partial`の名前が`PartialName::Dynamic(var)`の場合、まず`var`をコンテキスト探索で解決し（BR-11.1）、得られた文字列を通常のパーシャル名として以降はBR-5.1〜BR-5.4と同じ処理を行う。`PartialName::Static(name)`の場合は従来通り
-- `Node::Parent`到達時、BR-10.1〜BR-10.3に従い親テンプレートを解決・パースし、自身の`children`（`Node::Block`のみ）からオーバーライドマップを構築した上で、親の木を（オーバーライドを適用しつつ）レンダリングする
-- `Node::Block`到達時（`Node::Parent`の一部としてではなく、通常の子ノードとして走査に現れた場合）、BR-10.4に従い自身の`children`をそのままレンダリングする
+- `Node::Parent`到達時、BR-10.1〜BR-10.3に従い親テンプレートを解決・パースし、自身の`children`（`Node::Block`のみ）から`RenderState.block_overrides`のフレームを構築した上で、親の木を（事前一括置換なしで）レンダリングする
+- `Node::Block`到達時、`RenderState.block_overrides`の実効オーバーライド（BR-10.5）に同名のエントリがあれば、BR-10.10（除去）→BR-10.11（展開箇所インデント決定）→BR-10.12（付与・再パース）の順で処理した結果をレンダリングする。エントリがなければBR-10.4に従い自身の`children`をそのままレンダリングする
+
+### パーサー拡張（ブロック再インデント処理、v0.2.1）
+
+- Pass 3（木構築）の`Node::Block`構築時、開始タグ・終了タグそれぞれについてBR-10.8の「行頭clear」「行末clear」を判定し、`open_clears_start`/`open_clears_end`/`close_clears_start`/`close_clears_end`として記録する。既存のスタンドアロン行トリミング処理（`apply_standalone_trimming`）が個々のタグについて既に同種の判定（行が空白+タグのみで構成されるか）を行っているため、この判定結果を再利用して算出する
+- 開始タグ直前の行頭空白（スタンドアロン判定された場合の値、既存の`indent`算出と同じロジック）を`open_indent`として記録する
+- 開始タグ直後〜終了タグ直前の元の文字列を`Node::Block.raw`として記録する（`Node::Section.raw`と同じ方式）
+
+### レンダラー拡張（ブロック再インデント処理、v0.2.1）
+
+`Node::Block`のオーバーライド適用（BR-10.3の「同名のエントリがあればその内容を」の部分）を、以下の手順で行う:
+
+1. 実効オーバーライドから得た差し替え内容の`Node::Block`（以下「引数ブロック」）の`raw`に対し、BR-10.9を「差し替え内容として使う場合」の条件（`open_clears_end`のみ）で判定し、intrinsic indentationを求める
+2. BR-10.10に従い、引数ブロックの`raw`から本来のインデントを除去する（先頭行除去・intrinsic indentation除去・末尾改行の強制付与）
+3. 現在レンダリング中の`Node::Block`（実際に祖先テンプレート上に書かれている、以下「パラメータブロック」）自身について、BR-10.9を「展開箇所として使う場合」の条件（`open_clears_start`かつ`open_clears_end`）で判定し、intrinsic indentationを求める
+4. BR-10.11に従い、パラメータブロック自身の情報（intrinsic indentation、または`open_clears_start`かつ`close_clears_end`の場合の`open_indent`、いずれでもなければ空文字列）から展開箇所インデントを決定する
+5. BR-10.12に従い、ステップ2の除去済み内容に対しステップ4のインデントを`indent_source`で適用し、デフォルトデリミタで再パースする
+6. `enter_depth`（BR-10.13）でネスト深度ガードに入り、再パース結果を`render_nodes`でレンダリングしてから深度を戻す
 
 ## エラー伝播
 
@@ -64,5 +81,6 @@
 | ParseError / RenderError | — | N/A | エラー型はデータ保持のみで、業務ロジックを含まないため対象外 |
 | Renderer（ラムダ、v0.2.0追加） | ラムダの再帰レンダリングもネスト深度ガードで終端する | Invariant | 自身を呼び出すテンプレート文字列（例: `{{self}}`）を返すラムダに対し、レンダリングは無限再帰せず有限時間で`RenderErrorKind::MaxNestingDepthExceeded`を返す（BR-9.3、既存のPartial向け無限再帰終端保証と同じ安全装置を共有することの検証） |
 | Renderer（テンプレート継承、v0.2.0追加） | オーバーライドされないブロックはデフォルト内容と一致する | Invariant | `{{<parent}}`の本体に同名の`{{$block}}`を含まない場合、レンダリング結果は親テンプレート単体（`{{<parent}}`を使わず直接パーシャルとして）をレンダリングした結果と一致する（BR-10.3） |
+| Renderer（ブロック再インデント、v0.2.1追加） | 定義箇所インデントがない差し替え内容の再インデントは、パーシャルのインデント処理と等価 | Invariant | 差し替え内容の各行に先頭空白がない（intrinsic indentationが空）テンプレートに対し、BR-10.10〜BR-10.12の再インデント処理の結果は、同じ差し替え内容を独立したパーシャルとして展開箇所インデントで`indent_source`（BR-5.4）を適用した結果と一致する |
 
 これらのプロパティはCode Generation（Planning）ステージでPBTテスト実装計画に引き継ぐ。
