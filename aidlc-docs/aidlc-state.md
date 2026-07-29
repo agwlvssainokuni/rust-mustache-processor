@@ -83,15 +83,15 @@ Mustache公式spec準拠のオプションモジュール3種（`~lambdas`, `~in
 - [x] Workflow Planning — mustache-optional-modules-execution-plan.md承認済み
 - [ ] Application Design — SKIP（新規コンポーネント無し）
 - [ ] Units Generation — SKIP（既存core-engineユニットを拡張）
-- [ ] Functional Design（core-engine） — 未着手
+- [x] Functional Design（core-engine） — business-logic-model.md/business-rules.md/domain-entities.md追記、承認済み
 - [ ] NFR Requirements（core-engine） — SKIP（新規NFR要件なし）
 - [ ] NFR Design（core-engine） — SKIP
 - [ ] Infrastructure Design（core-engine） — SKIP
-- [ ] Code Generation（core-engine） — 未着手
+- [ ] Code Generation（core-engine） — 着手
 - [ ] Build and Test — 未着手
 
 ## Current Status
-- **Lifecycle Phase**: CONSTRUCTION（Mustacheオプションモジュール拡張: core-engineユニットのFunctional Design着手）／既存3ユニット（core-engine/cli/release-automation）はCONSTRUCTION完了・v0.1.1リリース済み
-- **Current Stage**: Functional Design（core-engineユニット、Mustacheオプションモジュール拡張分）
-- **Next Stage**: Code Generation（core-engineユニット、Mustacheオプションモジュール拡張分）
-- **Status**: v0.1.1は正式リリース済み（https://github.com/agwlvssainokuni/rust-mustache-processor/releases/tag/v0.1.1）。Mustacheオプションモジュール フルサポート（v0.2.0予定）はRequirements Analysis・Workflow Planningが完了し承認済み。Functional Designに着手
+- **Lifecycle Phase**: CONSTRUCTION（Mustacheオプションモジュール拡張: core-engineユニットのCode Generation着手）／既存3ユニット（core-engine/cli/release-automation）はCONSTRUCTION完了・v0.1.1リリース済み
+- **Current Stage**: Code Generation（core-engineユニット、Mustacheオプションモジュール拡張分）
+- **Next Stage**: Build and Test（Mustacheオプションモジュール拡張分）
+- **Status**: v0.1.1は正式リリース済み（https://github.com/agwlvssainokuni/rust-mustache-processor/releases/tag/v0.1.1）。Mustacheオプションモジュール フルサポート（v0.2.0予定）はRequirements Analysis・Workflow Planning・Functional Designが完了し承認済み。Code Generationに着手
