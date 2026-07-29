@@ -1184,3 +1184,16 @@
 **Context**: CONSTRUCTION PHASE — Code Generation（core-engine、BR-10.7）承認完了、Build and Testへ移行
 
 ---
+
+## Build and Test Stage: BR-10.7 ブロック再インデント処理
+**Timestamp**: 2026-07-30T05:30:00Z
+**Build Status**: Success
+**Test Status**: Pass（145テスト実行単位、`#[ignore]`0件。core-engineユニット93・cliユニット33・proptest9・spec conformance9スイート/194ケース・doctest1）
+**Files Generated**:
+- build-and-test-summary.md（「v0.2.1 追加確認」節を追記）
+- unit-test-instructions.md（Code Generation Step12で更新済み）
+- integration-test-instructions.md（Code Generation Step12で更新済み）
+**AI Response**: "cargo build --release / cargo test --release で最終確認。新たな問題は発見されず、Code Generation Step9で発見・修正済みの二重インデント回帰も再発なしを確認。既知の対象外事項からBR-10.7を除去（解消済みのため）。"
+**Context**: CONSTRUCTION PHASE — Build and Test（core-engine、BR-10.7）完了
+
+---

@@ -97,10 +97,10 @@ v0.2.0でフォローアップ課題として先送りしていた`~inheritance`
 - [x] Requirements Analysis相当（仕様確認） — mustache/spec Issue #130のアルゴリズム調査、3/4ケースを手動検証
 - [x] Functional Design（core-engine） — business-rules.md（BR-10.7〜BR-10.13）、domain-entities.md（Node::Block拡張）、business-logic-model.md追記、承認済み
 - [x] Code Generation（core-engine） — 全13ステップ完了。v0.2.1、spec準拠: ~inheritance 27/27（既知の制限を解消）。実装中にRule4 Step2の二重適用バグ（"Inherit indentation"の回帰）を検知・修正
-- [ ] Build and Test — 未実施（Code Generation完了直後、承認待ち）
+- [x] Build and Test — cargo build --release / cargo test --release 全成功を確認（145テスト実行単位、`#[ignore]`0件）
 
 ## Current Status
-- **Lifecycle Phase**: CONSTRUCTION（core-engine BR-10.7対応、Code Generation完了・承認待ち）
-- **Current Stage**: Code Generation（core-engine、BR-10.7）完了報告・承認待ち
-- **Next Stage**: Build and Test（core-engine、BR-10.7）
-- **Status**: v0.2.0が正式リリース済み（https://github.com/agwlvssainokuni/rust-mustache-processor/releases/tag/v0.2.0）。v0.2.1（BR-10.7対応、`~inheritance`が27/27・既知の制限解消）はCode Generation完了、Build and Test・リリースは未実施
+- **Lifecycle Phase**: CONSTRUCTION完了（core-engine BR-10.7対応）。OPERATIONS PHASEへの移行待ち
+- **Current Stage**: Build and Test（core-engine、BR-10.7）完了報告・承認待ち
+- **Next Stage**: —（承認後はOperations、v0.2.1リリースはユーザー指示待ち）
+- **Status**: v0.2.0が正式リリース済み（https://github.com/agwlvssainokuni/rust-mustache-processor/releases/tag/v0.2.0）。v0.2.1（BR-10.7対応、`~inheritance`が27/27・既知の制限解消）はBuild and Test完了、リリースは未実施

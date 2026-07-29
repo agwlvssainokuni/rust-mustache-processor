@@ -58,7 +58,6 @@ cargo test
 - リリースビルドの追加最適化（cli NFR Requirements Q3）
 - CLIバイナリのサブプロセス起動によるend-to-endテスト（`integration-test-instructions.md`参照、YAGNI）
 - 専用の性能ベンチマークスイート（`performance-test-instructions.md`参照）
-- ブロックの再インデント処理（`~inheritance`の一部、BR-10.7。下記「v0.2.0 追加確認」参照）
 
 ## v0.2.0 追加確認（Mustacheオプションモジュール フルサポート）
 
@@ -100,8 +99,44 @@ cargo test
 
 ### v0.2.0での既知の対象外事項
 
-- ブロックの再インデント処理（`~inheritance`のうち4ケース、BR-10.7）。フォローアップ課題として別途対応予定
+- ブロックの再インデント処理（`~inheritance`のうち4ケース、BR-10.7）。フォローアップ課題として別途対応予定（v0.2.1で対応済み、下記「v0.2.1 追加確認」参照）
+
+## v0.2.1 追加確認（BR-10.7 ブロック再インデント処理）
+
+`core-engine-block-reindentation-code-generation-plan.md`に基づくcore-engine拡張（Code Generation全13ステップ）完了後、ビルド・テストを再確認した。
+
+### ビルド結果
+
+```bash
+cargo build --release
+```
+
+- ライブラリ・バイナリともに**警告0件**でビルド成功（リリースビルドも確認）
+
+### テスト結果
+
+```bash
+cargo test --release
+```
+
+| テストグループ | 件数 | 結果 |
+|---|---|---|
+| core-engineユニットテスト | 93件（v0.2.0時点84件+9件） | 全成功 |
+| cliユニットテスト | 33件 | 全成功（変更なし） |
+| core-engineプロパティベーステスト | 9件 | 全成功（変更なし） |
+| core-engine spec conformanceテスト | 必須6モジュール136ケース + `~lambdas`10ケース + `~dynamic-names`21ケース + `~inheritance`27/27ケース | 全成功（`#[ignore]`なし、既知の制限を解消） |
+| doctest | 1件 | 全成功 |
+
+**合計: 145テスト実行単位、既定の`cargo test`で全て成功**（`#[ignore]`は0件）。
+
+### Build and Testで発見した問題と対応
+
+Code Generation内（Step9）で、既存の合格ケース"Inherit indentation"に対する二重インデントの回帰を`cargo test --test spec`実行時に検知した（Rule4 Step2の適用条件の考慮漏れ）。実装を補正し解消したことを、Build and Testステージでの`cargo build --release`・`cargo test --release`による最終確認でも再検証した。新たな問題は発見されなかった。
+
+### v0.2.1での既知の対象外事項
+
+なし（v0.2.0からの既知の制限BR-10.7を解消）。
 
 ## 次のステップ
 
-Build and Testステージの成果物確認後、v0.2.0としてリリースする（release-automationワークフローによる自動リリース）。
+Build and Testステージの成果物確認後、v0.2.1としてリリースする（release-automationワークフローによる自動リリース）。
