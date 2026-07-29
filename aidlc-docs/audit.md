@@ -1128,3 +1128,19 @@
 **Context**: 既存ユニット拡張: core-engine BR-10.7対応 — 仕様確認完了（Requirements Analysis相当の調査ステップ）
 
 ---
+
+## Functional Design Plan: BR-10.7 ブロック再インデント処理 — 質問と承認
+**Timestamp**: 2026-07-30T03:40:00Z
+**User Input**: "Functional Designに進めてください。"
+**AI Response**: "core-engine-block-reindentation-functional-design-plan.mdを作成。実装方式（生テキスト事前適用＋再パース）・clearance計算タイミング（パース時）・Nested block reindentationの検証方針（実装→実地検証）・テスト統合方針（inheritance()へ統合）・リリース種別（パッチv0.2.1）・ドキュメント記述（既知の制限を削除し27/27に更新）の6問全てに推奨(A)を記入し、理由とともにユーザーへ提示。"
+**Context**: CONSTRUCTION PHASE — Functional Design（core-engine、BR-10.7）質問提示
+
+---
+
+## Functional Design Plan - Approved
+**Timestamp**: 2026-07-30T03:42:00Z
+**User Input**: "OK"
+**AI Response**: "6問全て推奨(A)で承認。Functional Design成果物（business-rules.md BR-10.7書き換え、domain-entities.md Node::Block更新、business-logic-model.md追記）の生成に着手。"
+**Context**: CONSTRUCTION PHASE — Functional Design Plan（core-engine、BR-10.7）承認完了
+
+---
