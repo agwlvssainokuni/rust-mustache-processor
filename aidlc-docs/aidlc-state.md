@@ -91,7 +91,7 @@ Mustache公式spec準拠のオプションモジュール3種（`~lambdas`, `~in
 - [x] Build and Test — cargo build/cargo test（既定）全成功を確認。既知の制限4件は`#[ignore]`で分離しrelease-automationのテストゲートをブロックしないことを確認
 
 ## Current Status
-- **Lifecycle Phase**: CONSTRUCTION完了（Mustacheオプションモジュール拡張: Build and Test完了）／既存3ユニット（core-engine/cli/release-automation）はCONSTRUCTION完了・v0.1.1リリース済み
-- **Current Stage**: Build and Test完了（Mustacheオプションモジュール拡張分）
-- **Next Stage**: —（リリース待ち、ユーザー指示次第でv0.2.0タグ付け・リリースへ）
-- **Status**: v0.1.1は正式リリース済み（https://github.com/agwlvssainokuni/rust-mustache-processor/releases/tag/v0.1.1）。Mustacheオプションモジュール フルサポートはCode Generation・Build and Testが完了（バージョン0.2.0、ローカルのCargo.tomlに反映済み・未リリース）。spec準拠: 必須6モジュール136/136、~lambdas 10/10、~dynamic-names 21/21、~inheritance 23/27（既知の制限、BR-10.7参照。`cargo test`既定実行はクリーンに成功し、release-automationのテストゲートは問題なく通過する）
+- **Lifecycle Phase**: OPERATIONS（プレースホルダ、Mustacheオプションモジュール拡張: CONSTRUCTION全ステージ完了・承認済み）
+- **Current Stage**: —（CONSTRUCTION完了、OPERATIONSは具体的なステップ未定義）
+- **Next Stage**: —（ユーザー指示次第でv0.2.0タグ付け・リリースへ）
+- **Status**: v0.1.1は正式リリース済み（https://github.com/agwlvssainokuni/rust-mustache-processor/releases/tag/v0.1.1）。Mustacheオプションモジュール フルサポートはRequirements Analysis〜Build and Testの全ステージが完了・承認済み（バージョン0.2.0、ローカルのCargo.tomlに反映済み・未リリース）。spec準拠: 必須6モジュール136/136、~lambdas 10/10、~dynamic-names 21/21、~inheritance 23/27（既知の制限、BR-10.7参照。`cargo test`既定実行はクリーンに成功し、release-automationのテストゲートは問題なく通過する）
