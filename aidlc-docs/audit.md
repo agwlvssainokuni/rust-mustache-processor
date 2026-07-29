@@ -1022,3 +1022,27 @@
 **User Input**: （承認済み計画に基づく自動進行、追加のユーザー入力なし）
 **AI Response**: "Step 3: src/ast.rsにPartialName（Static/Dynamic）、Node::Section拡張（raw/open/close）、Node::Parent、Node::Blockを追加。Step 4: src/parser.rsをFrame方式に書き換え、親タグ（<）・ブロックタグ（$）・動的パーシャル（>*）の判定、セクション生テキスト・デリミタの記録、スタンドアロン判定へのインデント採取拡張を実装。Step 5: src/renderer.rsにrender_lambda_interpolation/render_lambda_sectionを追加し、BR-9.1〜BR-9.4（インターポレーションは常にデフォルトデリミタ、セクションは合成デリミタ変更タグで現在のデリミタを再現）を実装。Step 6: render_parent/build_block_overrides/substitute_blocksを追加し、BR-10.1〜BR-10.4（オーバーライドマップ構築→木の差し替え→レンダリング）を実装。Step 7: render_partialをPartialName対応に変更しBR-11.1/11.2を実装。fixtureで発見したデリミタ非対称性（Step1是正）を実装に反映。cargo build --lib成功、既存ユニットテスト72件・spec conformanceテスト（既存6モジュール）6件すべて成功、リグレッションなしを確認。"
 **Context**: CONSTRUCTION PHASE — Code Generation Part 2 Step 3-7（core-engine、Mustacheオプションモジュール）完了
+
+---
+
+## Code Generation Part 2 Step 8: spec conformance統合
+**Timestamp**: 2026-07-30T02:10:00Z
+**User Input**: （承認済み計画に基づく自動進行、追加のユーザー入力なし）
+**AI Response**: "tests/spec/conformance.rsに~lambdas（10ケース、Rubyコードを手動でRustクロージャに翻訳）・~inheritance・~dynamic-namesの3テスト関数を追加。lambdas 10/10、dynamic_names 21/21全件成功。inheritanceは初回5件失敗（Recursion、Standalone block、Block reindentation、Intrinsic indentation、Nested block reindentation）。Recursionはfixture精査により、RenderStateにブロックオーバーライド・スタックを追加し多段継承時の伝播を正しく実装することで解消（BR-10.5確定）。残り4件（ブロック再インデント処理）は手計算による検証を重ねたが末尾改行の扱い等で不確実性が残り、実装コストと得られる価値のバランスを鑑みユーザーに相談。"
+**Context**: CONSTRUCTION PHASE — Code Generation Part 2 Step 8（core-engine、Mustacheオプションモジュール）spec conformance統合、Recursion修正完了
+
+---
+
+## Code Generation Part 2 Step 8: 残課題の扱いについて相談
+**Timestamp**: 2026-07-30T02:15:00Z
+**User Input**: "オプション機能の実装としてはこのまま進めて最後まで通し、そのあとでじっくり対策する、というのはあり？"
+**AI Response**: "妥当な進め方と回答。23/27（85%）を現時点の準拠状況として区切り、Step 9〜13を完了させて最後まで通す。残り4件はBR-10.7として『既知の制限』を業務ルール文書に明記し、requirements.md/READMEにも実態を正直に記載する。リリース後のフォローアップ課題として別途対応する方針を提示。"
+**Context**: CONSTRUCTION PHASE — Code Generation Part 2 Step 8（core-engine、Mustacheオプションモジュール）既知の制限の扱いに合意
+
+---
+
+## Code Generation Part 2 Step 8 - Approved
+**Timestamp**: 2026-07-30T02:16:00Z
+**User Input**: "OK"
+**AI Response**: "business-rules.mdにBR-10.5（多段継承伝播の確定内容）とBR-10.7（既知の制限）を記録。Step 8を23/27・既知の制限ありとして完了扱いとし、Step 9へ進行。"
+**Context**: CONSTRUCTION PHASE — Code Generation Part 2 Step 8完了、Step 9へ移行

@@ -15,7 +15,7 @@
 - [x] Step 5: レンダラー拡張 — ラムダ（`src/renderer.rs`）
 - [x] Step 6: レンダラー拡張 — テンプレート継承（`src/renderer.rs`）
 - [x] Step 7: レンダラー拡張 — 動的パーシャル名（`src/renderer.rs`）
-- [ ] Step 8: spec conformanceテスト統合・是正ループ（`tests/spec/`）
+- [x] Step 8: spec conformanceテスト統合・是正ループ（`tests/spec/`） — `~lambdas`10/10・`~dynamic-names`21/21全件成功。`~inheritance`は23/27（85%）。残り4件（ブロック再インデント処理）は既知の制限としてBR-10.7に記録し、フォローアップ課題とする（ユーザー承認済み）
 - [ ] Step 9: ユニットテスト追加（`src/value.rs`, `src/renderer.rs`等の`#[cfg(test)]`）
 - [ ] Step 10: プロパティベーステスト追加（`tests/proptest/`）
 - [ ] Step 11: バージョン更新（`Cargo.toml` 0.1.1 → 0.2.0）
