@@ -6,7 +6,7 @@ A Mustache template engine implemented from scratch in Rust. Available both as a
 
 - Conforms to the mandatory feature set of the official [Mustache spec](https://github.com/mustache/spec) (variable interpolation, sections, inverted sections, partials, comments, delimiter changes)
 - Also supports the optional modules (lambdas, template inheritance, dynamic partial names) since v0.2.0 — see "Optional Features" below
-- Verified near-100% conformance against the official spec conformance test suite (136 test cases across the 6 mandatory modules, 58 test cases across the 3 optional modules; a small, known limitation remains in template inheritance — see below)
+- Verified 100% conformance against the official spec conformance test suite (136 test cases across the 6 mandatory modules, 58 test cases across the 3 optional modules)
 - Supports both JSON and YAML input data
 - Supports concatenating multiple template files in order (similar to `cat`)
 - Optional strict mode that raises an error on undefined variables
@@ -180,7 +180,7 @@ Use `{{<parent}}...{{/parent}}` to extend a parent template, and `{{$block}}...{
 {{/layout}}
 ```
 
-**Known limitation**: Block "reindentation" (aligning an overridden block's leading whitespace to the position where it's expanded, rather than where it was defined) is not implemented. The official spec conformance suite for `~inheritance` (27 cases) passes 23/27 (~85%); the 4 failing cases are all specifically about this indentation adjustment. Overriding itself — including override propagation across multi-level inheritance chains — works correctly.
+Block "reindentation" (aligning an overridden block's leading whitespace to the position where it's expanded, rather than where it was defined) is also supported. The official spec conformance suite for `~inheritance` (27 cases) passes 27/27 (100%).
 
 ### Dynamic Partial Names (`~dynamic-names`)
 
@@ -198,7 +198,7 @@ cargo test           # Run all tests (unit tests, property-based tests, spec con
 cargo doc --no-deps  # Generate library API documentation
 ```
 
-For detailed design decisions and the background of known limitations, see the documentation under `aidlc-docs/`.
+For detailed design decisions, see the documentation under `aidlc-docs/`.
 
 ## License
 

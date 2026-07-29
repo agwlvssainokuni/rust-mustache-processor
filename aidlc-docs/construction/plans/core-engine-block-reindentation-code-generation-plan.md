@@ -24,9 +24,9 @@
 - [x] Step 7: `src/renderer.rs` — 単体テストを5件追加（定義箇所インデント除去/単一行スタンドアロンペア/既定内容からのintrinsic indentation/Rule4 Step2二重適用の回帰防止/多段継承のカスケード）。追加時、多段継承テストで`grandparent`パーシャルに実在しない末尾`\n`を書いてしまい失敗 → フィクスチャJSONと突き合わせて修正、全93件成功
 - [x] Step 8: `tests/spec/conformance.rs` — `inheritance_known_limitations`関数と`INHERITANCE_KNOWN_LIMITATIONS`定数を削除し、`inheritance()`を`run_module("~inheritance")`（全27ケース）に統合。`cargo test --test spec`で27/27・`#[ignore]`なしを確認
 - [x] Step 9（先行実施）: `cargo test --test spec`実行によりspec conformance（`~inheritance`27/27を含む）を確認。実装直後は"Inherit indentation"（既存の合格23件の1つ）で二重インデントの回帰を検知し、Step6のRule4 Step2条件を補正して解消。全9スイート（`inheritance_known_limitations`含めれば10）成功、`cargo test --lib`88件も成功を確認
-- [ ] Step 10: `cargo test`（ワークスペース全体）・`cargo clippy`・`cargo fmt --check`を実行し、既存テスト（ユニット84・proptest9・doctest等）に回帰がないことを確認
-- [ ] Step 11: `Cargo.toml`のバージョンを0.2.0から0.2.1に更新（パッチリリース、Functional Design Q5）
-- [ ] Step 12: ドキュメント更新 — `mustache-optional-modules-requirements.md`（既知の制限セクションを削除し27/27に更新）、`README.md`/`README.en.md`（既知の制限の記述を削除、spec準拠率更新）、`unit-test-instructions.md`/`integration-test-instructions.md`（テスト件数・`#[ignore]`記述の更新）
+- [x] Step 10: `cargo test`（ワークスペース全体: lib93・bin33・proptest9・spec9・doctest1）・`cargo clippy --all-targets --all-features`を実行し回帰なしを確認。clippy警告2件はv0.2.0時点（本作業着手前）から存在する既存の警告で本作業と無関係と確認。`cargo fmt --check`の差分は`git worktree`でv0.2.0時点を検証したところ既に20ファイルで存在するrustfmtバージョン差異と判明、本作業スコープ外のため対応しない
+- [x] Step 11: `Cargo.toml`のバージョンを0.2.0から0.2.1に更新（パッチリリース、Functional Design Q5）
+- [x] Step 12: ドキュメント更新 — `mustache-optional-modules-requirements.md`（既知の制限の記述を解消済みに更新）、`README.md`/`README.en.md`（既知の制限の記述を削除、spec準拠率100%に更新）、`unit-test-instructions.md`（テスト件数93件に更新）/`integration-test-instructions.md`（`#[ignore]`記述を削除）
 - [ ] Step 13: `aidlc-docs/construction/core-engine/code/summary.md`に本拡張の生成物一覧・テスト結果・spec準拠状況を追記。`aidlc-state.md`を更新
 
 ## コミット方針

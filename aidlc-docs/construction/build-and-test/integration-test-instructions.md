@@ -33,16 +33,10 @@ cargo test --test proptest
 
 `tests/spec/`は、公式mustache/specリポジトリのJSONフィクスチャ（`tests/spec/fixtures/`）を用いて、core-engineライブラリの公開API（`Mustache::render_str`）が外部仕様と一致することを検証する統合テストである。ユニット間結合ではなく、core-engineライブラリと外部仕様との整合性を検証するものだが、Cargoの`tests/`ディレクトリ機構を用いる点で技術的には同種の統合テストに分類される。
 
-必須6モジュール（136ケース）に加え、v0.2.0でオプション3モジュール（`~lambdas`10ケース、`~dynamic-names`21ケース、`~inheritance`27ケース）を追加した。
+必須6モジュール（136ケース）に加え、v0.2.0でオプション3モジュール（`~lambdas`10ケース、`~dynamic-names`21ケース、`~inheritance`27ケース）を追加した。v0.2.1でブロック再インデント処理（BR-10.7〜BR-10.13）に対応し、`~inheritance`は27/27（100%）準拠となった（`#[ignore]`属性は無し）。
 
 ```bash
 cargo test --test spec
-```
-
-`~inheritance`のうち4ケース（ブロックの再インデント処理、BR-10.7の既知の制限）は`inheritance_known_limitations`として`#[ignore]`属性を付与しており、既定の`cargo test`では実行されない（release-automationのテストゲートをブロックしないため）。既知の制限の状況を確認する場合は以下を実行する:
-
-```bash
-cargo test --test spec -- --ignored inheritance_known_limitations
 ```
 
 ## 手動での結合確認（CLIエンドツーエンド）

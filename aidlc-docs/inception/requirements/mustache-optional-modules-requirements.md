@@ -76,6 +76,6 @@ README.md/README.en.mdの「対応していない機能」の記述を更新し�
 
 FR-3（ラムダ）・FR-6/FR-7（動的パーシャル名）は公式fixtureに100%準拠（`~lambdas.json` 10/10、`~dynamic-names.json` 21/21）。
 
-**既知の制限**: FR-4（テンプレート継承）は`~inheritance.json`（27ケース）で23/27（約85%）準拠に留まる。未対応の4ケース（`Standalone block`・`Block reindentation`・`Intrinsic indentation`・`Nested block reindentation`）はいずれも「ブロックの再インデント処理」（差し替え内容を定義箇所のインデントを除去し展開箇所のインデントを再付与する処理）に関するもの。オーバーライド機構自体・多段継承でのオーバーライド伝播（Recursionケース）は正しく動作することを確認済み。実装コストと得られる価値のバランスを鑑み、ユーザー合意のもとフォローアップ課題として先送りした（詳細は`aidlc-docs/construction/core-engine/functional-design/business-rules.md`のBR-10.7を参照）。
+FR-4（テンプレート継承）は当初`~inheritance.json`（27ケース）で23/27（約85%）準拠に留まり、ブロックの「再インデント処理」（差し替え内容を定義箇所のインデントを除去し展開箇所のインデントを再付与する処理）4ケースを既知の制限としてフォローアップ課題に先送りしていたが、v0.2.1で公式spec Issue #130のアルゴリズム調査に基づき対応し、27/27（100%）準拠を達成した（詳細は`aidlc-docs/construction/core-engine/functional-design/business-rules.md`のBR-10.7〜BR-10.13、`aidlc-docs/construction/plans/core-engine-block-reindentation-*-plan.md`を参照）。
 
 各決定の詳細な理由は`mustache-optional-modules-requirement-verification-questions.md`を参照。
