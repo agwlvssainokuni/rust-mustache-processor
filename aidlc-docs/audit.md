@@ -838,3 +838,11 @@
 **User Input**: "Push it, and tag v0.1.1"
 **AI Response**: "mainブランチをpush後、v0.1.1タグを作成しpush（run ID: 29542391719）。verify-version/test/build（linux, macos-aarch64, windows）/releaseの全ジョブが一発で成功。GitHub Release「mustache 0.1.1」が作成され、3プラットフォーム分のアーカイブがアセットとして添付されたことを確認した。"
 **Context**: 既存ユニット補正 — v0.1.1リリース完了（実地検証成功、Node.js 24対応版アクション・3プラットフォーム構成での初の正常実行）
+
+---
+
+## New Feature Request: 機能拡張プロセス開始
+**Timestamp**: 2026-07-30T00:15:00Z
+**User Input**: "機能拡張のプロセスを始めたい。どうすれば良い？"
+**AI Response**: "共通ルール（process-overview.md, session-continuity.md）とワークスペース検出ルールを再読み込み。aidlc-state.mdが既存（全ユニット完了・v0.1.1リリース済み）のため、新規機能はRequirements Analysis（Intent Analysis）から開始する方針を確認。具体的な機能内容についてユーザーに確認する。"
+**Context**: INCEPTION PHASE — Requirements Analysis（新規機能）開始
