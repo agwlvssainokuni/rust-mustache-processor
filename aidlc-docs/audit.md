@@ -942,3 +942,11 @@
 **User Input**: "全て推奨通りとします。"
 **AI Response**: "core-engine-mustache-optional-modules-functional-design-plan.mdの全9問にEditツールで回答（すべてA）と理由を直接記入した。矛盾・曖昧性なしと判定し、計画チェックリストのStep5を完了に更新。"
 **Context**: CONSTRUCTION PHASE — Functional Design（core-engine、Mustacheオプションモジュール）質問回答完了
+
+---
+
+## Functional Design: 成果物生成
+**Timestamp**: 2026-07-30T00:48:00Z
+**User Input**: （回答完了を受けての自動進行、追加のユーザー入力なし）
+**AI Response**: "business-rules.mdにBR-9系（ラムダ）・BR-10系（テンプレート継承）・BR-11系（動的パーシャル名）を追加。domain-entities.mdにValue::Lambda（Rc<dyn Fn(&str) -> String>、手動Debug/Clone/PartialEq）、Node拡張（Section.raw、PartialName::Static/Dynamic、Node::Parent、Node::Block）を追加。business-logic-model.mdにパーサー/レンダラー拡張の処理記述と、ラムダ再帰のネスト深度ガード検証・継承オーバーライドのTestable Propertiesを追加。"
+**Context**: CONSTRUCTION PHASE — Functional Design（core-engine、Mustacheオプションモジュール）成果物生成完了

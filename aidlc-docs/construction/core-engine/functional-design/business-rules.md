@@ -78,3 +78,39 @@
 |---|---|
 | BR-8.1 | `ParseError`/`RenderError`は発生箇所の行番号・列番号（1始まり）を`line`/`column`フィールドに含める |
 | BR-8.2 | パーシャル内で発生したエラーは、パーシャルファイル内での位置を報告する（呼び出し元テンプレートの行番号ではない） |
+
+## 9. ラムダルール（~lambdas、mustache-optional-modules-requirements.md FR-2/FR-3）
+
+`core-engine-mustache-optional-modules-functional-design-plan.md` Q1〜Q6の決定に基づく。
+
+| ルール | 内容 |
+|---|---|
+| BR-9.1 | `Value::Lambda`を変数展開位置（`{{name}}`/`{{{name}}}`/`{{&name}}`）またはセクション位置（`{{#name}}...{{/name}}`）で解決した場合、ラムダを呼び出す |
+| BR-9.2 | 呼び出しシグネチャは`Fn(&str) -> String`に統一する（Q1=A）。変数展開位置では空文字列`""`を引数とし、セクション位置ではセクション本体の生テキスト（`domain-entities.md`のNode::Section拡張、Q6=A）を引数とする |
+| BR-9.3 | 呼び出し結果（`String`）は常に現在のデリミタ・コンテキストスタックで再パース・再レンダリングする（Q2=A、FR-3）。この再帰的レンダリングは既存の`enter_depth`によるネスト深度ガード（`MAX_NESTING_DEPTH`）を必ず経由し、無限再帰を防止する（Workflow Planningレビューでの決定） |
+| BR-9.4 | 再レンダリング結果に対し、`{{name}}`は通常の変数展開と同じHTMLエスケープ（BR-1.1）を適用し、`{{{name}}}`/`{{&name}}`はエスケープしない（BR-1.2）（Q3=A） |
+| BR-9.5 | 逆セクション文脈（`{{^name}}...{{/name}}`）でラムダを参照した場合、ラムダは常にtruthyとして扱われ、本体は表示されない（呼び出しも発生しない） |
+| BR-9.6 | `Value::Lambda`が関わる`PartialEq`比較（自分自身との比較を含む）は常に`false`を返す（Q4=A、手動実装） |
+| BR-9.7 | `Value::Lambda`は`Rc<dyn Fn(&str) -> String>`で保持し、`Send`/`Sync`境界は要求しない（Q5=A）。`Clone`は`Rc`の参照カウント複製、`Debug`は`"<lambda>"`のような固定文字列を出力する手動実装とする |
+
+## 10. テンプレート継承ルール（~inheritance、mustache-optional-modules-requirements.md FR-4/FR-5）
+
+`core-engine-mustache-optional-modules-functional-design-plan.md` Q7〜Q8の決定に基づく。
+
+| ルール | 内容 |
+|---|---|
+| BR-10.1 | `{{<parent}}...{{/parent}}`到達時、`PartialResolver::resolve(parent名)`で親テンプレート文字列を取得する（既存パーシャル解決と同じ仕組み、FR-5）。解決できない場合はBR-5.2と同じ扱い（非strictモードでは空文字列として継続、strictモードでは`RenderErrorKind::PartialNotFound`相当のエラー） |
+| BR-10.2 | `{{<parent}}`本体（呼び出し側テンプレートに書かれた内容）を走査し、直下の`{{$block}}...{{/block}}`のみを収集して「ブロック名→差し替え内容」のオーバーライドマップを構築する。`{{$block}}`以外の内容は出力に一切寄与しない（Q7=A） |
+| BR-10.3 | 取得した親テンプレート文字列を現在のデリミタでパースし、その結果の木をオーバーライドマップを適用しながらレンダリングする。親の木の中で`{{$block}}...{{/block}}`（デフォルト内容）に遭遇した場合、オーバーライドマップに同名のエントリがあればその内容を、なければデフォルト内容をレンダリングする |
+| BR-10.4 | `{{$block}}...{{/block}}`が`{{<parent}}`の外（オーバーライドの対象にならない文脈）で単独評価された場合、単に自身のデフォルト内容を現在のコンテキストでレンダリングする（Q8=A） |
+| BR-10.5 | `{{<parent}}`のネスト（親テンプレートがさらに別の親を継承する等の多段継承）は既存の`MAX_NESTING_DEPTH`ガードで安全性を担保する。多段継承時のオーバーライド伝播の詳細な挙動は、公式spec fixture（`~inheritance.json`）による実測検証を経てCode Generation段階で確定する（既存必須6モジュールと同様の検証方針） |
+
+## 11. 動的パーシャル名ルール（~dynamic-names、mustache-optional-modules-requirements.md FR-6/FR-7）
+
+`core-engine-mustache-optional-modules-functional-design-plan.md` Q9の決定に基づく。
+
+| ルール | 内容 |
+|---|---|
+| BR-11.1 | `{{>* nameExpr}}`到達時、`nameExpr`をBR-4.1/BR-4.2のコンテキスト探索で解決する。解決した値が`Value::String`であれば、その文字列をパーシャル名として通常のパーシャル解決（BR-5.1〜BR-5.4）にそのまま渡す |
+| BR-11.2 | 解決した値が`Value::String`でない場合、または`nameExpr`自体がコンテキスト上に存在しない場合、BR-5.2と同じ扱いとする（非strictモードでは空文字列として継続、strictモードではエラー）（FR-7） |
+| BR-11.3 | 動的名前解決は`{{>* name}}`（パーシャル）にのみ適用する。`{{<parent}}`の親テンプレート名は常に静的指定のみサポートする（Q9=A、FR-6のスコープ限定） |

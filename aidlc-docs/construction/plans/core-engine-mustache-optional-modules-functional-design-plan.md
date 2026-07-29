@@ -7,7 +7,7 @@
 - [x] Step 1: ユニットコンテキスト分析（unit-of-work.md、既存domain-entities.md/business-rules.md、および実装済みソース src/value.rs, src/ast.rs, src/error.rs, src/partial.rs, src/renderer.rs との整合確認）
 - [x] Step 2-4: 計画作成・質問洗い出し（本ファイル）
 - [x] Step 5: ユーザー回答収集・曖昧さ分析（Q1〜Q9すべてA、いずれも推奨通り。曖昧・矛盾なし）
-- [ ] Step 6: 機能設計成果物生成（既存`business-logic-model.md`/`business-rules.md`/`domain-entities.md`への追記）
+- [x] Step 6: 機能設計成果物生成（既存`business-logic-model.md`/`business-rules.md`/`domain-entities.md`への追記）
 - [ ] Step 7-9: 完了メッセージ提示・承認待ち・記録
 
 ## 前提（要件で既に決定済み、質問不要）

@@ -22,6 +22,26 @@
 5. `Node::Partial`到達時: BR-5.1〜BR-5.4に従い`PartialResolver::resolve`を呼び出す（未解決時はstrictモードのみエラー、BR-5.2）。得られた文字列に対し、スタンドアロン時は`indent`を値展開前のテンプレート文字列自体に適用したうえで（BR-5.4）、現在のデリミタをリセットしてParserで再パースし（BR-6.3）、現在のコンテキストスタックで再帰的にレンダリングする。パーシャル名の再帰チェーン検出は行わず、ネスト深度カウンタ（`MAX_NESTING_DEPTH`）のみを安全装置とする（BR-5.5は削除）
 6. 全ノード走査後、蓄積した出力文字列を返す
 
+## パース処理・レンダリング処理の拡張（Mustacheオプションモジュール フルサポート、v0.2.0）
+
+`mustache-optional-modules-requirements.md`・`core-engine-mustache-optional-modules-functional-design-plan.md`の決定に基づく、既存のパース処理・レンダリング処理への追加。
+
+### パーサー拡張
+
+- Pass 1（tokenize）で新規タグ種別を追加判定する: テンプレート継承の親タグ（`<`）、ブロックタグ（`$`）、動的パーシャル（`>`直後の`*`）
+- Pass 3（木構築）で以下を追加する:
+  - セクション開始〜終了の間の元テキストを`Node::Section.raw`として記録する（`domain-entities.md`参照）
+  - 親タグ（`<`）はセクションと同様にスタックで対応する終了タグを待ち、`Node::Parent`を構築する。未対応の終了タグ・EOF到達時のエラーは既存の`UnbalancedSection`/`UnexpectedEof`を流用する
+  - ブロックタグ（`$`）も同様にスタックで対応させ、`Node::Block`を構築する
+  - パーシャルタグの名前が`*`で始まる場合、`PartialName::Dynamic`（`*`を除いた残りを変数名として保持）とし、それ以外は`PartialName::Static`とする
+
+### レンダラー拡張
+
+- `Node::Variable`/`Node::Section`の名前解決で得た値が`Value::Lambda`だった場合、BR-9.1〜BR-9.5に従いラムダを呼び出し、結果を再パース・再レンダリングして出力に追加する
+- `Node::Partial`の名前が`PartialName::Dynamic(var)`の場合、まず`var`をコンテキスト探索で解決し（BR-11.1）、得られた文字列を通常のパーシャル名として以降はBR-5.1〜BR-5.4と同じ処理を行う。`PartialName::Static(name)`の場合は従来通り
+- `Node::Parent`到達時、BR-10.1〜BR-10.3に従い親テンプレートを解決・パースし、自身の`children`（`Node::Block`のみ）からオーバーライドマップを構築した上で、親の木を（オーバーライドを適用しつつ）レンダリングする
+- `Node::Block`到達時（`Node::Parent`の一部としてではなく、通常の子ノードとして走査に現れた場合）、BR-10.4に従い自身の`children`をそのままレンダリングする
+
 ## エラー伝播
 
 - Parser内のエラーは`ParseError`として即座に呼び出し元（`Mustache::parse`）に伝播する（パース全体を中断）
@@ -42,5 +62,7 @@
 | DirectoryPartialResolver | 同一名の解決結果の安定性 | Idempotence | ファイルシステムの状態が変化しない限り、同じ名前に対する`resolve`の呼び出しは同じ結果を返す |
 | Value | — | N/A | 純粋なデータ表現であり、変換・アルゴリズムを含まないためテスト可能なプロパティは識別されない（データ構造としての等価性はexample-basedテストで十分） |
 | ParseError / RenderError | — | N/A | エラー型はデータ保持のみで、業務ロジックを含まないため対象外 |
+| Renderer（ラムダ、v0.2.0追加） | ラムダの再帰レンダリングもネスト深度ガードで終端する | Invariant | 自身を呼び出すテンプレート文字列（例: `{{self}}`）を返すラムダに対し、レンダリングは無限再帰せず有限時間で`RenderErrorKind::MaxNestingDepthExceeded`を返す（BR-9.3、既存のPartial向け無限再帰終端保証と同じ安全装置を共有することの検証） |
+| Renderer（テンプレート継承、v0.2.0追加） | オーバーライドされないブロックはデフォルト内容と一致する | Invariant | `{{<parent}}`の本体に同名の`{{$block}}`を含まない場合、レンダリング結果は親テンプレート単体（`{{<parent}}`を使わず直接パーシャルとして）をレンダリングした結果と一致する（BR-10.3） |
 
 これらのプロパティはCode Generation（Planning）ステージでPBTテスト実装計画に引き継ぐ。
