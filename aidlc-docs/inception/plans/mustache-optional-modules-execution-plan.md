@@ -84,6 +84,9 @@ flowchart TD
 ### CONSTRUCTION PHASE（対象ユニット: core-engine）
 - [ ] Functional Design - EXECUTE
   - **Rationale**: `Value::Lambda`のデータモデル設計（Debug/Clone/PartialEqの扱い含む）、ラムダ呼び出し規約、テンプレート継承のブロック差し替えアルゴリズム、動的パーシャル名の解決順序など、詳細な業務ロジック設計が必要
+  - **承認前レビューで追加された設計項目（要記録）**:
+    1. **ラムダの再帰レンダリングと既存ネスト深度ガードの結線**: 既存`MAX_NESTING_DEPTH`ガード（`enter_depth`関数、`src/renderer.rs:327`）はSection/Partial/Variable評価の各再帰パスに個別に組み込まれているが、「ラムダの返り値を現在のコンテキストで再帰的にレンダリングする」新しい処理パスは存在しないため、実装時に`enter_depth`呼び出しを確実に組み込む設計を明示すること（自己参照ラムダによる無限再帰・スタックオーバーフロー防止）
+    2. **Lambdaのtrait境界の明示的決定**: `Box<dyn Fn>`か`Rc<dyn Fn>`か、`Send`/`Sync`境界を持たせるかを、公開API設計として明示的に決定し、Functional Design完了時にレビュー対象とすること（NFR Requirements/DesignをSKIPとしたため、tech-stack的判断はここで代替する）
 - [ ] NFR Requirements - SKIP
   - **Rationale**: 新規crateの追加や新たな性能・セキュリティ・スケーラビリティ要件は発生しない。既存のテストフレームワーク（proptest）・エラー型の枠組みをそのまま利用する
 - [ ] NFR Design - SKIP

@@ -902,3 +902,19 @@
 **User Input**: （承認済み要件を受けての自動進行、追加のユーザー入力なし）
 **AI Response**: "workflow-planning.mdのルールに従い詳細分析を実施。Transformation Type=Single component enhancement（既存core-engineユニットの拡張、新規ユニットなし）、Risk Level=Medium、Rollback=Easy、Testing Complexity=Moderate〜Complexと判定。Application Design/Units Generation/NFR Requirements/NFR Design/Infrastructure DesignはすべてSKIP、Functional Design/Code Generation/Build and TestをEXECUTEとする実行計画をmustache-optional-modules-execution-plan.mdに作成。aidlc-state.mdに新セクション「既存ユニット拡張: core-engine Mustacheオプションモジュール フルサポート」を追加。"
 **Context**: INCEPTION PHASE — Workflow Planning（Mustacheオプションモジュール）実行計画作成完了
+
+---
+
+## Workflow Planning: レビュー観点の確認
+**Timestamp**: 2026-07-30T00:35:00Z
+**User Input**: "確認しておくべき事項は？"
+**AI Response**: "実装コードを確認し3点を提示。(1) 既存MAX_NESTING_DEPTHガード（enter_depth、src/renderer.rs:327）はSection/Partial/Variable再帰パスに組み込まれているが、ラムダ返り値の再帰レンダリング処理パスは未実装であり、実装時にenter_depth呼び出しを確実に組み込む必要がある（自己参照ラムダによる無限再帰対策）。(2) Lambdaのtrait境界（Box<dyn Fn> vs Rc<dyn Fn>、Send/Sync境界）はtech-stack的な判断でありFunctional Design完了時に明示的レビュー対象とすべき。(3) src/cli/配下を確認し、機能一覧記述がなく「cliユニット変更なし」という計画の前提が正しいことを確認（修正不要）。1・2を実行計画のFunctional Design理由欄に明記することを提案。"
+**Context**: INCEPTION PHASE — Workflow Planning（Mustacheオプションモジュール）レビュー観点の提示
+
+---
+
+## Workflow Planning - Approved
+**Timestamp**: 2026-07-30T00:36:00Z
+**User Input**: "OK"
+**AI Response**: "mustache-optional-modules-execution-plan.mdのFunctional Design項目に、承認前レビューで追加された設計項目（ネスト深度ガードの結線、Lambdaのtrait境界決定）を明記。実行計画を承認済みとしてFunctional Design（core-engineユニット）へ進行。"
+**Context**: INCEPTION PHASE — Workflow Planning（Mustacheオプションモジュール）承認完了、Functional Designへ移行
