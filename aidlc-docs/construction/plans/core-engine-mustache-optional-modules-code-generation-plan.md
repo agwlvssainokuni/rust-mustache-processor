@@ -18,7 +18,7 @@
 - [x] Step 8: spec conformanceテスト統合・是正ループ（`tests/spec/`） — `~lambdas`10/10・`~dynamic-names`21/21全件成功。`~inheritance`は23/27（85%）。残り4件（ブロック再インデント処理）は既知の制限としてBR-10.7に記録し、フォローアップ課題とする（ユーザー承認済み）
 - [x] Step 9: ユニットテスト追加（`src/value.rs`, `src/renderer.rs`等の`#[cfg(test)]`） — 12件追加、既存72件と合わせ計84件全成功
 - [x] Step 10: プロパティベーステスト追加（`tests/proptest/`） — lambda_recursion_guard.rs、block_default_matches_partial.rsを追加、既存7件と合わせ計9件全成功
-- [ ] Step 11: バージョン更新（`Cargo.toml` 0.1.1 → 0.2.0）
+- [x] Step 11: バージョン更新（`Cargo.toml` 0.1.1 → 0.2.0）
 - [ ] Step 12: ドキュメント更新（`README.md`/`README.en.md`）
 - [ ] Step 13: Code Generation Summary作成（`aidlc-docs/construction/core-engine/code/summary.md`への追記）
 

@@ -1062,3 +1062,11 @@
 **User Input**: （承認済み計画に基づく自動進行、追加のユーザー入力なし）
 **AI Response**: "tests/proptest/lambda_recursion_guard.rs（自己参照ラムダのネスト深度ガード終端）とblock_default_matches_partial.rs（オーバーライドされないブロックがプレーンなパーシャルと同じ結果になること）を追加し、main.rsにモジュール登録。cargo test --test proptest 実行で既存7件+新規2件の計9件全成功を確認。"
 **Context**: CONSTRUCTION PHASE — Code Generation Part 2 Step 10（core-engine、Mustacheオプションモジュール）完了
+
+---
+
+## Code Generation Part 2 Step 11: バージョン更新
+**Timestamp**: 2026-07-30T02:27:00Z
+**User Input**: （承認済み計画に基づく自動進行、追加のユーザー入力なし）
+**AI Response**: "Cargo.tomlのversionを0.1.1から0.2.0に変更（NFR-2）。ソースコード中にハードコードされたバージョン文字列は存在しないことを確認。cargo buildによりCargo.lockも自動更新された。"
+**Context**: CONSTRUCTION PHASE — Code Generation Part 2 Step 11（core-engine、Mustacheオプションモジュール）完了
