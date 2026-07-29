@@ -20,7 +20,7 @@
 - [x] Step 10: プロパティベーステスト追加（`tests/proptest/`） — lambda_recursion_guard.rs、block_default_matches_partial.rsを追加、既存7件と合わせ計9件全成功
 - [x] Step 11: バージョン更新（`Cargo.toml` 0.1.1 → 0.2.0）
 - [x] Step 12: ドキュメント更新（`README.md`/`README.en.md`） — オプション機能節・ラムダAPI使用例・既知の制限を追記。mustache-optional-modules-requirements.mdにも実装結果を記録
-- [ ] Step 13: Code Generation Summary作成（`aidlc-docs/construction/core-engine/code/summary.md`への追記）
+- [x] Step 13: Code Generation Summary作成（`aidlc-docs/construction/core-engine/code/summary.md`への追記）
 
 ## Step詳細
 

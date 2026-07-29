@@ -61,11 +61,61 @@ Code Generation承認後、ユーザーから「ライブラリ利用者の推�
 - パッケージversionを`0.1.0`→`0.1.1`にパッチアップ
 - README.md/README.en.mdの「ライブラリとしての使い方」節に`default-features = false`の指定方法と効果を追記
 
-## 未対応・対象外
+## 未対応・対象外（v0.1.1時点）
 
-- ラムダ、テンプレート継承等のオプションモジュール（FR-4/Q3=Bにより対象外）
+- ラムダ、テンプレート継承等のオプションモジュール（v0.2.0で対応。下記参照）
 - ストリーミング出力API（NFR Requirements Q1=Aにより対象外）
 
 ## 次のステップ
 
 cliユニットのCONSTRUCTION（Functional Design → NFR Requirements → NFR Design → Code Generation）へ進む。
+
+## Mustacheオプションモジュール フルサポート（v0.2.0、要記録）
+
+`core-engine-mustache-optional-modules-code-generation-plan.md`（全13ステップ）に基づき、`~lambdas`・`~inheritance`・`~dynamic-names`の3オプションモジュールを実装した。詳細な設計判断は`functional-design/business-rules.md`のBR-9〜BR-11を参照。
+
+### 生成物一覧（変更・追加分）
+
+| ファイル | 行数（v0.2.0時点） | 変更内容 |
+|---|---|---|
+| `src/value.rs` | 901 | `Value::Lambda(Rc<dyn Fn(&str) -> String>)`追加、`Debug`/`Clone`/`PartialEq`を手動実装に変更 |
+| `src/ast.rs` | 78 | `PartialName`（Static/Dynamic）、`Node::Section`に`raw`/`open`/`close`追加、`Node::Parent`/`Node::Block`追加 |
+| `src/parser.rs` | 821 | 親タグ（`<`）・ブロックタグ（`$`）・動的パーシャル（`>*`）の判定、Frame方式への書き換え、セクション生テキスト・デリミタの記録 |
+| `src/renderer.rs` | 1138 | ラムダ呼び出し（インターポレーション/セクション文脈）、テンプレート継承（オーバーライド・スタックによる多段継承伝播）、動的パーシャル名解決 |
+| `tests/spec/conformance.rs` | — | `~lambdas`（10ケース、Rubyコードを手動翻訳）・`~inheritance`・`~dynamic-names`のテスト関数を追加 |
+| `tests/spec/fixtures/~lambdas.json`, `~inheritance.json`, `~dynamic-names.json` | — | mustache/specリポジトリから取得 |
+| `tests/proptest/lambda_recursion_guard.rs`, `block_default_matches_partial.rs` | — | v0.2.0向けTestable Propertiesの実装 |
+| `Cargo.toml` | — | versionを`0.1.1`→`0.2.0`に更新 |
+
+### テスト（v0.2.0時点）
+
+| 種別 | 件数 |
+|---|---|
+| ユニットテスト（`#[cfg(test)]`） | 84件（v0.1.1時点72件から12件追加） |
+| 公式spec conformanceテスト | 必須6モジュール136ケース + オプション3モジュール58ケース（`~lambdas`10、`~dynamic-names`21、`~inheritance`27）= 計194ケース |
+| プロパティベーステスト（proptest） | 9プロパティ（v0.1.1時点7件から2件追加） |
+| doctest | 1件 |
+
+### Spec準拠状況（v0.2.0）
+
+- 必須6モジュール: 136/136（100%）
+- `~lambdas`: 10/10（100%）
+- `~dynamic-names`: 21/21（100%）
+- `~inheritance`: 23/27（約85%、既知の制限あり。下記参照）
+
+### Code Generation中に発見・修正した主な設計補正（v0.2.0）
+
+1. **ラムダの再パースデリミタが文脈依存**（Step1、fixture精査）: インターポレーション文脈は常にデフォルトデリミタ、セクション文脈はそのタグ自身が有効だった時点のデリミタを使う（当初は一律「現在のデリミタ」としていたBR-9.3の誤りを修正）。`Node::Section`に`open`/`close`フィールドを追加
+2. **ラムダはキャッシュしない**（Step1、fixture精査、BR-9.3b追加）: 同一ラムダへの複数回参照は都度呼び出す
+3. **スタンドアロン判定・Parentのindent欠落**（Functional Designレビュー）: BR-7.1が継承タグ・ブロックタグ・動的パーシャルタグを対象に含めていなかった漏れ、`Node::Parent`に`indent`フィールドが欠落していた漏れを承認前に発見・修正
+4. **多段継承のオーバーライド伝播**（Step8、`~inheritance.json`の"Recursion"フィクスチャで発見）: 当初は`{{<parent}}`解決のたびに一度だけツリー置換する設計だったが、最も外側の呼び出し元のオーバーライドが途中の階層を経ても優先されない不具合が判明。`RenderState`にオーバーライド・スタック（`block_overrides`）を持たせ、`{{<parent}}`解決のたびにフレームをpush/popし、実効オーバーライドをスタック全体から外側優先でマージする方式に修正（BR-10.5確定）
+5. **既知の制限（BR-10.7）**: ブロックの「再インデント処理」（差し替え内容のインデントを定義箇所で除去し展開箇所で再付与する処理）は未実装。`Standalone block`・`Block reindentation`・`Intrinsic indentation`・`Nested block reindentation`の4ケースが未準拠。手計算による検証を重ねたが末尾改行の扱い等で不確実性が残ったため、ユーザーと相談の上、実装コストと得られる価値のバランスを鑑みフォローアップ課題として先送りした
+
+### 未対応・対象外（v0.2.0時点）
+
+- ブロックの再インデント処理（BR-10.7、既知の制限。フォローアップ課題）
+- ストリーミング出力API（NFR Requirements Q1=Aにより対象外）
+
+### 次のステップ
+
+v0.2.0としてリリースする。ブロック再インデント処理は別途フォローアップ課題として着手する。

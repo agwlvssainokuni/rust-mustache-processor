@@ -87,11 +87,11 @@ Mustache公式spec準拠のオプションモジュール3種（`~lambdas`, `~in
 - [ ] NFR Requirements（core-engine） — SKIP（新規NFR要件なし）
 - [ ] NFR Design（core-engine） — SKIP
 - [ ] Infrastructure Design（core-engine） — SKIP
-- [ ] Code Generation（core-engine） — 着手
+- [x] Code Generation（core-engine） — 全13ステップ完了。v0.2.0、spec準拠: 必須6モジュール136/136、~lambdas 10/10、~dynamic-names 21/21、~inheritance 23/27（既知の制限あり、BR-10.7）
 - [ ] Build and Test — 未着手
 
 ## Current Status
-- **Lifecycle Phase**: CONSTRUCTION（Mustacheオプションモジュール拡張: core-engineユニットのCode Generation着手）／既存3ユニット（core-engine/cli/release-automation）はCONSTRUCTION完了・v0.1.1リリース済み
-- **Current Stage**: Code Generation（core-engineユニット、Mustacheオプションモジュール拡張分）
+- **Lifecycle Phase**: CONSTRUCTION（Mustacheオプションモジュール拡張: core-engineユニットのCode Generation完了、Build and Test待ち）／既存3ユニット（core-engine/cli/release-automation）はCONSTRUCTION完了・v0.1.1リリース済み
+- **Current Stage**: Code Generation完了（core-engineユニット、Mustacheオプションモジュール拡張分）
 - **Next Stage**: Build and Test（Mustacheオプションモジュール拡張分）
-- **Status**: v0.1.1は正式リリース済み（https://github.com/agwlvssainokuni/rust-mustache-processor/releases/tag/v0.1.1）。Mustacheオプションモジュール フルサポート（v0.2.0予定）はRequirements Analysis・Workflow Planning・Functional Designが完了し承認済み。Code Generationに着手
+- **Status**: v0.1.1は正式リリース済み（https://github.com/agwlvssainokuni/rust-mustache-processor/releases/tag/v0.1.1）。Mustacheオプションモジュール フルサポートはCode Generation完了（バージョン0.2.0、ローカルのCargo.tomlに反映済み・未リリース）。spec準拠: 必須6モジュール136/136、~lambdas 10/10、~dynamic-names 21/21、~inheritance 23/27（既知の制限、BR-10.7参照）

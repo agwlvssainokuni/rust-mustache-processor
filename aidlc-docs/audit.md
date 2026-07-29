@@ -1078,3 +1078,11 @@
 **User Input**: （承認済み計画に基づく自動進行、追加のユーザー入力なし）
 **AI Response**: "README.md/README.en.mdに「オプション機能」節を新設し、ラムダ（使用例付き）・テンプレート継承（既知の制限を明記）・動的パーシャル名を追記。冒頭の機能一覧・spec準拠率の記述も更新。mustache-optional-modules-requirements.mdに「実装結果」セクションを追加し、FR-3/FR-6/FR-7は100%準拠、FR-4（テンプレート継承）は23/27（85%）で既知の制限ありと記録。"
 **Context**: CONSTRUCTION PHASE — Code Generation Part 2 Step 12（core-engine、Mustacheオプションモジュール）完了
+
+---
+
+## Code Generation Part 2 Step 13: Summary作成、Code Generation完了
+**Timestamp**: 2026-07-30T02:35:00Z
+**User Input**: （承認済み計画に基づく自動進行、追加のユーザー入力なし）
+**AI Response**: "aidlc-docs/construction/core-engine/code/summary.mdに「Mustacheオプションモジュール フルサポート（v0.2.0）」節を追加。生成物一覧・テスト件数（ユニット84・spec conformance194ケース・proptest9・doctest1）・spec準拠状況・Code Generation中の主な設計補正5件（デリミタ非対称性、キャッシュ禁止、スタンドアロン判定漏れ、多段継承伝播、既知の制限）を記録。全13ステップ完了。aidlc-state.mdを更新しCode Generation完了・Build and Test待ちに更新。"
+**Context**: CONSTRUCTION PHASE — Code Generation Part 2（core-engine、Mustacheオプションモジュール）全13ステップ完了
