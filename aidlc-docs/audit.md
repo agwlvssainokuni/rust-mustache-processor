@@ -966,3 +966,11 @@
 **User Input**: "Continue to Next Stage"
 **AI Response**: "Functional Design（core-engine、Mustacheオプションモジュール）を承認済みとしてCode Generationへ進行。"
 **Context**: CONSTRUCTION PHASE — Functional Design承認完了、Code Generationへ移行
+
+---
+
+## Code Generation Part 1 (Planning): 計画作成
+**Timestamp**: 2026-07-30T00:58:00Z
+**User Input**: （承認済みFunctional Designを受けての自動進行、追加のユーザー入力なし）
+**AI Response**: "core-engine-mustache-optional-modules-code-generation-plan.mdを作成。13ステップ（fixture取得、Value::Lambda実装、AST拡張、パーサー拡張、レンダラー拡張×3(ラムダ/継承/動的パーシャル名)、spec conformance是正ループ、ユニットテスト、PBT、バージョン更新、ドキュメント更新、Summary作成）で構成。ユーザーに承認を依頼。"
+**Context**: CONSTRUCTION PHASE — Code Generation Part 1 (Planning)（core-engine、Mustacheオプションモジュール）計画作成完了、承認待ち
