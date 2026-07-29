@@ -709,6 +709,48 @@ mod tests {
     }
 
     #[test]
+    fn lambda_is_always_truthy() {
+        // BR-9.5: ラムダは常にtruthy。
+        let lambda = Value::Lambda(Rc::new(|_: &str| String::new()));
+        assert!(lambda.is_truthy());
+    }
+
+    #[test]
+    fn lambda_debug_does_not_panic_and_is_placeholder() {
+        // BR-9.7: Debugはクロージャの内容ではなく固定のプレースホルダを出力する。
+        let lambda = Value::Lambda(Rc::new(|_: &str| String::new()));
+        assert_eq!(format!("{lambda:?}"), "Lambda(<lambda>)");
+    }
+
+    #[test]
+    fn lambda_clone_shares_the_same_closure() {
+        // BR-9.7: Cloneはクロージャ本体を複製せずRcの参照カウントを複製する。
+        let calls = Rc::new(std::cell::Cell::new(0));
+        let calls_clone = Rc::clone(&calls);
+        let lambda = Value::Lambda(Rc::new(move |_: &str| {
+            calls_clone.set(calls_clone.get() + 1);
+            String::new()
+        }));
+        let cloned = lambda.clone();
+        if let (Value::Lambda(f1), Value::Lambda(f2)) = (&lambda, &cloned) {
+            f1("");
+            f2("");
+        } else {
+            panic!("expected Lambda variants");
+        }
+        assert_eq!(calls.get(), 2);
+    }
+
+    #[test]
+    fn lambda_partial_eq_is_always_false() {
+        // BR-9.6: Lambdaが関わる比較（自分自身との比較を含む）は常にfalse。
+        let lambda = Value::Lambda(Rc::new(|_: &str| String::new()));
+        let cloned = lambda.clone();
+        assert_ne!(lambda, cloned);
+        assert_ne!(lambda, Value::Integer(1));
+    }
+
+    #[test]
     fn get_on_map_and_non_map() {
         let mut map = Map::new();
         map.insert("k", Value::Integer(1));

@@ -1046,3 +1046,11 @@
 **User Input**: "OK"
 **AI Response**: "business-rules.mdにBR-10.5（多段継承伝播の確定内容）とBR-10.7（既知の制限）を記録。Step 8を23/27・既知の制限ありとして完了扱いとし、Step 9へ進行。"
 **Context**: CONSTRUCTION PHASE — Code Generation Part 2 Step 8完了、Step 9へ移行
+
+---
+
+## Code Generation Part 2 Step 9: ユニットテスト追加
+**Timestamp**: 2026-07-30T02:20:00Z
+**User Input**: （承認済み計画に基づく自動進行、追加のユーザー入力なし）
+**AI Response**: "src/value.rsにValue::Lambdaのis_truthy/Debug/Clone/PartialEq（常にfalse）のテスト4件、src/renderer.rsにラムダのインターポレーション呼び出し・自己参照ラムダのネスト深度ガード終端・テンプレート継承（オーバーライド/デフォルト/単独評価）・動的パーシャル名（解決/非文字列時の非strict・strict挙動）のテスト8件を追加。cargo build --lib成功、cargo test --lib 84件全成功（既存72件+新規12件）、cargo clippy --lib --tests は既存warning（parser.rs:255の needless_range_loop、data_loader.rs の redundant_closure、いずれも本セッションの変更前から存在）のみで新規の問題なしを確認。"
+**Context**: CONSTRUCTION PHASE — Code Generation Part 2 Step 9（core-engine、Mustacheオプションモジュール）完了

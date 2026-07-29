@@ -1039,4 +1039,100 @@ mod tests {
         .unwrap();
         assert_eq!(out, "\\\n |\n <\n->\n |\n/\n");
     }
+
+    #[test]
+    fn lambda_interpolation_calls_and_reparses() {
+        let mut map = Map::new();
+        map.insert(
+            "shout",
+            Value::Lambda(Rc::new(|_: &str| "loud".to_string())),
+        );
+        let out = render("{{shout}}!", &Value::Map(map), false).unwrap();
+        assert_eq!(out, "loud!");
+    }
+
+    #[test]
+    fn lambda_recursive_output_hits_depth_guard() {
+        // BR-9.3: ラムダの再帰レンダリングも既存のMAX_NESTING_DEPTHガードを経由し、
+        // 自己参照するラムダが無限再帰・スタックオーバーフローを起こさないことを確認する。
+        let mut map = Map::new();
+        map.insert(
+            "self",
+            Value::Lambda(Rc::new(|_: &str| "{{self}}".to_string())),
+        );
+        let err = render("{{self}}", &Value::Map(map), false).unwrap_err();
+        assert!(matches!(
+            err.kind,
+            RenderErrorKind::MaxNestingDepthExceeded { .. }
+        ));
+    }
+
+    #[test]
+    fn parent_inheritance_overrides_block() {
+        let mut resolver = std::collections::HashMap::new();
+        resolver.insert("layout", "<{{$title}}Default{{/title}}>");
+        let out = render_with_resolver(
+            "{{<layout}}{{$title}}Custom{{/title}}{{/layout}}",
+            &Value::Map(Map::new()),
+            false,
+            &MapResolver(resolver),
+        )
+        .unwrap();
+        assert_eq!(out, "<Custom>");
+    }
+
+    #[test]
+    fn parent_inheritance_uses_default_when_not_overridden() {
+        let mut resolver = std::collections::HashMap::new();
+        resolver.insert("layout", "<{{$title}}Default{{/title}}>");
+        let out = render_with_resolver(
+            "{{<layout}}{{/layout}}",
+            &Value::Map(Map::new()),
+            false,
+            &MapResolver(resolver),
+        )
+        .unwrap();
+        assert_eq!(out, "<Default>");
+    }
+
+    #[test]
+    fn standalone_block_renders_default_content_outside_parent() {
+        // BR-10.4: {{<parent}}の外で単独評価されたブロックはデフォルト内容を表示する。
+        let out = render("{{$title}}Default{{/title}}", &Value::Map(Map::new()), false).unwrap();
+        assert_eq!(out, "Default");
+    }
+
+    #[test]
+    fn dynamic_partial_name_resolves_from_context() {
+        let mut resolver = std::collections::HashMap::new();
+        resolver.insert("greeting", "Hello, {{name}}!");
+        let mut data = Map::new();
+        data.insert("name", Value::String("World".to_string()));
+        data.insert("dynamic", Value::String("greeting".to_string()));
+        let out = render_with_resolver(
+            "{{>*dynamic}}",
+            &Value::Map(data),
+            false,
+            &MapResolver(resolver),
+        )
+        .unwrap();
+        assert_eq!(out, "Hello, World!");
+    }
+
+    #[test]
+    fn dynamic_partial_name_non_string_renders_empty_by_default() {
+        // BR-11.2: 解決した値が文字列でない場合は既存の未解決パーシャルと同じ扱い。
+        let mut data = Map::new();
+        data.insert("dynamic", Value::Integer(1));
+        let out = render("[{{>*dynamic}}]", &Value::Map(data), false).unwrap();
+        assert_eq!(out, "[]");
+    }
+
+    #[test]
+    fn dynamic_partial_name_non_string_errors_in_strict_mode() {
+        let mut data = Map::new();
+        data.insert("dynamic", Value::Integer(1));
+        let err = render("{{>*dynamic}}", &Value::Map(data), true).unwrap_err();
+        assert!(matches!(err.kind, RenderErrorKind::PartialNotFound { .. }));
+    }
 }
