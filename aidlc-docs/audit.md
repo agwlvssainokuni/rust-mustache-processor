@@ -1152,3 +1152,11 @@
 **Context**: CONSTRUCTION PHASE — Functional Design（core-engine、BR-10.7）承認完了、Code Generationへ移行
 
 ---
+
+## Code Generation Part 1 (Planning): BR-10.7 ブロック再インデント処理
+**Timestamp**: 2026-07-30T04:15:00Z
+**User Input**: （Functional Design承認直後の自動進行、追加のユーザー入力なし）
+**AI Response**: "core-engine-block-reindentation-code-generation-plan.mdを作成。13ステップ（Node::Block拡張→パーサー算出ロジック→単体テスト→RenderState型変更→render_parent簡素化→render_block新設→単体テスト→spec conformanceテスト統合→実地検証→全体テスト/clippy/fmt→バージョン更新→ドキュメント更新→summary/state更新）。承認をユーザーに依頼。"
+**Context**: CONSTRUCTION PHASE — Code Generation Part 1（core-engine、BR-10.7）計画提示、承認待ち
+
+---
