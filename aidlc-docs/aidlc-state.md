@@ -75,8 +75,23 @@ Operations PHASEに具体的なステップが定義されていないため、�
 - ライブラリ利用者の推移的依存最小化のため、`Cargo.toml`の`clap`/`serde_json`/`serde_norway`を`cli` featureにゲート（`default-features = false`でserdeのみに絞れる）
 - 詳細: `aidlc-docs/construction/core-engine/nfr-requirements/tech-stack-decisions.md`、`aidlc-docs/construction/core-engine/code/summary.md`
 
+## 既存ユニット拡張: core-engine Mustacheオプションモジュール フルサポート（v0.2.0予定）
+
+Mustache公式spec準拠のオプションモジュール3種（`~lambdas`, `~inheritance`, `~dynamic-names`）を実装し、v1で対象外としていたラムダ等をフルサポートする。
+
+- [x] Requirements Analysis — mustache-optional-modules-requirements.md承認済み
+- [x] Workflow Planning — mustache-optional-modules-execution-plan.md（承認待ち）
+- [ ] Application Design — SKIP（新規コンポーネント無し）
+- [ ] Units Generation — SKIP（既存core-engineユニットを拡張）
+- [ ] Functional Design（core-engine） — 未着手
+- [ ] NFR Requirements（core-engine） — SKIP（新規NFR要件なし）
+- [ ] NFR Design（core-engine） — SKIP
+- [ ] Infrastructure Design（core-engine） — SKIP
+- [ ] Code Generation（core-engine） — 未着手
+- [ ] Build and Test — 未着手
+
 ## Current Status
-- **Lifecycle Phase**: OPERATIONS（既存2ユニットは完了）／release-automationユニットもCONSTRUCTION完了
-- **Current Stage**: —（全ユニットの実行可能な全ステージが完了）
-- **Next Stage**: —（現時点でAI-DLCワークフロー上実行可能な作業はない）
-- **Status**: core-engine/cli/release-automationの全ユニットが完了。v0.1.1が正式リリース済み（https://github.com/agwlvssainokuni/rust-mustache-processor/releases/tag/v0.1.1）
+- **Lifecycle Phase**: INCEPTION（Mustacheオプションモジュール拡張: Workflow Planning承認待ち）／既存3ユニット（core-engine/cli/release-automation）はCONSTRUCTION完了・v0.1.1リリース済み
+- **Current Stage**: Workflow Planning（Mustacheオプションモジュール フルサポート） — ユーザー承認待ち
+- **Next Stage**: Functional Design（core-engineユニット、Mustacheオプションモジュール拡張分）
+- **Status**: v0.1.1は正式リリース済み（https://github.com/agwlvssainokuni/rust-mustache-processor/releases/tag/v0.1.1）。Mustacheオプションモジュール フルサポート（v0.2.0予定）のRequirements Analysisが完了し、Workflow Planningの承認待ち
