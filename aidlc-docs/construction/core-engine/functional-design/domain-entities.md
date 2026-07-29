@@ -64,6 +64,8 @@ pub(crate) enum Node {
         inverted: bool,
         children: Vec<Node>,
         raw: String,          // Q6=A（v0.2.0追加）: セクション本体の生テキスト。ラムダのセクション文脈呼び出し（BR-9.2）に使用
+        open: String,          // v0.2.0追加（fixture精査で発見）: このセクションタグが書かれた時点で有効だったデリミタ（開始側）
+        close: String,         // 同上（終了側）。ラムダのセクション文脈での再パース（BR-9.3）に、デフォルトではなくこのデリミタを使う
         pos: SourcePosition,
     },
     Partial { name: PartialName, indent: String, pos: SourcePosition },
@@ -77,6 +79,7 @@ pub(crate) enum Node {
 - `Partial`の`indent`は、パーシャルタグの直前にあった行頭空白（スタンドアロン判定された場合）を保持し、レンダリング時にパーシャル内容の各行へ適用する（`component-dependency.md`のパーシャルインデント処理）
 - `pos`はQ5（エラーに行番号・列番号を含める）に基づき、`RenderError`生成時の位置情報として利用する
 - `Section.raw`（v0.2.0追加）: パース時にセクション開始タグ直後〜終了タグ直前の元の文字列をそのまま保持する（Q6=A、再構築方式は採らない）。ラムダを参照しないテンプレートでは未使用だが、常に保持する（呼び出し時点でどのセクションがラムダを参照するかは静的に判別できないため）
+- `Section.open`/`Section.close`（v0.2.0追加、fixture精査で発見）: パース時点でそのセクションタグに対して有効だったデリミタ文字列を保持する。ラムダのセクション文脈での返り値再パース（BR-9.3）にのみ使用する。インターポレーション文脈のラムダは常にデフォルトデリミタを使うため、`Variable`ノードには同種のフィールドは不要
 - `Node::Parent`の本体（`children`）は、直下の`Node::Block`のみがオーバーライドとして意味を持ち、それ以外の内容（`Node::Text`等）は無視される（BR-10.2）
 - `Node::Parent.indent`は`Node::Partial.indent`と同様、スタンドアロン時の行頭空白を保持し、親テンプレート文字列（値展開前）の各行に適用する（BR-10.6）
 - `Node::Block`は`{{<parent}}`の内側（オーバーライド定義）と外側（単独評価、デフォルト内容の表示）の両方で同じ構造を使う（BR-10.4）

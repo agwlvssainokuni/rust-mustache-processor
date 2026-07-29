@@ -998,3 +998,11 @@
 **User Input**: "承認します。Step 1から進めてください。"
 **AI Response**: "core-engine-mustache-optional-modules-code-generation-plan.mdを承認済みとしてPart 2（Generation）Step 1へ着手。"
 **Context**: CONSTRUCTION PHASE — Code Generation Part 1承認完了、Part 2 Step 1へ移行
+
+---
+
+## Code Generation Part 2 Step 1: fixture取得と発見事項の是正
+**Timestamp**: 2026-07-30T01:10:00Z
+**User Input**: （AIによるStep 1実行に対する承認応答）"OK"
+**AI Response**: "mustache/specリポジトリから~lambdas.json/~inheritance.json/~dynamic-names.jsonを取得しtests/spec/fixtures/に配置。内容精査により、BR-9.3（ラムダ返り値の再パースデリミタ）が誤りだったことを発見: インターポレーション文脈は常にデフォルトデリミタ、セクション文脈はそのタグが書かれた時点の現在のデリミタを使う（"Interpolation/Section - Alternate Delimiters"フィクスチャで確認）。また"Section - Multiple Calls"フィクスチャによりラムダは都度呼び出しキャッシュ禁止と判明（BR-9.3b追加）。~dynamic-names.jsonの確認により、動的名前解決がパーシャルタグのみを対象とするFunctional Design Q9=Aの決定が公式spec通りであることも確認。ユーザー承認を得てbusiness-rules.md（BR-9.3修正、BR-9.3b追加）、domain-entities.md（Node::Sectionにopen/closeフィールド追加）、code-generation-plan.md（Step1完了マーク、Step3/5の記述更新）を修正した。"
+**Context**: CONSTRUCTION PHASE — Code Generation Part 2 Step 1（core-engine、Mustacheオプションモジュール）完了、設計是正を反映

@@ -25,8 +25,11 @@
 ## Step詳細
 
 ### Step 1: 公式spec fixture取得
-- `https://github.com/mustache/spec`の`specs/`配下から`~lambdas.json`・`~inheritance.json`・`~dynamic-names.json`を取得し、既存の6ファイルと同じ形式で`tests/spec/fixtures/`に配置する
-- 取得できたfixtureの内容（各モジュールのテストケース定義）を精査し、Functional Design（BR-9〜BR-11）の設計と齟齬がないか確認する。齟齬が見つかった場合、Step 8のspec conformanceループで是正する（既存必須6モジュールのStep8補正と同じ方針）
+- [x] `https://github.com/mustache/spec`の`specs/`配下から`~lambdas.json`・`~inheritance.json`・`~dynamic-names.json`を取得し、既存の6ファイルと同じ形式で`tests/spec/fixtures/`に配置した
+- [x] 取得したfixtureの内容を精査し、Functional Design（BR-9〜BR-11）との齟齬を発見・是正した（Step 8を待たずこの時点で修正。齟齬が軽微な場合はStep 8のspec conformanceループで是正する方針は継続）:
+  - **ラムダの再パースデリミタが文脈依存**（BR-9.3を修正）: インターポレーション文脈は常にデフォルトデリミタ、セクション文脈はそのタグ自身が有効だった時点のデリミタを使う。`Node::Section`に`open`/`close`フィールドを追加（domain-entities.md反映済み）
+  - **ラムダはキャッシュしない**（BR-9.3b追加）: 同一ラムダへの複数回参照はその都度呼び出す
+  - `~dynamic-names.json`のテストケースを確認した結果、動的名前解決はパーシャルタグのみが対象で親タグの動的名前ケースは含まれていないことを確認した（Functional Design Q9=Aの決定が公式spec通りであることの裏付け、修正不要）
 
 ### Step 2: `Value::Lambda`実装
 - `src/value.rs`の`Value`列挙型に`Lambda(Rc<dyn Fn(&str) -> String>)`を追加
@@ -35,7 +38,7 @@
 - ライブラリ利用者向けのコンストラクタ手段（`Value::Lambda(Rc::new(...))`を直接構築可能にする、または補助関数を用意するかは実装時に決定）
 
 ### Step 3: AST拡張
-- `src/ast.rs`の`Node::Section`に`raw: String`フィールドを追加（BR-9.2、セクション本体の生テキスト）
+- `src/ast.rs`の`Node::Section`に`raw: String`（BR-9.2、セクション本体の生テキスト）と`open: String`/`close: String`（BR-9.3、パース時点で有効だったデリミタ）を追加
 - `PartialName`列挙型（`Static(String)` / `Dynamic(String)`）を追加し、`Node::Partial.name`の型を`String`から`PartialName`に変更（BR-11.1）
 - `Node::Parent { name: String, children: Vec<Node>, indent: String, pos: SourcePosition }`を追加（BR-10.1/BR-10.2/BR-10.6）
 - `Node::Block { name: String, children: Vec<Node>, pos: SourcePosition }`を追加（BR-10.3/BR-10.4）
@@ -43,11 +46,12 @@
 ### Step 4: パーサー拡張
 - Pass 1（tokenize）に新規タグ種別判定を追加: 親タグ（`<`）、ブロックタグ（`$`）、動的パーシャル（`>`直後の`*`）
 - Pass 2（スタンドアロン判定）のブロックタグ種別に、親タグ・終了タグ・ブロックタグ・終了タグ・動的パーシャルタグを追加する（BR-7.5）
-- Pass 3（木構築）に、親タグ・ブロックタグのスタックベース対応付け（開始〜終了のマッチング、`UnbalancedSection`/`UnexpectedEof`エラーの流用）と、セクションの`raw`記録、動的パーシャル名（`*`接頭辞）の`PartialName::Dynamic`判定を追加
+- Pass 3（木構築）に、親タグ・ブロックタグのスタックベース対応付け（開始〜終了のマッチング、`UnbalancedSection`/`UnexpectedEof`エラーの流用）と、セクションの`raw`/`open`/`close`記録、動的パーシャル名（`*`接頭辞）の`PartialName::Dynamic`判定を追加
 
 ### Step 5: レンダラー拡張 — ラムダ
 - `Node::Variable`/`Node::Section`の名前解決結果が`Value::Lambda`の場合の分岐を追加（BR-9.1）
-- 呼び出し（`Fn(&str) -> String`、セクションは`raw`、変数展開は`""`、BR-9.2）と、返り値の再パース・再レンダリング（現在のデリミタ・コンテキストスタック、`enter_depth`によるネスト深度ガードを経由、BR-9.3）を実装
+- 呼び出し（`Fn(&str) -> String`、セクションは`raw`、変数展開は`""`、BR-9.2）を実装
+- 返り値の再パース・再レンダリングを実装（BR-9.3）: インターポレーション文脈は常にデフォルトデリミタ（`{{`/`}}`）、セクション文脈は`Node::Section.open`/`.close`で再パースする。いずれも現在のコンテキストスタックを使い、`enter_depth`によるネスト深度ガードを経由する。ラムダは参照の都度呼び出し、結果をキャッシュしない（BR-9.3b）
 - `{{lambda}}`/`{{{lambda}}}`/`{{&lambda}}`のエスケープ規則の適用（BR-9.4）
 - 逆セクション文脈でラムダを常にtruthyとして扱う（BR-9.5、呼び出しなし）
 
