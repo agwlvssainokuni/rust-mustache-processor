@@ -1118,3 +1118,13 @@
 **User Input**: "Push it, and tag v0.2.0"
 **AI Response**: "mainブランチは既にリモートと同期済みだった。v0.2.0タグを作成しpush（run ID: 30479167958）。verify-version/test/build（linux, macos-aarch64, windows）/releaseの全ジョブが一発で成功。GitHub Release「mustache 0.2.0」が作成され、3プラットフォーム分のアーカイブ（mustache-0.2.0-aarch64-apple-darwin.tar.gz、mustache-0.2.0-x86_64-pc-windows-msvc.zip、mustache-0.2.0-x86_64-unknown-linux-gnu.tar.gz）がアセットとして添付されたことを確認した。バックグラウンドポーリングで再度zshの`status`予約変数問題（既知）が発生し、`run_status`に変数名変更して解消。"
 **Context**: OPERATIONS PHASE — v0.2.0リリース完了（実地検証成功、Mustacheオプションモジュール フルサポート初のリリース）
+
+---
+
+## New Work: BR-10.7（ブロック再インデント処理）対応開始 — 仕様確認
+**Timestamp**: 2026-07-30T03:35:00Z
+**User Input**: "ブロック再インデント処理の対応を開始。まずは仕様の確認から。"
+**AI Response**: "tests/spec/fixtures/~inheritance.jsonの既知の制限4ケース（Standalone block, Block reindentation, Intrinsic indentation, Nested block reindentation）を再精査。前回セッションで未解決だった末尾改行の不一致を解消するため、mustache/spec公式リポジトリのIssue #130（このフィクスチャ4件を追加したPR #131の設計議論、jgonggrijp氏によるBB/BS/BE/BN等の『clearance』分類を用いたRule1〜4のアルゴリズム提案）をWebFetchで調査。取得した規則を3ケース（Standalone block, Block reindentation, Intrinsic indentation）についてバイト単位で手動検証し、全て期待値と一致することを確認した（Nested block reindentationは多段継承のため未検証だが、既存のraw-text再パース方式で自然に解決する見込み）。詳細はユーザーへの報告メッセージに記載。次のステップとしてFunctional Design（business-rules.md BR-10.7の詳細化）への移行を提案する。"
+**Context**: 既存ユニット拡張: core-engine BR-10.7対応 — 仕様確認完了（Requirements Analysis相当の調査ステップ）
+
+---
