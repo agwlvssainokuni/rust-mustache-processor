@@ -8,8 +8,8 @@
 
 ## Plan Checklist
 
-- [ ] Step 1: 公式spec fixture取得（`~lambdas.json`, `~inheritance.json`, `~dynamic-names.json`をmustache/specリポジトリから取得し`tests/spec/fixtures/`に配置）
-- [ ] Step 2: `Value::Lambda`実装（`src/value.rs`）
+- [x] Step 1: 公式spec fixture取得（`~lambdas.json`, `~inheritance.json`, `~dynamic-names.json`をmustache/specリポジトリから取得し`tests/spec/fixtures/`に配置）
+- [x] Step 2: `Value::Lambda`実装（`src/value.rs`）
 - [ ] Step 3: AST拡張（`src/ast.rs`）
 - [ ] Step 4: パーサー拡張（`src/parser.rs`）
 - [ ] Step 5: レンダラー拡張 — ラムダ（`src/renderer.rs`）

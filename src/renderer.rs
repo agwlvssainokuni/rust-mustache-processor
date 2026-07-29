@@ -149,6 +149,9 @@ fn stringify(value: &Value) -> String {
         Value::Float(f) => stringify_float(*f),
         Value::String(s) => s.clone(),
         Value::Array(_) | Value::Map(_) => String::new(),
+        // BR-9.1: Value::Lambdaはこの関数に到達する前に呼び出し元でインターセプトされる
+        // 設計であり、ここに到達することはない（Step 5で実装）。
+        Value::Lambda(_) => unreachable!("Value::Lambda must be intercepted before stringify"),
     }
 }
 

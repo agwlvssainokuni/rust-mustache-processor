@@ -15,6 +15,7 @@
 //! Mustacheのレンダリングに使用する内部データ表現。
 
 use std::fmt;
+use std::rc::Rc;
 
 use serde::Serialize;
 use serde::ser::{
@@ -23,7 +24,9 @@ use serde::ser::{
 };
 
 /// Mustacheのコンテキストとして扱う、フォーマット非依存の内部データ表現。
-#[derive(Debug, Clone, PartialEq)]
+///
+/// `Debug`/`Clone`/`PartialEq`は`Lambda`バリアント（クロージャを保持し自動導出できない）
+/// のため手動実装する（BR-9.6/BR-9.7）。
 pub enum Value {
     /// 値が存在しないことを表す。
     Null,
@@ -39,6 +42,56 @@ pub enum Value {
     Array(Vec<Value>),
     /// キー順序を保持するマップ値。
     Map(Map),
+    /// ラムダ（関数値）。セクション文脈ではセクション本体の生テキストを、
+    /// インターポレーション文脈では空文字列を引数として呼び出される（BR-9.1〜BR-9.2）。
+    /// JSON/YAMLのデータでは表現できないため、ライブラリAPI経由でのみ構築できる。
+    Lambda(Rc<dyn Fn(&str) -> String>),
+}
+
+impl fmt::Debug for Value {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Value::Null => write!(f, "Null"),
+            Value::Bool(b) => f.debug_tuple("Bool").field(b).finish(),
+            Value::Integer(i) => f.debug_tuple("Integer").field(i).finish(),
+            Value::Float(v) => f.debug_tuple("Float").field(v).finish(),
+            Value::String(s) => f.debug_tuple("String").field(s).finish(),
+            Value::Array(items) => f.debug_tuple("Array").field(items).finish(),
+            Value::Map(map) => f.debug_tuple("Map").field(map).finish(),
+            Value::Lambda(_) => write!(f, "Lambda(<lambda>)"),
+        }
+    }
+}
+
+impl Clone for Value {
+    fn clone(&self) -> Self {
+        match self {
+            Value::Null => Value::Null,
+            Value::Bool(b) => Value::Bool(*b),
+            Value::Integer(i) => Value::Integer(*i),
+            Value::Float(v) => Value::Float(*v),
+            Value::String(s) => Value::String(s.clone()),
+            Value::Array(items) => Value::Array(items.clone()),
+            Value::Map(map) => Value::Map(map.clone()),
+            Value::Lambda(f) => Value::Lambda(Rc::clone(f)),
+        }
+    }
+}
+
+impl PartialEq for Value {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Value::Null, Value::Null) => true,
+            (Value::Bool(a), Value::Bool(b)) => a == b,
+            (Value::Integer(a), Value::Integer(b)) => a == b,
+            (Value::Float(a), Value::Float(b)) => a == b,
+            (Value::String(a), Value::String(b)) => a == b,
+            (Value::Array(a), Value::Array(b)) => a == b,
+            (Value::Map(a), Value::Map(b)) => a == b,
+            // BR-9.6: Lambdaが関わる比較（自分自身との比較を含む）は常にfalse。
+            _ => false,
+        }
+    }
 }
 
 impl Value {
@@ -58,6 +111,8 @@ impl Value {
             Value::Array(items) => !items.is_empty(),
             Value::Map(_) => true,
             Value::Integer(_) | Value::Float(_) | Value::String(_) => true,
+            // BR-9.5: ラムダは常にtruthy（逆セクションでは常に非表示、呼び出しも発生しない）。
+            Value::Lambda(_) => true,
         }
     }
 
