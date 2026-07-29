@@ -33,13 +33,15 @@ pub(crate) struct RenderState<'a> {
     context_stack: Vec<&'a Value>,
     depth: usize,
     strict: bool,
-    /// テンプレート継承のブロックオーバーライド・スタック（v0.2.0、fixture精査で追加）。
+    /// テンプレート継承のブロックオーバーライド・スタック（v0.2.0、fixture精査で追加。
+    /// v0.2.1でBR-10.7のため値の型を`Vec<Node>`から`Node`に変更 — 再インデント処理に
+    /// `raw`・clearance情報が必要なため）。
     /// `{{<parent}}`を解決するたびに、その直下の`Node::Block`から得たオーバーライドを
     /// フレームとしてpushする。多段継承（親がさらに別の親を継承する場合）で、最も外側の
     /// 呼び出し元（スタックの先頭）のオーバーライドが、途中の階層を経ても常に優先される
-    /// ことを保証するため、実効オーバーライドはスタック全体をマージして求める
-    /// （"Recursion"フィクスチャで発見。詳細はBR-10.5を参照）。
-    block_overrides: Vec<HashMap<String, Vec<Node>>>,
+    /// ことを保証するため、実効オーバーライドはスタックを外側から順に検索して求める
+    /// （BR-10.5、"Recursion"フィクスチャで発見）。
+    block_overrides: Vec<HashMap<String, Node>>,
 }
 
 impl<'a> RenderState<'a> {
@@ -99,10 +101,8 @@ pub(crate) fn render_nodes(
             } => {
                 render_parent(name, children, indent, *pos, state, partial_resolver, out)?;
             }
-            Node::Block { children, .. } => {
-                // BR-10.4: オーバーライド解決を経由しない場合（またはrender_parentでの
-                // 置換を既に済ませた後）、単に自身のchildrenを表示する。
-                render_nodes(children, state, partial_resolver, out)?;
+            Node::Block { .. } => {
+                render_block(node, state, partial_resolver, out)?;
             }
         }
     }
@@ -491,94 +491,210 @@ fn render_parent(
     })?;
 
     // BR-10.2: 自身のchildren（Node::Blockのみ）からオーバーライドマップを構築し、
-    // オーバーライド・スタックにpushする。
+    // オーバーライド・スタックにpushする。事前の木一括置換は行わず、親の木を
+    // レンダリングする過程で`Node::Block`に遭遇するたびに`render_block`が
+    // このスタックを参照してオーバーライドの有無をその場で判定する（BR-10.3）。
     let local_overrides = build_block_overrides(children);
     state.block_overrides.push(local_overrides);
-
-    // 実効オーバーライドは、スタックの先頭（最も外側＝最初の呼び出し元）から順に
-    // マージする。先に処理したフレームのキーが優先されるため、外側の呼び出し元の
-    // オーバーライドが、途中の階層の同名オーバーライドより常に優先される
-    // （多段継承での伝播、"Recursion"フィクスチャで確認）。
-    let mut effective: HashMap<String, Vec<Node>> = HashMap::new();
-    for frame in &state.block_overrides {
-        for (k, v) in frame {
-            effective.entry(k.clone()).or_insert_with(|| v.clone());
-        }
-    }
-    let substituted = substitute_blocks(&parent_nodes, &effective);
 
     // 多段継承（親がさらに別の親を継承する等）も既存のMAX_NESTING_DEPTHガードで
     // 安全性を担保する。
     enter_depth(state, pos)?;
-    let result = render_nodes(&substituted, state, partial_resolver, out);
+    let result = render_nodes(&parent_nodes, state, partial_resolver, out);
     state.depth -= 1;
     state.block_overrides.pop();
     result
 }
 
-/// `{{<parent}}`の直下の`Node::Block`のみを収集し、「ブロック名→差し替え内容」の
-/// マップを構築する（BR-10.2）。`Node::Block`以外の内容は無視する。
-fn build_block_overrides(children: &[Node]) -> HashMap<String, Vec<Node>> {
+/// `{{<parent}}`の直下の`Node::Block`のみを収集し、「ブロック名→差し替え内容の
+/// `Node::Block`」のマップを構築する（BR-10.2）。`Node::Block`以外の内容は無視する。
+fn build_block_overrides(children: &[Node]) -> HashMap<String, Node> {
     let mut overrides = HashMap::new();
     for child in children {
-        if let Node::Block { name, children, .. } = child {
-            overrides.insert(name.clone(), children.clone());
+        if let Node::Block { name, .. } = child {
+            overrides.insert(name.clone(), child.clone());
         }
     }
     overrides
 }
 
-/// ノード木を再帰的に走査し、`overrides`に同名のエントリを持つ`Node::Block`の
-/// `children`をオーバーライド内容に差し替える（BR-10.3）。オーバーライド内容自体は
-/// 再帰的な差し替えの対象にしない（無限ループ・多段の意図しない伝播を避けるため）。
-fn substitute_blocks(nodes: &[Node], overrides: &HashMap<String, Vec<Node>>) -> Vec<Node> {
-    nodes
-        .iter()
-        .map(|n| substitute_blocks_node(n, overrides))
+/// `Node::Block`をレンダリングする。実効オーバーライド（BR-10.5、外側優先でスタックを
+/// 検索）に同名のエントリがあれば、BR-10.10（除去）→BR-10.11（展開箇所インデント決定）→
+/// BR-10.12（付与・再パース）の順で処理した内容をレンダリングする。エントリがなければ
+/// BR-10.4により自身のデフォルト内容をそのままレンダリングする。
+fn render_block(
+    node: &Node,
+    state: &mut RenderState,
+    partial_resolver: Option<&dyn PartialResolver>,
+    out: &mut String,
+) -> Result<(), RenderError> {
+    let (name, children, pos) = match node {
+        Node::Block {
+            name, children, pos, ..
+        } => (name, children, *pos),
+        _ => unreachable!("render_block called with a non-Block node"),
+    };
+
+    let Some(arg_block) = find_effective_override(state, name) else {
+        // BR-10.4: オーバーライドなし。インデント処理を一切行わずデフォルト内容を表示する。
+        return render_nodes(children, state, partial_resolver, out);
+    };
+
+    // BR-10.10: 定義箇所（引数ブロック）でのインデント除去。
+    let dedented = dedent_block(&arg_block);
+
+    // BR-10.11: 展開箇所（パラメータブロック＝自分自身）でのインデント決定。
+    let expansion_indent = expansion_indent_for(node);
+
+    // BR-10.12: インデント付与・デフォルトデリミタでの再パース。
+    let indented = if expansion_indent.is_empty() {
+        dedented
+    } else {
+        indent_source(&dedented, &expansion_indent)
+    };
+    let nodes = crate::parser::parse(&indented).map_err(|parse_err| RenderError {
+        kind: RenderErrorKind::PartialParseError {
+            name: name.clone(),
+            message: parse_err.message.clone(),
+        },
+        line: parse_err.line,
+        column: parse_err.column,
+        message: format!("failed to parse block override '{name}': {}", parse_err.message),
+    })?;
+
+    // BR-10.13: 自己参照的なオーバーライドによる無限再帰を防止する。
+    enter_depth(state, pos)?;
+    let result = render_nodes(&nodes, state, partial_resolver, out);
+    state.depth -= 1;
+    result
+}
+
+/// `state.block_overrides`を外側（最初の呼び出し元）優先で検索し、`name`に一致する
+/// 差し替え内容の`Node::Block`を返す（BR-10.5）。スタックは`Vec`の先頭が最も外側。
+fn find_effective_override(state: &RenderState, name: &str) -> Option<Node> {
+    for frame in &state.block_overrides {
+        if let Some(node) = frame.get(name) {
+            return Some(node.clone());
+        }
+    }
+    None
+}
+
+/// BR-10.10: 差し替え内容（引数ブロック）の生テキストから、定義箇所の本来の
+/// インデント（intrinsic indentation）を除去する。
+fn dedent_block(block: &Node) -> String {
+    let (raw, open_clears_end, close_clears_start, close_clears_end) = match block {
+        Node::Block {
+            raw,
+            open_clears_end,
+            close_clears_start,
+            close_clears_end,
+            ..
+        } => (raw, *open_clears_end, *close_clears_start, *close_clears_end),
+        _ => unreachable!("dedent_block called with a non-Block node"),
+    };
+
+    // Rule3: open_clears_endなら、開始タグ自身の行の残りを内容から除外する。
+    let content = if open_clears_end {
+        match raw.find('\n') {
+            Some(idx) => &raw[idx + 1..],
+            None => "",
+        }
+    } else {
+        raw.as_str()
+    };
+
+    // BR-10.9（差し替え内容としての判定）: open_clears_endのみで判定する。
+    let intrinsic = if open_clears_end {
+        leading_whitespace_of_first_line(content)
+    } else {
+        String::new()
+    };
+    let mut dedented = if intrinsic.is_empty() {
+        content.to_string()
+    } else {
+        strip_prefix_from_lines(content, &intrinsic)
+    };
+
+    // 末尾改行の強制付与規則（"Standalone block"フィクスチャで判明した細則）。
+    if (close_clears_start || close_clears_end) && !dedented.ends_with('\n') {
+        dedented.push('\n');
+    }
+    dedented
+}
+
+/// BR-10.11: 差し替え対象として実際に評価される`Node::Block`（展開箇所）について、
+/// 適用するインデント文字列をRule4の優先順位で決定する。
+fn expansion_indent_for(target: &Node) -> String {
+    let (raw, open_clears_start, open_clears_end, close_clears_end, open_indent) = match target {
+        Node::Block {
+            raw,
+            open_clears_start,
+            open_clears_end,
+            close_clears_end,
+            open_indent,
+            ..
+        } => (
+            raw,
+            *open_clears_start,
+            *open_clears_end,
+            *close_clears_end,
+            open_indent,
+        ),
+        _ => unreachable!("expansion_indent_for called with a non-Block node"),
+    };
+
+    // Rule4 Step1: BR-10.9（展開箇所としての判定）はopen_clears_start かつ open_clears_end。
+    if open_clears_start && open_clears_end {
+        let content = match raw.find('\n') {
+            Some(idx) => &raw[idx + 1..],
+            None => "",
+        };
+        return leading_whitespace_of_first_line(content);
+    }
+    // Rule4 Step2: Rule1のスタンドアロンペア（open_clears_start かつ close_clears_end）。
+    // ただし、開始タグと同じ行にある`raw`内容（改行までの部分）が空白以外を含む場合、
+    // その行は既存のスタンドアロン行トリミング（Pass2）で除去されておらず、開始タグ
+    // 直前の空白は既にリテラル出力に残っている。ここでさらに`open_indent`を付与すると
+    // 二重適用になるため、その場合はStep2を適用しない（"Inherit indentation"
+    // フィクスチャの回帰で判明）。
+    if open_clears_start && close_clears_end {
+        let same_line = match raw.find('\n') {
+            Some(idx) => &raw[..idx],
+            None => raw.as_str(),
+        };
+        if same_line.chars().all(|c| c == ' ' || c == '\t') {
+            return open_indent.clone();
+        }
+    }
+    // Rule4 Step3: 空文字列。
+    String::new()
+}
+
+/// 文字列の最初の行の先頭空白（スペース・タブ）を取得する。
+fn leading_whitespace_of_first_line(content: &str) -> String {
+    let first_line = match content.find('\n') {
+        Some(idx) => &content[..idx],
+        None => content,
+    };
+    first_line
+        .chars()
+        .take_while(|c| *c == ' ' || *c == '\t')
         .collect()
 }
 
-fn substitute_blocks_node(node: &Node, overrides: &HashMap<String, Vec<Node>>) -> Node {
-    match node {
-        Node::Block {
-            name,
-            children,
-            pos,
-        } => {
-            let new_children = match overrides.get(name) {
-                Some(override_children) => override_children.clone(),
-                None => substitute_blocks(children, overrides),
-            };
-            Node::Block {
-                name: name.clone(),
-                children: new_children,
-                pos: *pos,
-            }
+/// `content`の各行の先頭から`prefix`を除去する（一致しない行はそのまま残す）。
+fn strip_prefix_from_lines(content: &str, prefix: &str) -> String {
+    let mut result = String::with_capacity(content.len());
+    let mut first = true;
+    for line in content.split('\n') {
+        if !first {
+            result.push('\n');
         }
-        Node::Section {
-            name,
-            inverted,
-            children,
-            raw,
-            open,
-            close,
-            pos,
-        } => Node::Section {
-            name: name.clone(),
-            inverted: *inverted,
-            children: substitute_blocks(children, overrides),
-            raw: raw.clone(),
-            open: open.clone(),
-            close: close.clone(),
-            pos: *pos,
-        },
-        // Node::Parentのchildren（直下のNode::Block宣言）は、そのParent自身が
-        // render_parentで解決される際に、その時点のオーバーライド・スタック
-        // （state.block_overrides）を使って独立して解決される。ここで先回りして
-        // 書き換える必要はない（多段継承の伝播はスタック側で保証される）。
-        // Text/Variable/Partialも含め、それ以外のノードはそのまま複製する。
-        other => other.clone(),
+        result.push_str(line.strip_prefix(prefix).unwrap_or(line));
+        first = false;
     }
+    result
 }
 
 /// パーシャルのテンプレート文字列に対し、各行（末尾改行のない最終行を除く）へ

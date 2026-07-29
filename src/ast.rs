@@ -73,6 +73,20 @@ pub(crate) enum Node {
     Block {
         name: String,
         children: Vec<Node>,
+        /// 開始タグ直後〜終了タグ直前の生テキスト。ブロック再インデント処理（BR-10.10）で
+        /// 差し替え内容として使う場合に使用する。
+        raw: String,
+        /// 開始タグが行頭clearするか（BR-10.8）。
+        open_clears_start: bool,
+        /// 開始タグが行末clearするか（BR-10.8）。
+        open_clears_end: bool,
+        /// 終了タグが行頭clearするか（BR-10.8）。
+        close_clears_start: bool,
+        /// 終了タグが行末clearするか（BR-10.8）。
+        close_clears_end: bool,
+        /// 開始タグ直前の行頭空白（`open_clears_start`が真の場合のみ意味を持つ）。
+        /// 展開箇所として使う場合、Rule4 Step2（BR-10.11）で使用する。
+        open_indent: String,
         pos: SourcePosition,
     },
 }

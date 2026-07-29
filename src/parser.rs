@@ -286,6 +286,10 @@ enum Frame {
         name: String,
         parent: Vec<Node>,
         pos: SourcePosition,
+        /// 開始タグ自身の開始バイトオフセット（BR-10.8のclearance判定に使用）。
+        open_start: usize,
+        /// 開始タグ自身の終了バイトオフセット（`raw`の開始位置、BR-10.8のclearance判定に使用）。
+        open_end: usize,
     },
 }
 
@@ -366,7 +370,13 @@ fn build_tree(template: &str, items: Vec<Item>) -> Result<Vec<Node>, ParseError>
                 }
                 ParsedTag::BlockStart { name } => {
                     let parent = std::mem::take(&mut current);
-                    stack.push(Frame::Block { name, parent, pos });
+                    stack.push(Frame::Block {
+                        name,
+                        parent,
+                        pos,
+                        open_start: start,
+                        open_end: end,
+                    });
                 }
                 ParsedTag::SectionEnd { name } => match stack.pop() {
                     None => {
@@ -422,12 +432,30 @@ fn build_tree(template: &str, items: Vec<Item>) -> Result<Vec<Node>, ParseError>
                             Frame::Block {
                                 name: open_name,
                                 parent,
+                                open_start,
+                                open_end,
                                 ..
                             } => {
                                 let children = std::mem::replace(&mut current, parent);
+                                let raw = template[open_end..start].to_string();
+                                let open_clears_start = clears_at_start(template, open_start);
+                                let open_clears_end = clears_at_end(template, open_end);
+                                let close_clears_start = clears_at_start(template, start);
+                                let close_clears_end = clears_at_end(template, end);
+                                let open_indent = if open_clears_start {
+                                    leading_whitespace_before(template, open_start)
+                                } else {
+                                    String::new()
+                                };
                                 current.push(Node::Block {
                                     name: open_name,
                                     children,
+                                    raw,
+                                    open_clears_start,
+                                    open_clears_end,
+                                    close_clears_start,
+                                    close_clears_end,
+                                    open_indent,
                                     pos: open_pos,
                                 });
                             }
@@ -459,6 +487,45 @@ fn build_tree(template: &str, items: Vec<Item>) -> Result<Vec<Node>, ParseError>
     }
 
     Ok(current)
+}
+
+/// BR-10.8: タグが「行頭clear」するか（直近の改行、またはテンプレート先頭から
+/// タグ開始位置までが空白文字のみか）を判定する。`\r\n`の場合は`\r`も改行の一部として扱う。
+fn clears_at_start(template: &str, tag_start: usize) -> bool {
+    let before = &template[..tag_start];
+    let seg = match before.rfind('\n') {
+        Some(idx) => &before[idx + 1..],
+        None => before,
+    };
+    seg.chars().all(|c| c == ' ' || c == '\t')
+}
+
+/// BR-10.8: タグが「行末clear」するか（タグ終了位置から次の改行、またはテンプレート末尾
+/// までが空白文字のみか）を判定する。`\r\n`の場合は`\r`も改行の一部として扱う。
+fn clears_at_end(template: &str, tag_end: usize) -> bool {
+    let after = &template[tag_end..];
+    let seg = match after.find('\n') {
+        Some(idx) => {
+            let cr_trim = if idx > 0 && after.as_bytes()[idx - 1] == b'\r' {
+                idx - 1
+            } else {
+                idx
+            };
+            &after[..cr_trim]
+        }
+        None => after,
+    };
+    seg.chars().all(|c| c == ' ' || c == '\t')
+}
+
+/// タグ直前の行頭空白（直近の改行、またはテンプレート先頭からタグ開始位置までの文字列）を
+/// 取得する。呼び出し元は`clears_at_start`が真であることを確認してから使用する。
+fn leading_whitespace_before(template: &str, tag_start: usize) -> String {
+    let before = &template[..tag_start];
+    match before.rfind('\n') {
+        Some(idx) => before[idx + 1..].to_string(),
+        None => before.to_string(),
+    }
 }
 
 struct Scanner<'a> {
@@ -769,6 +836,96 @@ mod tests {
             Node::Partial { name: PartialName::Static(n), indent, .. }
                 if n == "p" && indent == "  "
         ));
+    }
+
+    #[test]
+    fn block_captures_raw_and_clearance_glued_to_parent() {
+        // {{<parent}}に直接後続するブロック（行頭clearしない）。BR-10.8。
+        let nodes = parse_ok("{{<p}}{{$b}}\none\ntwo{{/b}}\n{{/p}}\n");
+        match &nodes[0] {
+            Node::Parent { children, .. } => match &children[0] {
+                Node::Block {
+                    raw,
+                    open_clears_start,
+                    open_clears_end,
+                    close_clears_start,
+                    close_clears_end,
+                    open_indent,
+                    ..
+                } => {
+                    assert_eq!(raw, "\none\ntwo");
+                    assert!(!open_clears_start);
+                    assert!(open_clears_end);
+                    assert!(!close_clears_start);
+                    assert!(close_clears_end);
+                    assert_eq!(open_indent, "");
+                }
+                other => panic!("unexpected node: {other:?}"),
+            },
+            other => panic!("unexpected node: {other:?}"),
+        }
+    }
+
+    #[test]
+    fn block_captures_clearance_standalone_pair_single_line() {
+        // 開始・終了タグが同一行に並ぶスタンドアロンペア（BR-10.8、Rule1のSE相当）。
+        let nodes = parse_ok("Hi,\n  {{$b}}{{/b}}\n");
+        match &nodes[1] {
+            Node::Block {
+                open_clears_start,
+                open_clears_end,
+                close_clears_start,
+                close_clears_end,
+                open_indent,
+                ..
+            } => {
+                assert!(open_clears_start);
+                assert!(!open_clears_end);
+                assert!(!close_clears_start);
+                assert!(close_clears_end);
+                assert_eq!(open_indent, "  ");
+            }
+            other => panic!("unexpected node: {other:?}"),
+        }
+    }
+
+    #[test]
+    fn block_captures_clearance_with_non_whitespace_default_content() {
+        // タグ間に非空白の既定内容があっても、ペア自体はRule1のSE相当になり得る（BR-10.8）。
+        let nodes = parse_ok("{{$b}}default{{/b}}\n");
+        match &nodes[0] {
+            Node::Block {
+                open_clears_start,
+                open_clears_end,
+                close_clears_start,
+                close_clears_end,
+                ..
+            } => {
+                assert!(open_clears_start);
+                assert!(!open_clears_end);
+                assert!(!close_clears_start);
+                assert!(close_clears_end);
+            }
+            other => panic!("unexpected node: {other:?}"),
+        }
+    }
+
+    #[test]
+    fn block_clearance_handles_crlf() {
+        let nodes = parse_ok("Hi,\r\n  {{$b}}\r\n  {{/b}}\r\n");
+        match &nodes[1] {
+            Node::Block {
+                open_clears_start,
+                open_clears_end,
+                open_indent,
+                ..
+            } => {
+                assert!(open_clears_start);
+                assert!(open_clears_end);
+                assert_eq!(open_indent, "  ");
+            }
+            other => panic!("unexpected node: {other:?}"),
+        }
     }
 
     #[test]
