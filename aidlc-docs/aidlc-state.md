@@ -100,7 +100,7 @@ v0.2.0でフォローアップ課題として先送りしていた`~inheritance`
 - [x] Build and Test — cargo build --release / cargo test --release 全成功を確認（145テスト実行単位、`#[ignore]`0件）
 
 ## Current Status
-- **Lifecycle Phase**: CONSTRUCTION完了（core-engine BR-10.7対応）。OPERATIONS PHASEへの移行待ち
-- **Current Stage**: Build and Test（core-engine、BR-10.7）完了報告・承認待ち
-- **Next Stage**: —（承認後はOperations、v0.2.1リリースはユーザー指示待ち）
-- **Status**: v0.2.0が正式リリース済み（https://github.com/agwlvssainokuni/rust-mustache-processor/releases/tag/v0.2.0）。v0.2.1（BR-10.7対応、`~inheritance`が27/27・既知の制限解消）はBuild and Test完了、リリースは未実施
+- **Lifecycle Phase**: OPERATIONS（プレースホルダ）。core-engine BR-10.7対応のCONSTRUCTION完了・承認済み
+- **Current Stage**: —（現時点でAI-DLCワークフロー上実行可能な作業はない）
+- **Next Stage**: —（v0.2.1リリースはユーザー指示待ち）
+- **Status**: v0.2.0が正式リリース済み（https://github.com/agwlvssainokuni/rust-mustache-processor/releases/tag/v0.2.0）。v0.2.1（BR-10.7対応、`~inheritance`が27/27・既知の制限解消）はCONSTRUCTION完了・承認済み、リリースは未実施
