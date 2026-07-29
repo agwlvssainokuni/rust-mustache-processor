@@ -11,7 +11,7 @@
 - **Build System**: Cargo（`rust-mustache-processor`パッケージ、バイナリ名`mustache`、edition 2024）
 - **Project Structure**: 単一バイナリクレート（雛形のみ、機能未実装）
 - **Reverse Engineering Needed**: No（雛形のみで解析対象となる設計・業務ロジックが存在しないため）
-- **Workspace Root**: /Users/agawa/Documents/project/git/rust-mustache-processor
+- **Workspace Root**: ~/Documents/project/git/rust-mustache-processor
 
 ## Code Location Rules
 - **Application Code**: Workspace root (NEVER in aidlc-docs/)

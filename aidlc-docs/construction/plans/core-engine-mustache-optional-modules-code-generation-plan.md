@@ -2,7 +2,7 @@
 
 `mustache-optional-modules-requirements.md`・`mustache-optional-modules-execution-plan.md`・Functional Design成果物（`business-logic-model.md`/`business-rules.md`/`domain-entities.md`のBR-9〜BR-11、v0.2.0追記分）に基づき、既存`core-engine`ユニットのソースを修正・拡張する。ブラウンフィールド（既存ファイルの修正）であり、`ClassName_new.rs`等の重複ファイルは作成しない。
 
-- **ワークスペースルート**: `/Users/agawa/Documents/project/git/rust-mustache-processor`
+- **ワークスペースルート**: `~/Documents/project/git/rust-mustache-processor`
 - **対象ユニット**: core-engine（`src/lib.rs`, `src/value.rs`, `src/ast.rs`, `src/parser.rs`, `src/renderer.rs`, `src/partial.rs`, `src/error.rs`）
 - **本計画がCode Generationの単一のソースオブトゥルース**。各Step完了ごとにチェックボックスを更新し、コミットする（既存プロジェクトの慣行を踏襲）
 
