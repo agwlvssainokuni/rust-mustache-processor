@@ -27,7 +27,7 @@
 - [x] Step 10: `cargo test`（ワークスペース全体: lib93・bin33・proptest9・spec9・doctest1）・`cargo clippy --all-targets --all-features`を実行し回帰なしを確認。clippy警告2件はv0.2.0時点（本作業着手前）から存在する既存の警告で本作業と無関係と確認。`cargo fmt --check`の差分は`git worktree`でv0.2.0時点を検証したところ既に20ファイルで存在するrustfmtバージョン差異と判明、本作業スコープ外のため対応しない
 - [x] Step 11: `Cargo.toml`のバージョンを0.2.0から0.2.1に更新（パッチリリース、Functional Design Q5）
 - [x] Step 12: ドキュメント更新 — `mustache-optional-modules-requirements.md`（既知の制限の記述を解消済みに更新）、`README.md`/`README.en.md`（既知の制限の記述を削除、spec準拠率100%に更新）、`unit-test-instructions.md`（テスト件数93件に更新）/`integration-test-instructions.md`（`#[ignore]`記述を削除）
-- [ ] Step 13: `aidlc-docs/construction/core-engine/code/summary.md`に本拡張の生成物一覧・テスト結果・spec準拠状況を追記。`aidlc-state.md`を更新
+- [x] Step 13: `aidlc-docs/construction/core-engine/code/summary.md`に本拡張の生成物一覧・テスト結果・spec準拠状況を追記。`aidlc-state.md`を更新
 
 ## コミット方針
 

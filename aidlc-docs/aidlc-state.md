@@ -90,8 +90,17 @@ Mustache公式spec準拠のオプションモジュール3種（`~lambdas`, `~in
 - [x] Code Generation（core-engine） — 全13ステップ完了。v0.2.0、spec準拠: 必須6モジュール136/136、~lambdas 10/10、~dynamic-names 21/21、~inheritance 23/27（既知の制限あり、BR-10.7）
 - [x] Build and Test — cargo build/cargo test（既定）全成功を確認。既知の制限4件は`#[ignore]`で分離しrelease-automationのテストゲートをブロックしないことを確認
 
+## 既存ユニット補正: core-engine BR-10.7（ブロック再インデント処理）対応（v0.2.1）
+
+v0.2.0でフォローアップ課題として先送りしていた`~inheritance`の既知の制限4件（Standalone block, Block reindentation, Intrinsic indentation, Nested block reindentation）に対応する。
+
+- [x] Requirements Analysis相当（仕様確認） — mustache/spec Issue #130のアルゴリズム調査、3/4ケースを手動検証
+- [x] Functional Design（core-engine） — business-rules.md（BR-10.7〜BR-10.13）、domain-entities.md（Node::Block拡張）、business-logic-model.md追記、承認済み
+- [x] Code Generation（core-engine） — 全13ステップ完了。v0.2.1、spec準拠: ~inheritance 27/27（既知の制限を解消）。実装中にRule4 Step2の二重適用バグ（"Inherit indentation"の回帰）を検知・修正
+- [ ] Build and Test — 未実施（Code Generation完了直後、承認待ち）
+
 ## Current Status
-- **Lifecycle Phase**: OPERATIONS（プレースホルダ）。全ユニット・全拡張がCONSTRUCTION完了・v0.2.0リリース済み
-- **Current Stage**: —（現時点でAI-DLCワークフロー上実行可能な作業はない）
-- **Next Stage**: —（フォローアップ課題: ブロックの再インデント処理、BR-10.7）
-- **Status**: v0.2.0が正式リリース済み（https://github.com/agwlvssainokuni/rust-mustache-processor/releases/tag/v0.2.0）。Mustacheオプションモジュール フルサポート（ラムダ・テンプレート継承・動的パーシャル名）を含む。spec準拠: 必須6モジュール136/136、~lambdas 10/10、~dynamic-names 21/21、~inheritance 23/27（既知の制限、BR-10.7参照）
+- **Lifecycle Phase**: CONSTRUCTION（core-engine BR-10.7対応、Code Generation完了・承認待ち）
+- **Current Stage**: Code Generation（core-engine、BR-10.7）完了報告・承認待ち
+- **Next Stage**: Build and Test（core-engine、BR-10.7）
+- **Status**: v0.2.0が正式リリース済み（https://github.com/agwlvssainokuni/rust-mustache-processor/releases/tag/v0.2.0）。v0.2.1（BR-10.7対応、`~inheritance`が27/27・既知の制限解消）はCode Generation完了、Build and Test・リリースは未実施
