@@ -33,6 +33,13 @@ pub(crate) struct RenderState<'a> {
     context_stack: Vec<&'a Value>,
     depth: usize,
     strict: bool,
+    /// テンプレート継承のブロックオーバーライド・スタック（v0.2.0、fixture精査で追加）。
+    /// `{{<parent}}`を解決するたびに、その直下の`Node::Block`から得たオーバーライドを
+    /// フレームとしてpushする。多段継承（親がさらに別の親を継承する場合）で、最も外側の
+    /// 呼び出し元（スタックの先頭）のオーバーライドが、途中の階層を経ても常に優先される
+    /// ことを保証するため、実効オーバーライドはスタック全体をマージして求める
+    /// （"Recursion"フィクスチャで発見。詳細はBR-10.5を参照）。
+    block_overrides: Vec<HashMap<String, Vec<Node>>>,
 }
 
 impl<'a> RenderState<'a> {
@@ -41,6 +48,7 @@ impl<'a> RenderState<'a> {
             context_stack: vec![root],
             depth: 0,
             strict,
+            block_overrides: Vec::new(),
         }
     }
 }
@@ -483,15 +491,28 @@ fn render_parent(
     })?;
 
     // BR-10.2: 自身のchildren（Node::Blockのみ）からオーバーライドマップを構築し、
-    // 親の木の中の同名Node::Blockをオーバーライド内容に差し替える。
-    let overrides = build_block_overrides(children);
-    let substituted = substitute_blocks(&parent_nodes, &overrides);
+    // オーバーライド・スタックにpushする。
+    let local_overrides = build_block_overrides(children);
+    state.block_overrides.push(local_overrides);
+
+    // 実効オーバーライドは、スタックの先頭（最も外側＝最初の呼び出し元）から順に
+    // マージする。先に処理したフレームのキーが優先されるため、外側の呼び出し元の
+    // オーバーライドが、途中の階層の同名オーバーライドより常に優先される
+    // （多段継承での伝播、"Recursion"フィクスチャで確認）。
+    let mut effective: HashMap<String, Vec<Node>> = HashMap::new();
+    for frame in &state.block_overrides {
+        for (k, v) in frame {
+            effective.entry(k.clone()).or_insert_with(|| v.clone());
+        }
+    }
+    let substituted = substitute_blocks(&parent_nodes, &effective);
 
     // 多段継承（親がさらに別の親を継承する等）も既存のMAX_NESTING_DEPTHガードで
     // 安全性を担保する。
     enter_depth(state, pos)?;
     let result = render_nodes(&substituted, state, partial_resolver, out);
     state.depth -= 1;
+    state.block_overrides.pop();
     result
 }
 
@@ -551,18 +572,11 @@ fn substitute_blocks_node(node: &Node, overrides: &HashMap<String, Vec<Node>>) -
             close: close.clone(),
             pos: *pos,
         },
-        Node::Parent {
-            name,
-            children,
-            indent,
-            pos,
-        } => Node::Parent {
-            name: name.clone(),
-            children: substitute_blocks(children, overrides),
-            indent: indent.clone(),
-            pos: *pos,
-        },
-        // Text/Variable/Partialはネストしたchildrenを持たないため対象外。
+        // Node::Parentのchildren（直下のNode::Block宣言）は、そのParent自身が
+        // render_parentで解決される際に、その時点のオーバーライド・スタック
+        // （state.block_overrides）を使って独立して解決される。ここで先回りして
+        // 書き換える必要はない（多段継承の伝播はスタック側で保証される）。
+        // Text/Variable/Partialも含め、それ以外のノードはそのまま複製する。
         other => other.clone(),
     }
 }
