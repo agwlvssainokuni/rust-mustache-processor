@@ -124,34 +124,12 @@ fn sections() {
     run_module("sections");
 }
 
-/// ブロックの再インデント処理が未実装のため既知の制限として除外しているケース名
-/// （BR-10.7、`business-rules.md`参照）。
-const INHERITANCE_KNOWN_LIMITATIONS: &[&str] = &[
-    "Standalone block",
-    "Block reindentation",
-    "Intrinsic indentation",
-    "Nested block reindentation",
-];
-
 #[test]
 fn inheritance() {
     // ~inheritance.jsonのテストデータは通常のJSON値のみで、コード実行を伴わないため
-    // 既存のrun_moduleでそのまま検証できる。既知の制限4件（BR-10.7）は除外し、
-    // 残り23件が公式spec準拠であることを検証する。
-    run_module_filtered("~inheritance", INHERITANCE_KNOWN_LIMITATIONS, false);
-}
-
-/// BR-10.7（ブロックの再インデント処理、既知の制限）に該当する4ケース。
-///
-/// 通常の`cargo test`では実行されない（`#[ignore]`）。これにより、既知の制限が
-/// `cargo test`の失敗として現れず、release-automationのテストゲート（FR-5）を
-/// ブロックしない。フォローアップ課題として対応する際は
-/// `cargo test --test spec -- --ignored inheritance_known_limitations`で
-/// 進捗を確認できる。
-#[test]
-#[ignore = "BR-10.7: block reindentation is a known, documented limitation"]
-fn inheritance_known_limitations() {
-    run_module_filtered("~inheritance", INHERITANCE_KNOWN_LIMITATIONS, true);
+    // 既存のrun_moduleでそのまま検証できる。BR-10.7（ブロック再インデント処理）の
+    // 実装により、27ケース全てが公式spec準拠であることを検証する（v0.2.1）。
+    run_module("~inheritance");
 }
 
 #[test]
