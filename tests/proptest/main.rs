@@ -16,8 +16,10 @@
 //! プロパティベーステストのエントリーポイント。
 
 mod array_repeat;
+mod block_default_matches_partial;
 mod directory_resolver_idempotence;
 mod escape_roundtrip;
+mod lambda_recursion_guard;
 mod partial_recursion_guard;
 mod section_complement;
 mod section_nesting;

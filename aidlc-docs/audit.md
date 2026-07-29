@@ -1054,3 +1054,11 @@
 **User Input**: （承認済み計画に基づく自動進行、追加のユーザー入力なし）
 **AI Response**: "src/value.rsにValue::Lambdaのis_truthy/Debug/Clone/PartialEq（常にfalse）のテスト4件、src/renderer.rsにラムダのインターポレーション呼び出し・自己参照ラムダのネスト深度ガード終端・テンプレート継承（オーバーライド/デフォルト/単独評価）・動的パーシャル名（解決/非文字列時の非strict・strict挙動）のテスト8件を追加。cargo build --lib成功、cargo test --lib 84件全成功（既存72件+新規12件）、cargo clippy --lib --tests は既存warning（parser.rs:255の needless_range_loop、data_loader.rs の redundant_closure、いずれも本セッションの変更前から存在）のみで新規の問題なしを確認。"
 **Context**: CONSTRUCTION PHASE — Code Generation Part 2 Step 9（core-engine、Mustacheオプションモジュール）完了
+
+---
+
+## Code Generation Part 2 Step 10: プロパティベーステスト追加
+**Timestamp**: 2026-07-30T02:25:00Z
+**User Input**: （承認済み計画に基づく自動進行、追加のユーザー入力なし）
+**AI Response**: "tests/proptest/lambda_recursion_guard.rs（自己参照ラムダのネスト深度ガード終端）とblock_default_matches_partial.rs（オーバーライドされないブロックがプレーンなパーシャルと同じ結果になること）を追加し、main.rsにモジュール登録。cargo test --test proptest 実行で既存7件+新規2件の計9件全成功を確認。"
+**Context**: CONSTRUCTION PHASE — Code Generation Part 2 Step 10（core-engine、Mustacheオプションモジュール）完了
