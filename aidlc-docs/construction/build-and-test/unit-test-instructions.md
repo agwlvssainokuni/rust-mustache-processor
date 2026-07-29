@@ -4,7 +4,7 @@
 
 | ユニット | 種別 | 場所 | 件数 |
 |---|---|---|---|
-| core-engine | ユニットテスト（`#[cfg(test)]`） | `src/*.rs`内 | 72件 |
+| core-engine | ユニットテスト（`#[cfg(test)]`） | `src/*.rs`内 | 84件（v0.2.0、Mustacheオプションモジュール分12件を含む） |
 | core-engine | doctest | `src/lib.rs`クレートdoc | 1件 |
 | cli | ユニットテスト（`#[cfg(test)]`） | `src/cli/*.rs`内 | 33件（うちproptest 3件） |
 
@@ -60,9 +60,9 @@ cargo test --bin mustache cli::tests::
 
 ### core-engine（`mustache_processor`ライブラリ）
 
-- `value.rs`（14件）: `is_truthy`各パターン、`get`/`iter`、`Map`の挿入順序保持、`from_serialize`（プリミティブ/struct/Vec/Map/Option/ネスト構造）
-- `parser.rs`（17件）: 各タグ種別、デリミタ変更、スタンドアロン行トリミング（複数タグ・`\r\n`対応）、構文エラー
-- `renderer.rs`（31件）: エスケープ、セクション各パターン、暗黙のイテレータ`.`、ドット区切り名前、strictモード、パーシャル（自己再帰・循環時の深度ガード・インデント適用）、ネスト深度超過
+- `value.rs`（18件）: `is_truthy`各パターン、`get`/`iter`、`Map`の挿入順序保持、`from_serialize`（プリミティブ/struct/Vec/Map/Option/ネスト構造）、`Value::Lambda`のtruthy/Debug/Clone/PartialEq（v0.2.0、4件）
+- `parser.rs`（20件）: 各タグ種別、デリミタ変更、スタンドアロン行トリミング（複数タグ・`\r\n`対応）、構文エラー
+- `renderer.rs`（39件）: エスケープ、セクション各パターン、暗黙のイテレータ`.`、ドット区切り名前、strictモード、パーシャル（自己再帰・循環時の深度ガード・インデント適用）、ネスト深度超過、ラムダ呼び出し・自己参照ラムダの深度ガード・テンプレート継承・動的パーシャル名（v0.2.0、8件）
 - `partial.rs`（2件）: `DirectoryPartialResolver`
 - `lib.rs`（5件）: `Mustache`公開APIの統合テスト
 - クレートdoc（1件）: 使用例のdoctest

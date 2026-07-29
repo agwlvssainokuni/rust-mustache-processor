@@ -1094,3 +1094,11 @@
 **User Input**: "Continue to Next Stage"
 **AI Response**: "Code Generation（core-engine、Mustacheオプションモジュール）を承認済みとしてBuild and Testへ進行。"
 **Context**: CONSTRUCTION PHASE — Code Generation承認完了、Build and Testへ移行
+
+---
+
+## Build and Test: 全体ビルド・テスト確認、重大な問題の発見と修正
+**Timestamp**: 2026-07-30T02:45:00Z
+**User Input**: （AIによる提案への承認）"OK"
+**AI Response**: "cargo build/cargo test（全体）を実行したところ、~inheritanceの既知の制限（BR-10.7）によりcargo test全体が失敗扱いになり、release-automationのテストゲート（FR-5）をブロックしv0.2.0が永久にリリースできなくなる重大な問題を発見。ユーザー確認のうえ、tests/spec/conformance.rsのinheritanceテストを『合格23件（既定で実行）』と『既知の制限4件（inheritance_known_limitations、#[ignore]属性）』に分割し解消。修正後、既定のcargo testが全テストバイナリ（lib 84・bin 33・proptest 9・spec 9+1ignored・doctest 1）でクリーンに成功することを確認。business-rules.md BR-10.7、build-and-test-summary.md、unit-test-instructions.md、integration-test-instructions.mdに反映。"
+**Context**: CONSTRUCTION PHASE — Build and Test（Mustacheオプションモジュール）完了、release-automationテストゲートへの影響を修正
