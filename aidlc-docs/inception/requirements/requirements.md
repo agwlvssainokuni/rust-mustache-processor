@@ -33,7 +33,7 @@
 - コメント `{{! comment }}`
 - デリミタ変更 `{{=<% %>=}}`
 
-**対象外**: ラムダ（`~lambdas`）およびその他のオプション拡張モジュール（`~inheritance`, `~dynamic-names`等）。JSON/YAMLのデータ入力では関数を表現できずCLI用途で活用できないため、v1のスコープからは除外する。将来ライブラリAPIとしての需要が明確になった場合に再検討する。
+**対象外（v1時点、v0.2.0で撤回・改訂）**: ラムダ（`~lambdas`）およびその他のオプション拡張モジュール（`~inheritance`, `~dynamic-names`等）。JSON/YAMLのデータ入力では関数を表現できずCLI用途で活用できないため、v1のスコープからは除外していた。v0.2.0でこの除外を撤回し、3モジュールすべてをフルサポートする。詳細は`mustache-optional-modules-requirements.md`を参照。
 
 ### FR-5: CLIの入出力インターフェース
 - テンプレートファイル・データファイル・出力先ファイルをコマンドライン引数で指定可能とする。
@@ -65,7 +65,7 @@
 
 ### NFR-2: テスト方針
 - 標準的な単体テスト・結合テストに加え、公式mustache/specのコンフォーマンステストスイート（JSON形式のテストケース集）を取り込み、仕様準拠を検証する。
-- 取り込み対象はFR-4で定めた必須モジュール（comments, delimiters, interpolation, inverted, partials, sections）に対応するテストケースとし、ラムダ等オプションモジュールのテストケースは対象外とする。
+- 取り込み対象はFR-4で定めた必須モジュール（comments, delimiters, interpolation, inverted, partials, sections）に対応するテストケースとする。オプションモジュール（ラムダ、テンプレート継承、動的パーシャル名）のテストケースは、v0.2.0（`mustache-optional-modules-requirements.md`）で追加対象となった。
 
 ### NFR-3: プロパティベーステスト（PBT拡張機能: 有効）
 - PBT拡張ルール（PBT-01〜PBT-10）を全面適用する（Partial enforcementではなくフル適用）。
