@@ -1070,3 +1070,11 @@
 **User Input**: （承認済み計画に基づく自動進行、追加のユーザー入力なし）
 **AI Response**: "Cargo.tomlのversionを0.1.1から0.2.0に変更（NFR-2）。ソースコード中にハードコードされたバージョン文字列は存在しないことを確認。cargo buildによりCargo.lockも自動更新された。"
 **Context**: CONSTRUCTION PHASE — Code Generation Part 2 Step 11（core-engine、Mustacheオプションモジュール）完了
+
+---
+
+## Code Generation Part 2 Step 12: ドキュメント更新
+**Timestamp**: 2026-07-30T02:30:00Z
+**User Input**: （承認済み計画に基づく自動進行、追加のユーザー入力なし）
+**AI Response**: "README.md/README.en.mdに「オプション機能」節を新設し、ラムダ（使用例付き）・テンプレート継承（既知の制限を明記）・動的パーシャル名を追記。冒頭の機能一覧・spec準拠率の記述も更新。mustache-optional-modules-requirements.mdに「実装結果」セクションを追加し、FR-3/FR-6/FR-7は100%準拠、FR-4（テンプレート継承）は23/27（85%）で既知の制限ありと記録。"
+**Context**: CONSTRUCTION PHASE — Code Generation Part 2 Step 12（core-engine、Mustacheオプションモジュール）完了

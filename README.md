@@ -5,7 +5,8 @@
 Rustでゼロから実装したMustacheテンプレートエンジンです。ライブラリ（`mustache_processor`）とCLIツール（`mustache`）の両方として利用できます。
 
 - 公式[Mustache spec](https://github.com/mustache/spec)の必須機能一式に準拠（変数展開、セクション、逆セクション、パーシャル、コメント、デリミタ変更）
-- 公式spec conformanceテスト（comments/delimiters/interpolation/inverted/partials/sections、計136ケース）で100%準拠を確認済み
+- オプション機能（ラムダ、テンプレート継承、動的パーシャル名）にも対応（v0.2.0〜。詳細は下記「オプション機能」参照）
+- 公式spec conformanceテスト（必須6モジュール計136ケース、オプション3モジュール計58ケース）でほぼ100%準拠を確認済み（テンプレート継承の一部のみ既知の制限あり、後述）
 - 入力データはJSON・YAMLの両方に対応
 - 複数テンプレートファイルの連結（`cat`ライクな指定順連結）に対応
 - 未定義変数をエラーにするstrictモード
@@ -143,6 +144,52 @@ let mustache = Mustache::new()
     .with_partial_resolver(Box::new(DirectoryPartialResolver::new("./partials")));
 ```
 
+## オプション機能
+
+公式Mustache specのオプション拡張モジュール（`~`接頭辞）にも対応しています。
+
+### ラムダ（`~lambdas`）
+
+`{{lambda}}`（インターポレーション）・`{{#lambda}}...{{/lambda}}`（セクション）の値として、Rustのクロージャを返す`Value::Lambda`を渡せます。JSON/YAMLのデータには関数を表現する手段がないため、**ライブラリAPI経由でのみ**利用可能です（CLIからは利用できません）。
+
+```rust
+use std::rc::Rc;
+use mustache_processor::Mustache;
+use mustache_processor::value::{Map, Value};
+
+let mustache = Mustache::new();
+let mut data = Map::new();
+data.insert(
+    "shout",
+    Value::Lambda(Rc::new(|_text: &str| "Hello!".to_string())),
+);
+
+let output = mustache.render_str("{{shout}}", &Value::Map(data)).unwrap();
+assert_eq!(output, "Hello!");
+```
+
+セクション文脈では、セクション本体の生テキスト（未展開）が引数として渡されます。返り値は常にMustacheテンプレートとして再パース・再レンダリングされます。
+
+### テンプレート継承（`~inheritance`）
+
+`{{<parent}}...{{/parent}}`で親テンプレートを継承し、`{{$block}}...{{/block}}`でデフォルト内容を持つ差し替え可能なブロックを定義できます。
+
+```mustache
+{{<layout}}
+  {{$title}}カスタムタイトル{{/title}}
+{{/layout}}
+```
+
+**既知の制限**: ブロックの「再インデント処理」（差し替え内容の行頭インデントを、定義箇所ではなく展開箇所の位置に揃える処理）は未対応です。公式spec conformanceテスト（`~inheritance`、27ケース）は23/27（約85%）準拠で、未対応の4ケースはいずれもこのインデント調整に関するものです。オーバーライド自体（多段継承でのオーバーライド伝播を含む）は正しく動作します。
+
+### 動的パーシャル名（`~dynamic-names`）
+
+`{{>* name}}`で、`name`をコンテキストから解決した文字列をパーシャル名として使用します。
+
+```mustache
+{{>* templateName}}
+```
+
 ## 開発
 
 ```bash
@@ -151,7 +198,7 @@ cargo test           # 全テスト実行（ユニットテスト・プロパテ
 cargo doc --no-deps  # ライブラリAPIドキュメント生成
 ```
 
-対応していない機能（ラムダ等のオプションMustache拡張モジュール）や設計上の詳細な決定事項は`aidlc-docs/`配下のドキュメントを参照してください。
+設計上の詳細な決定事項や既知の制限の経緯は`aidlc-docs/`配下のドキュメントを参照してください。
 
 ## ライセンス
 

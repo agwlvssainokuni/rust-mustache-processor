@@ -5,7 +5,8 @@
 A Mustache template engine implemented from scratch in Rust. Available both as a library (`mustache_processor`) and a CLI tool (`mustache`).
 
 - Conforms to the mandatory feature set of the official [Mustache spec](https://github.com/mustache/spec) (variable interpolation, sections, inverted sections, partials, comments, delimiter changes)
-- Verified 100% conformance against the official spec conformance test suite (comments/delimiters/interpolation/inverted/partials/sections, 136 test cases total)
+- Also supports the optional modules (lambdas, template inheritance, dynamic partial names) since v0.2.0 — see "Optional Features" below
+- Verified near-100% conformance against the official spec conformance test suite (136 test cases across the 6 mandatory modules, 58 test cases across the 3 optional modules; a small, known limitation remains in template inheritance — see below)
 - Supports both JSON and YAML input data
 - Supports concatenating multiple template files in order (similar to `cat`)
 - Optional strict mode that raises an error on undefined variables
@@ -143,6 +144,52 @@ let mustache = Mustache::new()
     .with_partial_resolver(Box::new(DirectoryPartialResolver::new("./partials")));
 ```
 
+## Optional Features
+
+The library also supports the official Mustache spec's optional extension modules (the `~`-prefixed ones).
+
+### Lambdas (`~lambdas`)
+
+You can pass a `Value::Lambda` wrapping a Rust closure as the value for `{{lambda}}` (interpolation) or `{{#lambda}}...{{/lambda}}` (section) tags. Since JSON/YAML data has no way to express a function, lambdas can only be constructed **via the library API** (not from the CLI).
+
+```rust
+use std::rc::Rc;
+use mustache_processor::Mustache;
+use mustache_processor::value::{Map, Value};
+
+let mustache = Mustache::new();
+let mut data = Map::new();
+data.insert(
+    "shout",
+    Value::Lambda(Rc::new(|_text: &str| "Hello!".to_string())),
+);
+
+let output = mustache.render_str("{{shout}}", &Value::Map(data)).unwrap();
+assert_eq!(output, "Hello!");
+```
+
+In a section context, the lambda receives the section's raw (unrendered) body text as its argument. The return value is always re-parsed and re-rendered as a Mustache template.
+
+### Template Inheritance (`~inheritance`)
+
+Use `{{<parent}}...{{/parent}}` to extend a parent template, and `{{$block}}...{{/block}}` to define an overridable block with default content.
+
+```mustache
+{{<layout}}
+  {{$title}}Custom title{{/title}}
+{{/layout}}
+```
+
+**Known limitation**: Block "reindentation" (aligning an overridden block's leading whitespace to the position where it's expanded, rather than where it was defined) is not implemented. The official spec conformance suite for `~inheritance` (27 cases) passes 23/27 (~85%); the 4 failing cases are all specifically about this indentation adjustment. Overriding itself — including override propagation across multi-level inheritance chains — works correctly.
+
+### Dynamic Partial Names (`~dynamic-names`)
+
+`{{>* name}}` resolves `name` from the current context and uses the resulting string as the partial name.
+
+```mustache
+{{>* templateName}}
+```
+
 ## Development
 
 ```bash
@@ -151,7 +198,7 @@ cargo test           # Run all tests (unit tests, property-based tests, spec con
 cargo doc --no-deps  # Generate library API documentation
 ```
 
-For unsupported features (optional Mustache extension modules such as lambdas) and detailed design decisions, see the documentation under `aidlc-docs/`.
+For detailed design decisions and the background of known limitations, see the documentation under `aidlc-docs/`.
 
 ## License
 
