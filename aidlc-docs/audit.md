@@ -1205,3 +1205,11 @@
 **Context**: CONSTRUCTION PHASE完了（core-engine BR-10.7対応）、OPERATIONS PHASEへ移行
 
 ---
+
+## Ad-hoc Request: v0.2.1リリース
+**Timestamp**: 2026-07-30T05:45:00Z
+**User Input**: "Push it, and tag v0.2.1"
+**AI Response**: "mainをpush（9d2920e..306e246）。v0.2.1タグを作成しpush（run ID: 30499584590）。verify-version/test/build（linux, macos-aarch64, windows）/releaseの全ジョブが一発で成功。GitHub Release「mustache 0.2.1」が作成され、3プラットフォーム分のアーカイブ（mustache-0.2.1-aarch64-apple-darwin.tar.gz、mustache-0.2.1-x86_64-pc-windows-msvc.zip、mustache-0.2.1-x86_64-unknown-linux-gnu.tar.gz）がアセットとして添付されたことを確認した。今回はghコマンドが利用不可だったため、GitHub API（curl）で直接確認した。"
+**Context**: OPERATIONS PHASE — v0.2.1リリース完了（BR-10.7対応、~inheritance 27/27達成後の初のリリース）
+
+---
