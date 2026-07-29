@@ -68,7 +68,7 @@ pub(crate) enum Node {
     },
     Partial { name: PartialName, indent: String, pos: SourcePosition },
     // 以下2種はv0.2.0でテンプレート継承（~inheritance）対応のため追加
-    Parent { name: String, children: Vec<Node>, pos: SourcePosition },  // {{<parent}}...{{/parent}}。nameは常に静的（Q9=A）
+    Parent { name: String, children: Vec<Node>, indent: String, pos: SourcePosition },  // {{<parent}}...{{/parent}}。nameは常に静的（Q9=A）、indentはBR-10.6
     Block { name: String, children: Vec<Node>, pos: SourcePosition },  // {{$block}}...{{/block}}
 }
 ```
@@ -78,6 +78,7 @@ pub(crate) enum Node {
 - `pos`はQ5（エラーに行番号・列番号を含める）に基づき、`RenderError`生成時の位置情報として利用する
 - `Section.raw`（v0.2.0追加）: パース時にセクション開始タグ直後〜終了タグ直前の元の文字列をそのまま保持する（Q6=A、再構築方式は採らない）。ラムダを参照しないテンプレートでは未使用だが、常に保持する（呼び出し時点でどのセクションがラムダを参照するかは静的に判別できないため）
 - `Node::Parent`の本体（`children`）は、直下の`Node::Block`のみがオーバーライドとして意味を持ち、それ以外の内容（`Node::Text`等）は無視される（BR-10.2）
+- `Node::Parent.indent`は`Node::Partial.indent`と同様、スタンドアロン時の行頭空白を保持し、親テンプレート文字列（値展開前）の各行に適用する（BR-10.6）
 - `Node::Block`は`{{<parent}}`の内側（オーバーライド定義）と外側（単独評価、デフォルト内容の表示）の両方で同じ構造を使う（BR-10.4）
 
 ## Template（公開）
