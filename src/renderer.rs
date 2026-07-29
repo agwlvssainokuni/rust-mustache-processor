@@ -1212,6 +1212,89 @@ mod tests {
     }
 
     #[test]
+    fn block_reindentation_dedents_definition_and_reindents_expansion() {
+        // BR-10.7/BR-10.10/BR-10.11: 定義箇所のインデントを除去し、展開箇所のインデントを再付与する。
+        let mut resolver = std::collections::HashMap::new();
+        resolver.insert("parent", "Hi,\n  {{$block}}\n  {{/block}}\n");
+        let out = render_with_resolver(
+            "{{<parent}}{{$block}}\n    one\n    two\n{{/block}}{{/parent}}\n",
+            &Value::Map(Map::new()),
+            false,
+            &MapResolver(resolver),
+        )
+        .unwrap();
+        assert_eq!(out, "Hi,\n  one\n  two\n");
+    }
+
+    #[test]
+    fn block_reindentation_standalone_pair_on_single_line() {
+        // BR-10.7: 開始・終了タグが同一行に並ぶスタンドアロンペア（Rule1）でも再インデントする。
+        let mut resolver = std::collections::HashMap::new();
+        resolver.insert("parent", "Hi,\n  {{$block}}{{/block}}\n");
+        let out = render_with_resolver(
+            "{{<parent}}{{$block}}\none\ntwo{{/block}}\n{{/parent}}\n",
+            &Value::Map(Map::new()),
+            false,
+            &MapResolver(resolver),
+        )
+        .unwrap();
+        assert_eq!(out, "Hi,\n  one\n  two\n");
+    }
+
+    #[test]
+    fn block_reindentation_uses_default_content_indentation() {
+        // BR-10.9/BR-10.11: 展開箇所のインデントが既定内容から決まる（intrinsic indentation）。
+        let mut resolver = std::collections::HashMap::new();
+        resolver.insert("parent", "Hi,\n{{$block}}\n  default\n{{/block}}\n");
+        let out = render_with_resolver(
+            "{{<parent}}{{$block}}\none\ntwo\n{{/block}}{{/parent}}\n",
+            &Value::Map(Map::new()),
+            false,
+            &MapResolver(resolver),
+        )
+        .unwrap();
+        assert_eq!(out, "Hi,\n  one\n  two\n");
+    }
+
+    #[test]
+    fn block_reindentation_does_not_double_indent_when_default_shares_line() {
+        // Rule4 Step2の回帰防止: 既定内容がタグと同じ行にある場合、既存のスタンドアロン行
+        // トリミングは働かないため、展開箇所インデントを重ねて付与してはならない。
+        let mut resolver = std::collections::HashMap::new();
+        resolver.insert(
+            "parent",
+            "stop:\n  {{$nineties}}collaborate and listen{{/nineties}}\n",
+        );
+        let out = render_with_resolver(
+            "{{<parent}}{{$nineties}}hammer time{{/nineties}}{{/parent}}",
+            &Value::Map(Map::new()),
+            false,
+            &MapResolver(resolver),
+        )
+        .unwrap();
+        assert_eq!(out, "stop:\n  hammer time\n");
+    }
+
+    #[test]
+    fn block_reindentation_cascades_through_nested_inheritance() {
+        // BR-10.12: 多段継承のネストしたブロックも、再パースを通じて自然にカスケードする。
+        let mut resolver = std::collections::HashMap::new();
+        resolver.insert(
+            "parent",
+            "{{<grandparent}}{{$block}}\n  one\n  {{$nested}}\n    two\n  {{/nested}}\n{{/block}}{{/grandparent}}\n",
+        );
+        resolver.insert("grandparent", "{{$block}}default{{/block}}");
+        let out = render_with_resolver(
+            "{{<parent}}{{$nested}}\nthree\n{{/nested}}{{/parent}}\n",
+            &Value::Map(Map::new()),
+            false,
+            &MapResolver(resolver),
+        )
+        .unwrap();
+        assert_eq!(out, "one\n  three\n");
+    }
+
+    #[test]
     fn standalone_block_renders_default_content_outside_parent() {
         // BR-10.4: {{<parent}}の外で単独評価されたブロックはデフォルト内容を表示する。
         let out = render("{{$title}}Default{{/title}}", &Value::Map(Map::new()), false).unwrap();

@@ -21,7 +21,7 @@
 - [x] Step 4: `src/renderer.rs` — `RenderState.block_overrides`の型を`Vec<HashMap<String, Node>>`に変更。`build_block_overrides`を全体の`Node`を保持するよう変更
 - [x] Step 5: `src/renderer.rs` — `substitute_blocks`/`substitute_blocks_node`を削除。`render_parent`を簡素化（事前一括置換を廃止し、`parent_nodes`をそのまま`render_nodes`に渡す）
 - [x] Step 6: `src/renderer.rs` — `render_nodes`の`Node::Block`処理を`render_block`関数に置き換え。`find_effective_override`・`dedent_block`（BR-10.10）・`expansion_indent_for`（BR-10.11）・`leading_whitespace_of_first_line`・`strip_prefix_from_lines`ヘルパーを追加。`enter_depth`によるネスト深度ガード（BR-10.13）を適用。**実装中に発見した追加補正**: Rule4 Step2（`open_indent`によるスタンドアロンペア判定）は、開始タグと同じ行にある差し替え前の既定内容（`raw`）が空白以外を含む場合は適用しないよう修正（`cargo test --test spec`で"Inherit indentation"の回帰を検知して発見。詳細はStep 9参照）
-- [ ] Step 7: `src/renderer.rs` — Step 4〜6の追加に対する単体テストを追加（主要な再インデントパターンの直接検証: 定義箇所インデント除去、展開箇所インデント付与、末尾改行の強制付与規則）
+- [x] Step 7: `src/renderer.rs` — 単体テストを5件追加（定義箇所インデント除去/単一行スタンドアロンペア/既定内容からのintrinsic indentation/Rule4 Step2二重適用の回帰防止/多段継承のカスケード）。追加時、多段継承テストで`grandparent`パーシャルに実在しない末尾`\n`を書いてしまい失敗 → フィクスチャJSONと突き合わせて修正、全93件成功
 - [ ] Step 8: `tests/spec/conformance.rs` — `inheritance_known_limitations`関数と`INHERITANCE_KNOWN_LIMITATIONS`定数を削除し、4ケースを`inheritance()`本体（`run_module("~inheritance")`、全27ケース）に統合
 - [x] Step 9（先行実施）: `cargo test --test spec`実行によりspec conformance（`~inheritance`27/27を含む）を確認。実装直後は"Inherit indentation"（既存の合格23件の1つ）で二重インデントの回帰を検知し、Step6のRule4 Step2条件を補正して解消。全9スイート（`inheritance_known_limitations`含めれば10）成功、`cargo test --lib`88件も成功を確認
 - [ ] Step 10: `cargo test`（ワークスペース全体）・`cargo clippy`・`cargo fmt --check`を実行し、既存テスト（ユニット84・proptest9・doctest等）に回帰がないことを確認
